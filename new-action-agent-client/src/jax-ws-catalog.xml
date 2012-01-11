@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://localhost:8080/new-action-agent/services/?wsdl=SynchronousDroolsAgentService.wsdl" uri="wsdl/localhost_8080/new-action-agent/services/.wsdl_SynchronousDroolsAgentService.wsdl"/>
+    <system systemId="http://localhost:8080/new-action-agent/services/?WSDL" uri="wsdl/localhost_8080/new-action-agent/services/.wsdl"/>
+    <system systemId="http://192.168.0.112:9763/new-action-agent-web-1.0-SNAPSHOT/services/?WSDL" uri="wsdl/192.168.0.112_9763/new-action-agent-web-1.0-SNAPSHOT/services/.wsdl"/>
+</catalog>
