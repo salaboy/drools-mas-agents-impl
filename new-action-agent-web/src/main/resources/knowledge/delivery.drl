@@ -388,9 +388,7 @@ query deliverMessage( String $refId, String $conversationId,
       $return:= MessageDeliveredResponse( $refId, $conversationId; )
 end
 
-
-
-
-
-
+query testQuery( mock.MockFact $m, String $pId, int $age )
+   $m := mock.MockFact( $pid := name, $age := age )
+end
 
