@@ -99,6 +99,21 @@ declare MessageDeliveredResponse
 end
 
 
+rule "ENTER"
+salience 99999
+when
+    $o : Object()
+then
+    System.out.println("************************************************* " + $o );
+end
+
+rule "Q"
+salience 99999
+when
+    $o : org.drools.base.DroolsQuery( )
+then
+    System.out.println("********************QRYYY***************************** " + $o );
+end
 
 // totally useless rule, except for debug :)
 rule "Deliver Message Action Found"

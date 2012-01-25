@@ -129,12 +129,7 @@
             <version>1.4</version>
             <scope>provided</scope>
         </dependency>
-       <!--dependency>
-            <groupId>org.drools.fipa</groupId>
-            <artifactId>drools-mas-acl</artifactId>
-            <version>${project.version}</version>
-            
-        </dependency-->
+       
         <dependency>
             <groupId>org.drools.mas</groupId>
             <artifactId>drools-mas-util</artifactId>
