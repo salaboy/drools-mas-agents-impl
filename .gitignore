@@ -2,3 +2,7 @@
 /new-dsa-agent-client/target/
 /new-action-agent-web/target/
 /new-action-agent-client/target/
+/remove-agent/target/
+/new-emergency-agent-client/target/
+/action-agent/target/
+/action-agent-client/target/

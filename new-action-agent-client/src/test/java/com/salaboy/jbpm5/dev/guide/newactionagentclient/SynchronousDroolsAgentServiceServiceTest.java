@@ -176,6 +176,22 @@ public class SynchronousDroolsAgentServiceServiceTest {
 //        assertTrue(target.getObjects().contains(fact));
 
     }
+    
+    @Test
+    public void testSimpleInformWithHelper() {
+        SynchronousRequestHelper agentHelper = new SynchronousRequestHelper("http://localhost:8080/new-action-agent/services/?WSDL");
+        
+        MockFact fact = new MockFact("patient1", 18);
+        
+
+        agentHelper.invokeInform("me", "you", fact);
+        
+        Object result = agentHelper.getReturn(true);
+        assertNull(result);
+       
+
+
+    }
 
     @Ignore
     public void testInformAsTrigger() {
@@ -248,7 +264,7 @@ public class SynchronousDroolsAgentServiceServiceTest {
 
     }
 
-    @Test
+    @Ignore
     public void testRequest() {
         SynchronousDroolsAgentService synchronousDroolsAgentServicePort = new SynchronousDroolsAgentServiceImplService().getSynchronousDroolsAgentServiceImplPort();
         ACLMessageFactory factory = new ACLMessageFactory(Encodings.XML);
