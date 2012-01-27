@@ -5,21 +5,22 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>KMR2 :: Agents Implementations</name>
-        <modules>
-	<module>service-clients</module>
-	<module>action-agent-helpers</module>
+    <modules>
+        <module>service-clients</module>
+        <module>action-agent-helpers</module>
         <module>action-agent</module>
         <module>action-agent-client</module>
-	
-           </modules>
-  
+        <module>dsa-agent-web</module>
+        <module>dsa-agent-client</module>
+    </modules>
+
     <repositories>
         <repository>
             <id>jboss</id>
             <name>jboss</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
-  
+
     </repositories>
-      
+
 </project>

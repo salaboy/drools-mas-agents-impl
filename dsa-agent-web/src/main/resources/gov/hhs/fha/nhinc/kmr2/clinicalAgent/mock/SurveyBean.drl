@@ -1,0 +1,131 @@
+/*
+ * TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+ * Copyright (c) 2008, Nationwide Health Information Network (NHIN) Connect.
+ * All rights reserved.Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * - Neither the name of the NHIN Connect Project nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *    END OF TERMS AND CONDITIONS
+ */
+
+ package gov.hhs.fha.nhinc.kmr2.clinicalAgent.mock;
+
+import org.drools.informer.generator.FormRegistry;
+import org.drools.informer.generator.Surveyable;
+import org.drools.informer.Question;
+import org.drools.informer.generator.annotations.AllowedAnswers;
+import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.informer.generator.annotations.Questionable;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+
+//import org.hibernate.annotations.CollectionOfElements;
+
+
+import java.util.Date;
+import java.util.List;
+
+
+
+declare Surveyable
+end
+
+declare SurveyBean  extends Surveyable
+@Questionable( label = "Name or title of the Survey", language = "EN" )
+@Entity(name = "SurveyBean")
+@Table(name = "SurveyBeanTable" )
+
+    questionnaireId : String @Id  @key
+
+    question1 : Integer =  3
+    @QuestionMark( type = Question.QuestionType.TYPE_NUMBER, label = "Please choose one : ", required = true )
+    @AllowedAnswers( values = { "1=Choice1", "2=Choice2", "3=Choice3", "4=Choice4", "5=Choice5", "6=Choice6" } )
+
+    question2 : String = "Rural"
+    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Please choose domicile : ", required = true )
+    @AllowedAnswers( values = { "Rural=Rural Dom.", "Urban=Urban Dom."} )
+
+    question3 : List
+    @CollectionOfElements( targetElement = String.class )
+    @QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose all hobbies that apply : ", required = true )
+    @AllowedAnswers( values = { "CMP=Camping", "FSH=Fishing", "GLF=Golf", "HGL=Hang Gliding" } )
+
+    question4 : Integer     = 99
+    @QuestionMark( type = Question.QuestionType.TYPE_NUMBER, label = "Please enter a numeric value : ", required = false )
+
+    question5 : String
+    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Please enter any value : " )
+
+    question6 : Date
+    @QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Please enter any date value : ", dateFormat = "dd/MM/yyyy" )
+
+    question7 : Integer
+    @QuestionMark( type = Question.QuestionType.TYPE_NUMBER, label = "Please enter a numeric value again: ", required = false )
+
+    question8 : Boolean
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label=" True of false? ", required = false )
+
+    question9 : Double
+    @QuestionMark( type = Question.QuestionType.TYPE_DECIMAL, label="Please enter a decimal value : ", required = false )
+
+    question10 : Double
+    @QuestionMark( type = Question.QuestionType.TYPE_DECIMAL, label = "Please choose one decimal: ", required = false )
+    @AllowedAnswers( values = { "0.21=#0.21", "1.34=#1.34", "2.88=#2.88" } )
+
+    question11 : String = "Date"
+    @QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Please choose a date : ", required = false, dateFormat = "dd/MM/yyyy" )
+    @AllowedAnswers( values = { "01/01/2001=1st Jan 2001", "02/02/2002=2nd Feb 2002"} )
+
+    question12 : Boolean
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = "Please choose true or false : ", required = false )
+    @AllowedAnswers( values = { "true=Yes", "false=No."} )
+
+
+    question13 : List
+    @CollectionOfElements( targetElement = Integer.class )
+    @QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose all lucky numbers : ", required = true )
+    @AllowedAnswers( values = { "1=1", "2=2", "3=3", "4=4", "5=5", "6=6", "7=7", "8=8"} )
+
+    question14 : List
+    @CollectionOfElements( targetElement = Double.class )
+    @QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose all lucky decimals : ", required = true )
+    @AllowedAnswers( values = { "1.1=1.1", "2.2=2.2", "3.3=3.3", "4.4=4.4", "5.5=5.5", "6.6=6.6", "7.7=7.7", "8.8=8.8"} )
+
+    question15 : List
+    @CollectionOfElements( targetElement = Boolean.class )
+    @QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose yes, no or both : ", required = true )
+    @AllowedAnswers( values = { "true=Yes", "false=No."} )
+
+    question16 : List
+    @CollectionOfElements( targetElement = Date.class )
+    @QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose any date you like : ", required = true )
+    @AllowedAnswers( values = { "01/01/2001=1st Jan 2001", "02/02/2002=2nd Feb 2002", "03/03/2003=3rd March 2003"} )
+
+
+    finalQuestion : Boolean
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = "Complete", required = false )
+
+
+end

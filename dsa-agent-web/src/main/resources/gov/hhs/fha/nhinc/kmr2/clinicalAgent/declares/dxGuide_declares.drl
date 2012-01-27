@@ -1,0 +1,206 @@
+
+/*
+ * TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+ * Copyright (c) 2008, Nationwide Health Information Network (NHIN) Connect.
+ * All rights reserved.Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * - Neither the name of the NHIN Connect Project nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *    END OF TERMS AND CONDITIONS
+ */
+
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision;
+
+import org.drools.informer.generator.Surveyable;
+
+import org.drools.informer.generator.annotations.Questionable;
+import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.informer.generator.annotations.AllowedAnswers;
+
+
+declare DiagnosticGuideProcess
+   id                       : String                @key
+   status                   : String                        = "n/a"
+   message                  : String
+   decModel                 : String
+   diagModel                : String
+   disease                  : String
+   diagnosticProcessHistory : java.util.LinkedList
+   canAdvance               : boolean                       = false
+   canCancel                : boolean                       = false
+   actions                  : java.util.HashSet
+   successStatus            : boolean                       = true
+end
+
+
+declare DxDecision
+    nodeId                  : String                @key
+    stage                   : int
+    current                 : boolean
+    descr                   : String
+    diseaseProbability      : int
+    severity                : String
+    response                : String
+    actions                 : java.util.List
+end
+
+
+
+declare Surveyable
+end
+
+
+declare DxAction extends Surveyable
+
+    actionId        : String                        @key
+    questionnaireId : String
+    numQuestions    : int
+
+    utility         : double      = -1.0
+    utilityLevel    : String
+
+    status          : String                        = "Not Started"
+//    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Current status : ", required = true )
+//    @AllowedAnswers( values = { "Not Started=Not Started", "Started=Started", "Committed=Committed", "Complete=Complete" } )
+
+    statusUpdated   : String
+
+end
+
+
+declare DxAutoCommittingAction extends DxAction
+end
+
+declare DxExternalCommittingAction extends DxAction
+end
+
+
+declare DxStep
+    dxProcessId : String
+    stage       : int
+end
+
+
+declare trait DiagValue
+    value   : double
+    context : String
+end
+
+
+
+
+query isUseful( DxAction $act, Double $use, Integer $intg )
+    $use := Double() from ( 0.01 * Math.round( 100 * Math.random() ) )
+    $intg := Integer() from new Integer( Math.round( 100 * $use ) )
+end
+
+
+
+
+declare AskAlcohol extends DxAutoCommittingAction
+@Questionable( label = "Ask for Alcohol Abuse", language = "EN" )
+
+    descr           : String            = "Ask for alcohol abuse"
+
+    question        : String            = null
+    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Do you abuse alcohol ? ", required = false )
+    @AllowedAnswers( values = { "true=true", "false=false", "unknown=unknown"  } )
+
+end
+
+
+declare AskDeployment extends DxAutoCommittingAction
+@Questionable( label = "Ask for Number of Deployments", language = "EN" )
+
+    descr           : String            = "Ask for number of deployments "
+
+    deploys         : String            = null
+    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " How many times have you been deployed ? ", required = true )
+    @AllowedAnswers( values = { "0=No deployments", "1=Just once", "2+=Two or more times"  } )
+
+end
+
+
+declare DoExcruciatinglyPainfulTest extends DxExternalCommittingAction
+@Questionable( label = "There's something I have to tell you...", language = "EN" )
+
+    descr           : String            = "You had better not know"
+
+    confirm         : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Are you sure ? ", required = true )
+end
+
+
+declare AskSomething1 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 1", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+declare AskSomething2 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 2", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+declare AskSomething3 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 3", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+declare AskSomething4 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 4", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+declare AskSomething5 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 5", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+declare AskSomething6 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 6", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+declare AskSomething7 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 7", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+declare AskSomething8 extends DxAutoCommittingAction
+@Questionable( label = "Ask for Something 8", language = "EN" )
+    descr           : String            = "No survey here, just complete"
+    question        : Boolean           = null
+    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
+end
+
+
+
+
+
