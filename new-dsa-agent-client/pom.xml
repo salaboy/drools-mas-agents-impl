@@ -23,7 +23,7 @@
     <artifactId>new-dsa-agent-client</artifactId>
     <version>1.0-SNAPSHOT</version>
     
-    <name>Drools MAS :: dsa-agent Client</name>
+    <name>KMR2 :: dsa-agent Client</name>
     <url>http://maven.apache.org</url>
     <build>
         <resources>

@@ -23,7 +23,7 @@
     <artifactId>action-agent-client</artifactId>
     <version>1.0-SNAPSHOT</version>
     
-    <name>Drools MAS :: action-agent Client</name>
+    <name>KMR2 :: action-agent Client</name>
     <url>http://maven.apache.org</url>
     <build>
         <resources>

@@ -22,7 +22,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>Drools MAS :: action-agent Agent Web</name>
+    <name>KMR2 :: action-agent Agent Web</name>
     
 
     <properties>
