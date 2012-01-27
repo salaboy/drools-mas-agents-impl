@@ -6,3 +6,9 @@
 /new-emergency-agent-client/target/
 /action-agent/target/
 /action-agent-client/target/
+/action-message-agent-model/target/
+/service-clients/display-data-aggregator/target/
+/service-clients/dsa-integration-services/target/
+/service-clients/registry-services/target/
+/action-agent-helpers/target/
+.DS_Store
