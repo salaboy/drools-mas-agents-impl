@@ -12,6 +12,8 @@
         <module>action-agent-client</module>
         <module>dsa-agent-web</module>
         <module>dsa-agent-client</module>
+        <module>dsa-fact-model</module>
+        <module>simulator-agent</module>
     </modules>
 
     <repositories>

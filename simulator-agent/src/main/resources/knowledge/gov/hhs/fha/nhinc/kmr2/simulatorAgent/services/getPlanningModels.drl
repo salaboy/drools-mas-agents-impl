@@ -1,0 +1,124 @@
+/*
+ * TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+ * Copyright (c) 2008, Nationwide Health Information Network (NHIN) Connect.
+ * All rights reserved.Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * - Neither the name of the NHIN Connect Project nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *    END OF TERMS AND CONDITIONS
+ */
+
+ package gov.hhs.fha.nhinc.kmr2.simulatorAgent.services;
+
+import org.drools.io.internal.InternalResource;
+
+import org.drools.mas.body.content.Action;
+import java.util.List;
+import java.util.ArrayList;
+
+import org.drools.pmml_4_0.ModelMarker;
+
+
+
+declare ModelElement
+    modelId             : String    @key
+    tags                : ArrayList @key
+    name                : String
+    shortDescr          : String
+    fullDescr           : String
+    disease             : String
+    modelRunInfo        : PlanningModelRunInfo
+end
+
+declare ModelList
+    tags                : ArrayList @key
+    models              : List
+    successStatus       : boolean   = true
+    successMessage      : String    = "(ok)"
+end
+
+declare PlanningModelRunInfo
+    startedSimulations  : int       = 0
+    pausedSimulations   : int       = 0
+    resultedSimulations : int       = 0
+end
+
+
+
+rule "Action_Request : getPlanningModels Init"
+salience 10
+when
+    $a :  Action( actionName == "getPlanningModels",
+                  $userId    : this["userId"]
+                )
+    not   ModelList( $patientId, $tags == ["Plan"]; )
+then
+    insert( new ModelList( new ArrayList( java.util.Arrays.asList("Plan") ),
+            null,
+            true,
+            "(ok)" )
+          );
+end
+
+
+
+rule "Action_Request : getPlanningModels Clear"
+when
+    $a :  Action( actionName == "getPlanningModels" )
+then
+    retract( $a );
+end
+
+
+
+rule "Load Model"
+when
+    InternalResource( $id : name, $type : description, $tags : categories  )
+then
+    insertLogical( new ModelElement( $id,
+                                     new ArrayList($tags),
+                                     $type,
+                                     $type,
+                                     $type,
+                                     $type,
+                                     new PlanningModelRunInfo() ) );
+end
+
+
+
+rule "Listing"
+no-loop
+when
+    $ml : ModelList( $queryTags : tags )
+    $list : List( $num : size ) from accumulate (
+        $m : ModelElement( tags.containsAll( $queryTags ) )
+        collectList( $m )
+    )
+then
+    $ml.setModels( new ArrayList( $list ) );
+    update( $ml );
+end
+
+
+query getPlanningModels( String $userId, Object $return )
+    $return := ModelList(  )
+end
