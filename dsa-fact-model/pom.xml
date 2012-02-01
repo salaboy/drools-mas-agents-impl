@@ -235,7 +235,7 @@
                 </executions>
                 <configuration>
                     <outputDirectory>${pom.basedir}/target</outputDirectory>
-                    <ontology>${pom.basedir}/src/main/resources/KMR2_OntologyLatest.ttl</ontology>
+                    <ontology>${pom.basedir}/src/main/resources/KMR_Ontology.ttl</ontology>
                     <modelName>kmr2</modelName>
                     <delegateInference>true</delegateInference>
                     <generateInterfaces>true</generateInterfaces>
@@ -272,7 +272,7 @@
                     <removeOldOutput>false</removeOldOutput>
                     <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
                     <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
-                    <persistenceXml>src/main/resources/persistence-template.xml</persistenceXml>
+                    <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
 
 
                     <generateEquals>false</generateEquals>
