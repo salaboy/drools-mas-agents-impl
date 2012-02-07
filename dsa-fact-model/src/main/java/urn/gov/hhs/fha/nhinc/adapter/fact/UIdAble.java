@@ -1,32 +1,60 @@
-package org.drools.semantics.builder.model;
+package urn.gov.hhs.fha.nhinc.adapter.fact;
 
 
 import com.clarkparsia.empire.SupportsRdfId;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
+import java.util.UUID;
 
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RdfIdAble", propOrder = {
-        "key"
-})
-public class RdfIdAble implements SupportsRdfId {
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public abstract class UIdAble implements SupportsRdfId {
 
-    @XmlElement(required = true, type = Key.class)
     private Key key;
 
+    private String actualType;
+
+    private boolean isReference = false;
+
+    @XmlTransient
     public RdfKey getRdfId() {
+        if ( key == null && getUniversalId() != null ) {
+            key = new Key( getUniversalId() );
+        }
         return key;
     }
 
     public void setRdfId( RdfKey theId ) {
         key = new Key( theId.value() );
+        setUniversalId( theId.toString() );
     }
 
+    @XmlTransient
+    public abstract String getUniversalId();
+    public abstract void setUniversalId( String x );
+
+    public String getActualType() {
+        return actualType;
+    }
+
+    public void setActualType(String actualType) {
+        this.actualType = actualType;
+    }
+
+    public UIdAble() {
+        setUniversalId( "http://" + UUID.randomUUID().toString() );
+    }
+
+    public boolean isReference() {
+        return isReference;
+    }
+
+    public void setReference(boolean reference) {
+        isReference = reference;
+    }
 
     protected static class Key implements RdfKey {
 

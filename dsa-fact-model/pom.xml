@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-shapes-reasoner-generator</artifactId>
-            <version>${drools.version}</version>
+            <version>5.4.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -248,7 +248,6 @@
 
 
 
-
             <plugin>
                 <groupId>org.jvnet.hyperjaxb3</groupId>
                 <artifactId>maven-hyperjaxb3-plugin</artifactId>
@@ -260,14 +259,17 @@
                         <arg>-Xjaxbindex</arg>
                         <arg>-Xannotate</arg>
                         <arg>-Xinheritance</arg>
-                        <arg>-XtoString</arg>
-                        <arg>-Xcopyable</arg>
-                        <arg>-Xmergeable</arg>
-                        <arg>-Xvalue-constructor</arg>
-                        <arg>-Xfluent-api</arg>
+                        <!--arg>-Xequals</arg-->
+                        <!--arg>-XhashCode</arg-->
+                        <!--arg>-XtoString</arg-->
+                        <!--arg>-Xcopyable</arg-->
+                        <!--arg>-Xmergeable</arg-->
+                        <!--arg>-Xvalue-constructor</arg-->
+                        <!--arg>-Xfluent-api</arg-->
                         <arg>-Xinject-code</arg>
                         <arg>-Xkey-equality</arg>
                         <arg>-Xsem-accessors</arg>
+                        <arg>-Xdefault-constructor</arg>
                     </args>
                     <removeOldOutput>false</removeOldOutput>
                     <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
@@ -278,6 +280,7 @@
                     <generateEquals>false</generateEquals>
                     <generateHashCode>false</generateHashCode>
 
+                    <variant>jpa2</variant>
 
                 </configuration>
                 <executions>
@@ -301,7 +304,7 @@
                     <dependency>
                         <groupId>org.drools</groupId>
                         <artifactId>drools-shapes-generator-plugin</artifactId>
-                        <version>${drools.version}</version>
+                        <version>5.4.0-SNAPSHOT</version>
                     </dependency>
                     <dependency>
                         <groupId>javax.jdo</groupId>
