@@ -243,6 +243,7 @@
                     <generateTraitDRL>true</generateTraitDRL>
                     <generateDefaultImplClasses>true</generateDefaultImplClasses>
                     <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
+                    <buildSpecXSDs>true</buildSpecXSDs>
                 </configuration>
             </plugin>
 
@@ -262,8 +263,8 @@
                         <!--arg>-Xequals</arg-->
                         <!--arg>-XhashCode</arg-->
                         <!--arg>-XtoString</arg-->
-                        <!--arg>-Xcopyable</arg-->
-                        <!--arg>-Xmergeable</arg-->
+                        <arg>-Xcopyable</arg>
+                        <arg>-Xmergeable</arg>
                         <!--arg>-Xvalue-constructor</arg-->
                         <!--arg>-Xfluent-api</arg-->
                         <arg>-Xinject-code</arg>
@@ -272,10 +273,16 @@
                         <arg>-Xdefault-constructor</arg>
                     </args>
                     <removeOldOutput>false</removeOldOutput>
-                    <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
-                    <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
-                    <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
 
+                    <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
+
+                    <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
+                    <schemaExcludes>
+                        <exclude>**/*_$full.xsd</exclude>
+                        <exclude>**/*_$spec.xsd</exclude>
+                    </schemaExcludes>
+
+                    <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
 
                     <generateEquals>false</generateEquals>
                     <generateHashCode>false</generateHashCode>
