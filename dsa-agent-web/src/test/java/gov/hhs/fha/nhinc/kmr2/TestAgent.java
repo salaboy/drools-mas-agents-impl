@@ -375,6 +375,8 @@ public class TestAgent {
         for ( int j = 1; j < 8; j++ ) {
             String val = getValue( xmlSurv, "//org.drools.informer.presentation.QuestionGUIAdapter/itemId[.='"+qid[j]+"']/../successType" );
             switch (j) {
+                case 1  :
+                case 2  :
                 case 4  : assertEquals( "valid", val ); break;
                 case 7  : assertEquals( "missing", val ); break;
                 default : assertEquals( "invalid", val ); break;
@@ -1074,6 +1076,28 @@ public class TestAgent {
         setRiskThreshold( "drX", "patient33", "MockPTSD", "Alert", 50 );
 
     }
+
+
+
+
+
+    @Test
+    public void testUnroutableMessage() {
+        Map<String,Object> args = new LinkedHashMap<String,Object>();
+        args.put("userId", "uid");
+        args.put("surveyId","123");
+
+        ACLMessage req = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("getSurvey", args));
+        mainAgent.tell(req);
+
+        assertEquals( 1, mainAgent.getMind().getObjects().size() );
+
+        List<ACLMessage> resp = mainResponseInformer.getResponses( req );
+        assertEquals( 1, resp.size() );
+        assertEquals( Act.NOT_UNDERSTOOD, resp.get( 0 ).getPerformative() );
+
+    }
+
 
 
 

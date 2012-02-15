@@ -9,7 +9,7 @@
   </appender>
 
   <logger name="org.drools.mas">
-    <level value="DEBUG"/>
+    <level value="TRACE"/>
   </logger>
   
  

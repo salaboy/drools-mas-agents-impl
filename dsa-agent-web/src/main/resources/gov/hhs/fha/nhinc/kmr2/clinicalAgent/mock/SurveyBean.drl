@@ -94,7 +94,7 @@ declare SurveyBean  extends Surveyable
     @QuestionMark( type = Question.QuestionType.TYPE_DECIMAL, label = "Please choose one decimal: ", required = false )
     @AllowedAnswers( values = { "0.21=#0.21", "1.34=#1.34", "2.88=#2.88" } )
 
-    question11 : String = "Date"
+    question11 : String
     @QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Please choose a date : ", required = false, dateFormat = "dd/MM/yyyy" )
     @AllowedAnswers( values = { "01/01/2001=1st Jan 2001", "02/02/2002=2nd Feb 2002"} )
 
