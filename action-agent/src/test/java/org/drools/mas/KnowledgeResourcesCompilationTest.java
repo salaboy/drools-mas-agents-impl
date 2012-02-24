@@ -6,10 +6,11 @@ package org.drools.mas;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import mock.MockFact;
 import org.drools.mas.body.content.Action;
 import org.drools.mas.core.DroolsAgent;
-import org.drools.mas.mock.MockResponseInformer;
 import org.drools.mas.util.ACLMessageFactory;
+import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.util.MessageContentFactory;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
@@ -124,4 +125,10 @@ public class KnowledgeResourcesCompilationTest {
         assertEquals(true, result.toString().contains("convoId"));
         agent.dispose();
     }
+     @Test
+    public void encoderTest(){
+        MockFact fact = new MockFact("salaboy", Integer.SIZE);
+        System.out.println(" result = "+MessageContentEncoder.encode(fact, Encodings.XML));
+        
+    } 
 }

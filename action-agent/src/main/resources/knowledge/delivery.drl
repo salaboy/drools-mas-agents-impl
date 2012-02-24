@@ -4,13 +4,13 @@ import org.drools.mas.body.content.*;
 import org.drools.mas.action.message.*;
 import org.drools.mas.action.message.types.*;
 import org.drools.mas.action.message.invokers.*;
-
+import org.drools.mas.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
-
+import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.action.helpers.*;
 
 
@@ -32,8 +32,8 @@ declare Entity
 end
 
 
-declare OrgEntity
-@format(trait)
+declare trait OrgEntity
+
     cn                  : String
     mobile              : String
     employeeNumber      : String
@@ -41,34 +41,34 @@ declare OrgEntity
     gender              : String
 end
 
-declare Patient extends OrgEntity
-@format(trait)
+declare trait Patient extends OrgEntity
+
     id                  : String        @key
     messageId           : String
 end
 
-declare Provider extends OrgEntity
-@format(trait)
+declare trait Provider extends OrgEntity
+
     id                  : String        @key
     messageId           : String
 end
 
-declare Recipient extends OrgEntity
-@format(trait)
+declare trait Recipient extends OrgEntity
+
     id                  : String        @key
     messageId           : String
 end
 
-declare MainRecipient extends Recipient
-@format(trait)
+declare trait MainRecipient extends Recipient
+
 end
 
-declare SecondaryRecipient extends Recipient
-@format(trait)
+declare trait SecondaryRecipient extends Recipient
+
 end
 
-declare HiddenRecipient extends Recipient
-@format(trait)
+declare trait HiddenRecipient extends Recipient
+
 end
 
 
@@ -399,8 +399,9 @@ query deliverMessage( String $refId, String $conversationId,
                       String $type, String $header, String $body,
                       String $priority,
                       String $deliveryDate, String $status,
-                      MessageDeliveredResponse $return )
-      $return:= MessageDeliveredResponse( $refId, $conversationId; )
+                      String $return )
+       $ret : MessageDeliveredResponse( $refId, $conversationId; )
+       $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
 end
 
 
