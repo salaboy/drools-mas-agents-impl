@@ -32,6 +32,8 @@
 import org.drools.io.internal.InternalResource;
 import java.util.List;
 import java.util.ArrayList;
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.Encodings;
 
 import org.drools.pmml_4_0.ModelMarker;
 
@@ -125,12 +127,14 @@ then
 end
 
 
-query getModels( String $userId, String $patientId, List $types, Object $return )
-    $return := ModelList( patientId == $patientId, tags == $types )
+query getModels( String $userId, String $patientId, List $types, String $return )
+    $ret    :  ModelList( patientId == $patientId, tags == $types )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end
 
-query getRiskModels( String $userId, String $patientId, Object $return )
-    $return := ModelList( patientId == $patientId, tags == ["Risk"] )
+query getRiskModels( String $userId, String $patientId, String $return )
+    $ret    :  ModelList( patientId == $patientId, tags == ["Risk"] )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end
 
 

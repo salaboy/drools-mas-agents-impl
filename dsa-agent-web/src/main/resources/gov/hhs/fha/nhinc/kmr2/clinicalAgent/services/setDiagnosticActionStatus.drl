@@ -27,7 +27,7 @@
  *    END OF TERMS AND CONDITIONS
  */
 
- package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 import org.drools.mas.body.content.Action;
 
@@ -36,7 +36,8 @@ import org.drools.informer.xml.ChangeCollector;
 import org.drools.informer.presentation.*;
 
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
-
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.Encodings;
 
 
 rule "Action_Request : setDiagnosticActionStatus - Complete"
@@ -149,7 +150,8 @@ end
 
 
 
-query setDiagnosticActionStatus( String $userId, String $patientId, String $processId, String $actionId, String $status, SetDxActionReturn $return )
+query setDiagnosticActionStatus( String $userId, String $patientId, String $processId, String $actionId, String $status, String $return )
     //DxAction( actionId == $actionId, $return := status )
-    $return := SetDxActionReturn( actionId == $actionId )
+    $ret    :  SetDxActionReturn( actionId == $actionId )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end

@@ -27,7 +27,7 @@
  *    END OF TERMS AND CONDITIONS
  */
 
- package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 import org.drools.mas.body.content.Action;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
@@ -38,7 +38,8 @@ import java.util.ArrayList;
 
 import org.drools.pmml_4_0.ModelMarker;
 import org.drools.pmml_4_0.PMML4Wrapper;
-
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.Encodings;
 
 
 
@@ -118,7 +119,8 @@ when
 then
     String defPack = PMML4Wrapper.getPack();
     PMML4Wrapper.setPack( "org.drools.pmml_4_0.diag.ptsd" );
-    manager.addResource( $dxModel, $rs );
+    //TODO
+//    manager.addResource( $dxModel, $rs );
     PMML4Wrapper.setPack( defPack );
 end
 
@@ -130,7 +132,8 @@ when
 then
     System.out.println(" LOADING DECISION ");
     try {
-    manager.addResource( $decModel, $rs );
+    //TODO
+    //manager.addResource( $decModel, $rs );
     } catch ( Exception e ) {
     e.printStackTrace();
     }
@@ -151,7 +154,8 @@ then
 end
 
 
-query startDiagnosticGuideProcess( String $userId, String $patientId, String $disease, StartReturn $return )
-    DiagnosticGuideProcess( disease == $disease, $dxProcessId : id, status == "Started" )
-    $return := StartReturn( dxProcessId == $dxProcessId )
+query startDiagnosticGuideProcess( String $userId, String $patientId, String $disease, String $return )
+               DiagnosticGuideProcess( disease == $disease, $dxProcessId : id, status == "Started" )
+    $ret    :  StartReturn( dxProcessId == $dxProcessId )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end

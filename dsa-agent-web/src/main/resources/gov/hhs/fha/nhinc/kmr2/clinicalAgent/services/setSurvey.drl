@@ -27,13 +27,15 @@
  *    END OF TERMS AND CONDITIONS
  */
 
- package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 import org.drools.mas.body.content.Action;
 
 import org.drools.informer.*;
 import org.drools.informer.xml.ChangeCollector;
 import org.drools.informer.presentation.*;
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.Encodings;
 
 import org.drools.base.DroolsQuery;
 
@@ -128,6 +130,7 @@ end
 
 
 
-query setSurvey( String $userId, String $pid, String $surveyId, String $questionId, String $value, ChangeGUIAdapter $return   )
-    $return := ChangeGUIAdapter( itemId == $surveyId )
+query setSurvey( String $userId, String $pid, String $surveyId, String $questionId, String $value, String $return )
+    $ret    :  ChangeGUIAdapter( itemId == $surveyId )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML);
 end

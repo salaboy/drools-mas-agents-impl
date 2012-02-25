@@ -47,6 +47,7 @@ import org.drools.informer.generator.annotations.AllowedAnswers;
 
 import org.drools.informer.interaction.*;
 
+
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DxAutoCommittingAction;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DxExternalCommittingAction;
@@ -432,49 +433,49 @@ then
 end
 
 
-rule "Initialize action forms"
-salience 100
-when
-    DroolsQuery( name == "ticket", $args : elements )
-    not InteractionTicket( id == $args[1] )
-then
-    String ticketId = $args[1].toString();
-    InteractionTicket ticket = new InteractionTicket( ticketId,
-                                                      new java.util.ArrayList(),
-                                                      null );
-
-    ticket.getInteractions().add( new Interaction( $args[0].toString(), null, new java.util.ArrayList(), new java.util.ArrayList() ) );
-    System.out.println( "Created " + ticket + " on the fly");
-    insert( ticket );
-end
-
-
+//rule "Initialize action forms"
+//salience 100
+//when
+//    DroolsQuery( name == "ticket", $args : elements )
+//    not InteractionTicket( id == $args[1] )
+//then
+//    String ticketId = $args[1].toString();
+//    InteractionTicket ticket = new InteractionTicket( ticketId,
+//                                                      new java.util.ArrayList(),
+//                                                      null );
+//
+//    ticket.getInteractions().add( new Interaction( $args[0].toString(), null, new java.util.ArrayList(), new java.util.ArrayList() ) );
+//    System.out.println( "Created " + ticket + " on the fly");
+//    insert( ticket );
+//end
 
 
-rule "Clone Actions"
-dialect "mvel"
-salience ($intg - 300)
-no-loop
-when
-    $dx     : DiagnosticGuideProcess( $id : id, $acts : actions, actions.size() > 0, $steps : diagnosticProcessHistory, status == "Started" )
-    $x      : DxStep( dxProcessId == $id, $n : stage )
-    $step   : DxDecision( stage == $n, this memberOf $steps, $choices : actions, current == true ) from $steps
-    $class  : Class( $className : name ) from $acts
-              not DxAction( this memberOf $choices, class == $class )
-    $tid    : String() from java.util.UUID.randomUUID().toString()
 
-              ticket( $className, $tid, $ticket ; )
-              formMarker( $tid, $className, $formId ; )
-              $act : DxAction( actionId != null, questionnaireId == $formId, utility < 0.0, class == $class, this not memberOf $choices )
-              ?isUseful( $act, $util, $intg; )
-then
-    System.out.println( "Configuring action " + $intg + "in stage " + $n);
-        $act.setUtility( $util );
-        $act.setStatus( "Not Started" );
-        $choices.add( 0, $act );
-//        update( $step );
-        update( $act );
-end
+
+//rule "Clone Actions"
+//dialect "mvel"
+//salience ($intg - 300)
+//no-loop
+//when
+//    $dx     : DiagnosticGuideProcess( $id : id, $acts : actions, actions.size() > 0, $steps : diagnosticProcessHistory, status == "Started" )
+//    $x      : DxStep( dxProcessId == $id, $n : stage )
+//    $step   : DxDecision( stage == $n, this memberOf $steps, $choices : actions, current == true ) from $steps
+//    $class  : Class( $className : name ) from $acts
+//              not DxAction( this memberOf $choices, class == $class )
+//    $tid    : String() from UUID.randomUUID().toString()
+//
+//              ticket( $className, $tid, $ticket ; )
+//              formMarker( $tid, $className, $formId ; )
+//              $act : DxAction( actionId != null, questionnaireId == $formId, utility < 0.0, class == $class, this not memberOf $choices )
+//              ?isUseful( $act, $util, $intg; )
+//then
+//    System.out.println( "Configuring action " + $intg + "in stage " + $n);
+//        $act.setUtility( $util );
+//        $act.setStatus( "Not Started" );
+//        $choices.add( 0, $act );
+////        update( $step );
+//        update( $act );
+//end
 
 
 

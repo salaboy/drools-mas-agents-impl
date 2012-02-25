@@ -27,7 +27,7 @@
  *    END OF TERMS AND CONDITIONS
  */
 
- package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 
 import org.drools.mas.body.content.Action;
@@ -49,6 +49,8 @@ import org.drools.pmml_4_0.PMML4Wrapper;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.risk.*;
 
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.Encodings;
 
 
 rule "Action_Request : getRiskModelsDetail"
@@ -96,7 +98,8 @@ when
 then
     String defPack = PMML4Wrapper.getPack();
     PMML4Wrapper.setPack( "org.drools.pmml_4_0.risk."+$id );
-    manager.addResource( $id, $rs );
+    //TODO
+    //manager.addResource( $id, $rs );
     PMML4Wrapper.setPack( defPack );
 end
 
@@ -268,8 +271,9 @@ end
 
 
 
-query getRiskModelsDetail( String $userId, String $patientId, String[] $modelIds, Object $return )
-    $return :=  GetRiskModelsDetail( )
+query getRiskModelsDetail( String $userId, String $patientId, String[] $modelIds, String $return )
+    $ret    :  GetRiskModelsDetail( )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end
 
 

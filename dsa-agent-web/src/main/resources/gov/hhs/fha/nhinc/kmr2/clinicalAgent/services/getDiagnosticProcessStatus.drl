@@ -27,11 +27,12 @@
  *    END OF TERMS AND CONDITIONS
  */
 
- package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 import org.drools.mas.body.content.Action;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
-
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.Encodings;
 
 
 
@@ -90,6 +91,7 @@ end
 
 
 
-query getDiagnosticProcessStatus( String $userId, String $patientId, String $dxProcessId, boolean $refresh, DiagnosticGuideProcess $return )
-    $return := DiagnosticGuideProcess( id == $dxProcessId )
+query getDiagnosticProcessStatus( String $userId, String $patientId, String $dxProcessId, boolean $refresh, String $return )
+    $ret    :  DiagnosticGuideProcess( id == $dxProcessId )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end

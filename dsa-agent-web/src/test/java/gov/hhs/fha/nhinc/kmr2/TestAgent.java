@@ -36,14 +36,18 @@ import org.drools.mas.Act;
 import org.drools.mas.Encodings;
 import org.drools.mas.body.acts.Inform;
 import org.drools.mas.core.DroolsAgent;
-import org.drools.mas.core.DroolsAgentConfiguration;
-import org.drools.mas.core.DroolsAgentFactory;
-import org.drools.mas.core.DroolsAgentResponseInformer;
 import org.drools.mas.util.ACLMessageFactory;
+import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.util.MessageContentFactory;
+import org.h2.tools.DeleteDbFiles;
+import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -53,6 +57,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -64,31 +69,31 @@ public class TestAgent {
 
     private static DroolsAgent mainAgent;
 
-    private static MockResponseInformer mainResponseInformer;
-
-
     private ACLMessageFactory factory = new ACLMessageFactory( Encodings.XML );
 
+    private static Logger logger = LoggerFactory.getLogger(TestAgent.class);
+    private static Server server;
 
     @BeforeClass
     public static void createAgents() {
 
-        mainResponseInformer = new MockResponseInformer();
+        DeleteDbFiles.execute("~", "mydb", false);
 
-        DroolsAgentConfiguration mainConfig = new DroolsAgentConfiguration();
-        mainConfig.setAgentId( "Mock Test Agent" );
-        mainConfig.setChangeset("config/agent_changeset.xml");
-        mainConfig.setDefaultSubsessionChangeSet("config/subsession_default.xml");
-        mainConfig.setResponseInformer( mainResponseInformer );
-        DroolsAgentConfiguration.SubSessionDescriptor subDescr1 = new DroolsAgentConfiguration.SubSessionDescriptor(
-                "sessionSurvey",
-                "gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/survey_test.xml",
-                "NOT_USED_YET" );
-        mainConfig.addSubSession(subDescr1);
-        mainAgent = DroolsAgentFactory.getInstance().spawn( mainConfig );
+        logger.info("Staring DB for white pages ...");
+        try {
+            server = Server.createTcpServer(null).start();
+        } catch (SQLException ex) {
+            logger.error(ex.getMessage());
+        }
+        logger.info("DB for white pages started! ");
+
+
+        ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/applicationContext.xml");
+        mainAgent = (DroolsAgent) context.getBean("agent");
+        assertNotNull (mainAgent );
+
 
     }
-
 
 
     @AfterClass
@@ -97,7 +102,13 @@ public class TestAgent {
             mainAgent.dispose();
         }
 
+        logger.info("Stopping DB ...");
+        server.stop();
+        logger.info("DB Stopped!");
+
     }
+
+
 
 
     private void sleep( long millis ) {
@@ -122,7 +133,7 @@ public class TestAgent {
 
         ACLMessage req = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("probe", args) );
         mainAgent.tell(req);
-        ACLMessage ans = mainResponseInformer.getResponses(req).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers( req.getId() ).get( 1 );
         return ret(ans);
     }
 
@@ -131,7 +142,9 @@ public class TestAgent {
             System.err.println( ans );
         }
         assertEquals( Act.INFORM, ans.getPerformative() );
-        return ((Inform) ans.getBody()).getProposition().getEncodedContent();
+        MessageContentEncoder.decodeBody( ans.getBody(), Encodings.XML );
+        return (String) ((Inform) ans.getBody()).getProposition().getData();
+
     }
 
 
@@ -143,7 +156,7 @@ public class TestAgent {
 
         ACLMessage req = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("getSurvey", args));
         mainAgent.tell(req);
-        ACLMessage ans = mainResponseInformer.getResponses(req).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
         return ret(ans);
     }
 
@@ -157,7 +170,7 @@ public class TestAgent {
 
         ACLMessage set = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("setSurvey", args) );
         mainAgent.tell(set);
-        ACLMessage ans = mainResponseInformer.getResponses(set).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers(set.getId()).get(1);
         return ret(ans);
     }
 
@@ -180,7 +193,7 @@ public class TestAgent {
         args.put("types", tags);
         ACLMessage req = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("getModels", args));
         mainAgent.tell(req);
-        ACLMessage ans = mainResponseInformer.getResponses(req).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
 
 
         return ret(ans);
@@ -192,7 +205,7 @@ public class TestAgent {
         args.put("patientId",patientId);
         ACLMessage req = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("getRiskModels", args));
         mainAgent.tell(req);
-        ACLMessage ans = mainResponseInformer.getResponses(req).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
 
 
         return ret(ans);
@@ -210,7 +223,7 @@ public class TestAgent {
 
         mainAgent.tell(req);
 
-        ACLMessage ans = mainResponseInformer.getResponses(req).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
         return ret( ans );
     }
 
@@ -224,7 +237,7 @@ public class TestAgent {
         ACLMessage start = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("startDiagnosticGuideProcess", args) );
 
         mainAgent.tell(start);
-        ACLMessage ans = mainResponseInformer.getResponses(start).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers(start.getId()).get(1);
 //        MessageContentEncoder.decodeBody( ans.getBody(), Encodings.XML );
 //        String dxProcessId = (String) ((Inform) ans.getBody()).getProposition().getData();
 //        return dxProcessId;
@@ -240,7 +253,7 @@ public class TestAgent {
         ACLMessage reqStatus = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("getDiagnosticProcessStatus", args) );
 
         mainAgent.tell(reqStatus);
-        ACLMessage ans2 = mainResponseInformer.getResponses(reqStatus).get(1);
+        ACLMessage ans2 = mainAgent.getAgentAnswers( reqStatus.getId() ).get( 1 );
         return ret( ans2 );
     }
 
@@ -255,7 +268,7 @@ public class TestAgent {
 
         ACLMessage reqAction = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("setDiagnosticActionStatus", args) );
         mainAgent.tell(reqAction);
-        ACLMessage ans = mainResponseInformer.getResponses(reqAction).get(1);
+        ACLMessage ans = mainAgent.getAgentAnswers(reqAction.getId()).get(1);
         return ret( ans ).replaceAll("<string>","").replaceAll("</string>","") ;
 
     }
@@ -444,91 +457,91 @@ public class TestAgent {
 
 
     @Test
-        // @Ignore
-        public void testExceedAndReset() {
+    // @Ignore
+    public void testExceedAndReset() {
 
-            List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
-            String modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
-
-
-            FactType alertType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "Alert");
-            Class alertClass = alertType.getFactClass();
-            Collection alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
-            assertEquals( 0, alerts.size() );
+        List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
+        String modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
 
 
-
-            String sid1 = getValue( modelStats, "//modelId[.='MockPTSD']/../surveyId" );
-            assertNotNull( sid1 );
-
-            String ptsdSurvey = getSurvey( "docX", "patient33", sid1);
-
-            String gender = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId" );
-            String deployments = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId" );
-            String alcohol = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Alcohol']/../itemId" );
-            String age = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Age']/../itemId" );
-
-            assertNotNull( gender );
-            assertNotNull( deployments );
-            assertNotNull( age );
-
-            setSurvey( "drX", "patient33", sid1, deployments, "1" );
-            setSurvey( "drX", "patient33", sid1, gender, "female" );
-            setSurvey( "drX", "patient33", sid1, alcohol, "yes" );
-            setSurvey( "drX", "patient33", sid1, age, "30" );
-
-            modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
-            assertEquals( "30", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
-
-
-            setRiskThreshold( "drX", "patient33", "MockPTSD", "Alert", 25 );
-
-
-            assertEquals( 2, alerts.size() );
-            sleep(12000);
-            alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
-            assertEquals( 0, alerts.size() );
-
-
-            for ( Object o :  mainAgent.getInnerSession("patient33").getObjects() )
-                System.err.println( o );
+        FactType alertType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "Alert");
+        Class alertClass = alertType.getFactClass();
+        Collection alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
+        assertEquals( 0, alerts.size() );
 
 
 
+        String sid1 = getValue( modelStats, "//modelId[.='MockPTSD']/../surveyId" );
+        assertNotNull( sid1 );
+
+        String ptsdSurvey = getSurvey( "docX", "patient33", sid1);
+
+        String gender = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId" );
+        String deployments = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId" );
+        String alcohol = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Alcohol']/../itemId" );
+        String age = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Age']/../itemId" );
+
+        assertNotNull( gender );
+        assertNotNull( deployments );
+        assertNotNull( age );
+
+        setSurvey( "drX", "patient33", sid1, deployments, "1" );
+        setSurvey( "drX", "patient33", sid1, gender, "female" );
+        setSurvey( "drX", "patient33", sid1, alcohol, "yes" );
+        setSurvey( "drX", "patient33", sid1, age, "30" );
+
+        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        assertEquals( "30", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
 
 
-            setSurvey( "drX", "patient33", sid1, age, "1" );
-
-            modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
-            assertEquals( "16", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
+        setRiskThreshold( "drX", "patient33", "MockPTSD", "Alert", 25 );
 
 
-            setSurvey( "drX", "patient33", sid1, age, "40" );
+        assertEquals( 2, alerts.size() );
+        sleep(12000);
+        alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
+        assertEquals( 0, alerts.size() );
 
-            modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
-            assertEquals( "35", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
+
+        for ( Object o :  mainAgent.getInnerSession("patient33").getObjects() )
+            System.err.println( o );
 
 
 
 
 
+        setSurvey( "drX", "patient33", sid1, age, "1" );
 
-            FactType xType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "TicketActor");
-            Collection zalerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(xType.getFactClass()) );
-            for (Object o : zalerts) {
-                System.err.println(o);
-            }
+        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        assertEquals( "16", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
 
 
-            alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
-            for (Object o : alerts) {
-                System.err.println(o);
-            }
-            assertEquals( 2, alerts.size() );
+        setSurvey( "drX", "patient33", sid1, age, "40" );
+
+        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        assertEquals( "35", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
 
 
 
+
+
+
+        FactType xType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "TicketActor");
+        Collection zalerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(xType.getFactClass()) );
+        for (Object o : zalerts) {
+            System.err.println(o);
         }
+
+
+        alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
+        for (Object o : alerts) {
+            System.err.println(o);
+        }
+        assertEquals( 2, alerts.size() );
+
+
+
+    }
 
 
 
@@ -1092,7 +1105,7 @@ public class TestAgent {
 
         assertEquals( 1, mainAgent.getMind().getObjects().size() );
 
-        List<ACLMessage> resp = mainResponseInformer.getResponses( req );
+        List<ACLMessage> resp =  mainAgent.getAgentAnswers(req.getId());
         assertEquals( 1, resp.size() );
         assertEquals( Act.NOT_UNDERSTOOD, resp.get( 0 ).getPerformative() );
 
@@ -1322,23 +1335,3 @@ public class TestAgent {
 
 
 
-
-
-
-class MockResponseInformer implements DroolsAgentResponseInformer {
-
-    private Map<ACLMessage,List<ACLMessage>> responses = new HashMap<ACLMessage, List<ACLMessage>>();
-
-    public synchronized void informResponse(ACLMessage originalMessage, ACLMessage response) {
-        if (!responses.containsKey(originalMessage)){
-            responses.put(originalMessage, new ArrayList<ACLMessage>());
-        }
-
-        responses.get(originalMessage).add(response);
-    }
-
-    public List<ACLMessage> getResponses(ACLMessage originalMessage){
-        return this.responses.get(originalMessage);
-    }
-
-}

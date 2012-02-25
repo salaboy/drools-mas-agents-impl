@@ -4,17 +4,17 @@
  */
 package org.drools.mas;
 
+import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
-import java.util.List;
 
 /**
  *
  * @author salaboy
  */
 @WebService
-public interface SynchronousDroolsAgentService {
+public interface AsyncDroolsAgentService {
     @WebMethod
-    List<ACLMessage> tell(ACLMessage message);
-    
+    void tell(ACLMessage message);
+    List<ACLMessage> getResponses(String msgId);
 }

@@ -32,7 +32,9 @@
 import org.drools.mas.body.content.Action;
 import java.util.List;
 import java.util.ArrayList;
-
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.action.helpers.*;
+import org.drools.mas.Encodings;
 
 
 rule "Action_Request : probe"
@@ -41,15 +43,19 @@ when
                  $patientId : this["patientId"]
                )
 then
+    System.out.println( "PROBEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe ");
     retract( $a );
 end
 
 
-query probe( String $patientId, List $return )
-    $return := List( ) from accumulate (
+
+
+query probe( String $patientId, String $return )
+    $ret : List( ) from accumulate (
         $o : Object(),
         init( ArrayList l = new ArrayList(); ),
         action( l.add(" >> " + $o.toString() + " \n" ); ),
         result( l )
     )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML);
 end

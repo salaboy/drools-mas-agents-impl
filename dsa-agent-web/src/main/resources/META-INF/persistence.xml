@@ -29,28 +29,54 @@
   -->
 
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
-             version="2.0">
-
-  <persistence-unit name="org.kmr2.surveys" transaction-type="RESOURCE_LOCAL">
+             version="1.0">
 
 
-    <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
-      <property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver"/>
-      <property name="hibernate.connection.username" value="sa"/>
-      <property name="hibernate.connection.password" value=""/>
-      <property name="hibernate.connection.url" value="jdbc:hsqldb:mem:jamsession"/>
-      <property name="hibernate.showSql" value="true"/>
-      <property name="hibernate.formatSql" value="true"/>
-      <property name="hibernate.connection.autocommit" value="false"/>
+    <persistence-unit name="org.drools.grid">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>org.drools.grid.service.directory.impl.GridServiceDescriptionImpl</class>
+        <class>org.drools.grid.service.directory.impl.AddressImpl</class>
+        <class>java.lang.String</class>
+        <class>org.drools.grid.timer.impl.ScheduledJob</class>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
+            <property name="hibernate.connection.url" value="jdbc:h2:tcp://localhost/~/mydb"/>
+            <!--property name="hibernate.connection.url" value="jdbc:h2:file:/h2/test;AUTO_SERVER=TRUE" /-->
+            <!--  property name="hibernate.connection.url" value="jdbc:h2:file:\dev\drools\trunk7\jbpm-process\jbpm-human-task\mydb"/ -->
+            <!--      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>-->
+            <!--          <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>              -->
+            <!--          <property name="hibernate.connection.url" value="jdbc:postgresql://localhost/postgres"/>-->
+            <property name="hibernate.connection.username" value="sa"/>
+            <property name="hibernate.connection.password" value="sasa"/>
+            <property name="hibernate.connection.autocommit" value="false"/>
+            <property name="hibernate.max_fetch_depth" value="3"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="false"/>
+        </properties>
+    </persistence-unit>
 
-      <!-- <property name="hibernate.transaction.manager_lookup_class"
-				value="org.hibernate.transaction.JBossTransactionManagerLookup" />
-			-->
-    </properties>
 
-  </persistence-unit>
+    <persistence-unit name="org.kmr2.surveys" transaction-type="RESOURCE_LOCAL">
+
+
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver"/>
+            <property name="hibernate.connection.username" value="sa"/>
+            <property name="hibernate.connection.password" value=""/>
+            <property name="hibernate.connection.url" value="jdbc:hsqldb:mem:jamsession"/>
+            <property name="hibernate.showSql" value="true"/>
+            <property name="hibernate.formatSql" value="true"/>
+            <property name="hibernate.connection.autocommit" value="false"/>
+
+            <!-- <property name="hibernate.transaction.manager_lookup_class"
+                   value="org.hibernate.transaction.JBossTransactionManagerLookup" />
+               -->
+        </properties>
+
+    </persistence-unit>
 
 
 

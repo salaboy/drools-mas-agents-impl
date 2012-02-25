@@ -31,7 +31,8 @@
 
 import org.drools.mas.body.content.Action;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
-
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.Encodings;
 
 
 rule "Action_Request : advanceDiagnosticGuideProcess"
@@ -53,5 +54,6 @@ end
 
 
 query advanceDiagnosticGuideProcess( String $userId, String $patientId, String $dxProcessId, String $return )
-    $return := DiagnosticGuideProcess( id == $dxProcessId )
+    $ret    :  DiagnosticGuideProcess( id == $dxProcessId )
+    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end

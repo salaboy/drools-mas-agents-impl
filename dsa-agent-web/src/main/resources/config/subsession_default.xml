@@ -36,7 +36,7 @@
 
 
         <!-- <resource type="DRL" source="classpath:declares/interaction_declares.drl" /> -->
-        <resource type="DRL" source="classpath:org/drools/informer/interaction/interaction.drl" />
+        <resource type="CHANGE_SET" source="classpath:org/drools/informer/interaction/interaction-changeset.xml" />
 
 
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/declares/risk_declares.drl" />
@@ -55,7 +55,9 @@
 
 
         <!--  TODO: fix? issue in KnowledgeAgent to load this dynamically -->
-        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd_decision.drl" name="MockDecision" description="Post Traumatic Stress Disorder" />
+        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd_decision.drl"
+                  name="MockDecision" description="Post Traumatic Stress Disorder" />
+
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/default/usecase_1.drl" />
 
 
