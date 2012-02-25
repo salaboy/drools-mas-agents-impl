@@ -13,25 +13,51 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.ws.BindingProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author salaboy
  */
 public class LDAPHelper {
+    private static Logger logger = LoggerFactory.getLogger(LDAPHelper.class);
+    
     public static Map<String, String> queryEntity(String endpoint, String id, List<String> names){
           
         Map<String, String> result = new HashMap<String, String>();
         GetDirectoryAttributeRequestType request = new GetDirectoryAttributeRequestType();
         request.setUid(id);
-        request.getNames().addAll(names);
-        GetDirectoryAttributeResponseType response = getPort(endpoint).getDirectoryAttribute(request);
-        List<String> values = response.getValues();
-        System.out.print("RESPONSE:");
+        if(names != null){
+            request.getNames().addAll(names);
+        }
+        DSAIntegrationPortType port;
+        try{
+            port = getPort(endpoint);
+        }catch (Exception e){
+            logger.error(" ??? LDAPHelper: Query Entity Failed: "+e);
+            logger.error(" ??? LDAPHelper: Returning Mock Data ... ");
+            result.put("cn", "cn_"+id);
+            result.put("mobile", "mobile_"+id);
+            result.put("employeeNumber", "employeeNumber_"+id);
+            result.put("displayName", "displayName_"+id);
+            result.put("gender", "gender_"+id);
+            return result;
+            
+        }
+        GetDirectoryAttributeResponseType response = port.getDirectoryAttribute(request);
+        
+        
         for(int i = 0; i < names.size(); i++){
             result.put(names.get(i), response.getValues().get(i));
         }
         
+        if(logger.isInfoEnabled()){
+            logger.info(" >>> LDAPHelper: queryEntity id: " +id);
+        }
+        if(logger.isDebugEnabled()){
+            logger.debug(" ### LDAPHelper: queryEntity results: "+result);
+        }
         return result;
         
     }

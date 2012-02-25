@@ -190,13 +190,13 @@ when
     $ent : Entity( $id : id, resolved == false )
 then
     System.out.println( "I'm calling the LDAP Service here for " + $id );
-    // TOOD : CALL LDAP SERVICE HERE!
-
-        $ent.setCn( "cn_" + $id );
-        $ent.setMobile( "mob_00" + $id );
-        $ent.setEmployeeNumber( "empNum_" + $id );
-        $ent.setDisplayName( "name_" + $id );
-        $ent.setGender( "x" );
+   
+    Map<String, String> results = LDAPHelper.queryEntity("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",$id);
+        $ent.setCn( (String)results.get("cn") );
+        $ent.setMobile( (String)results.get("mobile") );
+        $ent.setEmployeeNumber( (String)results.get("employerNumber") );
+        $ent.setDisplayName( (String)results.get("displayNumber") );
+        $ent.setGender( (String)results.get("gender") );
 
     $ent.setResolved( true );
     update( $ent );
@@ -257,21 +257,6 @@ end
 
 
 
-//    $action: Action( actionName == "deliverMessage",
-//                        $refId          : this["refId"],
-//                        $convoId        : this["conversationId"],
-//                        $about          : this["subjectAbout"],
-//                        $mainRec        : this["mainRecipients"],
-//                        $secRec         : this["secondaryRecipients"],
-//                        $hiddenRec      : this["hiddenRecipients"],
-//                        $type           : this["type"],
-//                        $header         : this["header"],
-//                        $body           : this["body"],
-//                        $priority       : this["priority"],
-//                        $deliveryDate   : this["deliveryDate"],
-//                        $status         : this["status"]
-//                   )
-
 
 
 rule "Construct SMS"
@@ -300,12 +285,8 @@ end
        $rec :   Recipient( messageId == $convoId, $mobile : mobile )
    then
        //insert( new SMSMessage( (String) $convoId, $mobile, (String) $header ) );
-      // DeliverMessageHelper.sendSMS("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
-       System.out.println("Delivering (send sms) Message with arguments =  "+
-                                              "URL = " + "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL" +
-   	                                      " mobile = "+  $mobile +
-   	                                      " header = " + (String) $header 
-                );  
+       DeliverMessageHelper.sendSMS("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
+       
    end
 
 
@@ -337,22 +318,14 @@ end
                args.put( "provider", $pro );
 
            String finalBody = (String) org.mvel2.templates.TemplateRuntime.execute( org.mvel2.templates.TemplateCompiler.compileTemplate( (String) $body ), args );
-        //   DeliverMessageHelper.sendAlert( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",
-        //                                   (String) $convoId,
-        //                                   (String) $header,
-        //                                   finalBody,
-        //                                   (String) $sender,
-        //                                   $rec.getId(),
-        //                                   $about );
-          System.out.println("Delivering (send alert) Message with arguments =  "+
-                                              "URL = " + "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL" +
-   	                                      " convoId = "+  (String) $convoId +
-   	                                      " header = " + (String) $header +
-                                              " final body  =" + finalBody +  
-   	                                      " sender = " +  (String) $sender + 
-   	                                      " rec.id = " +  $rec.getId() +
-                                              " about  = " + $about  
-                );                                 
+           DeliverMessageHelper.sendAlert( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",
+                                           (String) $convoId,
+                                           (String) $header,
+                                           finalBody,
+                                           (String) $sender,
+                                           $rec.getId(),
+                                           (String[])$about );
+                                  
    end
 
 
@@ -365,26 +338,21 @@ end
                            $convoId        : this["conversationId"],
                            $type           : this["type"] == "UPDATE",
                            $priority       : this["priority"],
+                           $about          : this["subjectAbout"],
                            $deliveryDate   : this["deliveryDate"],
                            $status         : this["status"],
                            $header         : this["header"]
                           )
            $rec :   Recipient( messageId == $convoId )
        then
-   	       // DeliverMessageHelper.sendAlert( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",
-   	       //                                 (String) $convoId,
-   	       //                                 (String) $header,
-   	       //                                 (String) $status,
-   	       //                                 (String) $sender,
-   	       //                                 $rec.getId() );
-               System.out.println("Delivering (send alert) Message with arguments =  "+
-                                              "URL = " + "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL" +
-   	                                      " convoId = "+  (String) $convoId +
-   	                                      " header = " + (String) $header +
-   	                                      " status = " + (String) $status +
-   	                                      " sender = " +  (String) $sender + 
-   	                                      " rec.id = " +  $rec.getId()
-                );
+   	        DeliverMessageHelper.sendAlert( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",
+   	                                        (String) $convoId,
+   	                                        (String) $header,
+   	                                        (String) $status,
+   	                                        (String) $sender,
+   	                                        $rec.getId() ,
+                                                (String[])$about);
+               
    end
 
 

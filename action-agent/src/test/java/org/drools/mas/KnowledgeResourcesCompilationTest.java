@@ -119,8 +119,6 @@ public class KnowledgeResourcesCompilationTest {
         Object result = agent.getAgentAnswers(req.getId());
         assertNotNull(result);
 
-        System.out.println("Results = "+result);
-
         assertEquals(true, result.toString().contains("refId"));
         assertEquals(true, result.toString().contains("convoId"));
         agent.dispose();

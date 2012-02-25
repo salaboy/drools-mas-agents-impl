@@ -10,16 +10,19 @@ import gov.hhs.fha.nhinc.dsa.DeliverMessageRequestType;
 import gov.hhs.fha.nhinc.dsa.DeliverMessageResponseType;
 import java.util.*;
 import javax.xml.ws.BindingProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author salaboy
  */
 public class DeliverMessageHelper {
-
+    
+    private static Logger logger = LoggerFactory.getLogger(DeliverMessageHelper.class);
+    
     public static String deliverMessage(String endpoint, Map<String, Object> params) {
-        System.out.println("DELIVER MESSAGE REQUEST IS " + params);
-        DSAIntegrationPortType port = getPort(endpoint);
+        
         DeliverMessageRequestType request = new DeliverMessageRequestType();
         request.setRefId((String) ((params.get("refId") != null)?params.get("refId"):"") );
         request.setPriority((String) ((params.get("priority") != null)?params.get("priority"):""));
@@ -29,14 +32,26 @@ public class DeliverMessageHelper {
         request.setSender((String) ((params.get("sender") != null)?params.get("sender"):""));
         request.setStatus((String) ((params.get("status") != null)?params.get("status"):""));
 
-        request.getSubject().addAll((Collection) ((params.get("subjectAbout") != null)?params.get("subjectAbout"):Collections.EMPTY_LIST));
+        request.getSubject().addAll((Collection) ((params.get("subjectAbout") != null)?Arrays.asList( params.get("subjectAbout")) :Collections.EMPTY_LIST));
         request.getMainRecipients().addAll((Collection) ((params.get("mainRecipients") != null)?params.get("mainRecipients"):Collections.EMPTY_LIST));
         request.getSecondaryRecipients().addAll((Collection) ((params.get("secondaryRecipients") != null)?params.get("secondaryRecipients"):Collections.EMPTY_LIST));
         request.getHiddenRecipients().addAll((Collection) ((params.get("hiddenRecipients")!= null)?params.get("hiddenRecipients"):Collections.EMPTY_LIST));
         request.getType().addAll((Collection) ((params.get("type")!= null)?params.get("type"):Collections.EMPTY_LIST));
+        if(logger.isInfoEnabled()){
+            logger.info(" >>> DeliveryMessageHelper: Trying to Delivere Message: "+request);
+        }
+        DSAIntegrationPortType port;
+        try{
+            port = getPort(endpoint);
+        }catch(Exception e){
+            logger.error(" ??? DeliveryMessageHelper: Delivering Message Failed: "+e);
+            return null;
+        }
         DeliverMessageResponseType response = port.deliverMessage(request);
-
-        System.out.println("DELIVER MESSAGE RESPONSE IS " + response.getStatus());
+        if(logger.isInfoEnabled()){
+            logger.info(" >>> DeliveryMessageHelper: Message Delivered, with response =  " + response.getStatus());
+        }
+        
 
         return response.getStatus();
 
@@ -54,7 +69,9 @@ public class DeliverMessageHelper {
         List<String> types = new ArrayList<String>();
         types.add("SMS");
         params.put("type", types);
-        System.out.println(" Sending a SMS: "+mobile+ " - text: "+text);
+        if(logger.isInfoEnabled()){
+            logger.info(" >>> DeliveryMessageHelper: Sending a SMS: "+mobile+ " - text: "+text);
+        }
         deliverMessage(endpoint, params);
     }
     
@@ -74,7 +91,9 @@ public class DeliverMessageHelper {
         List<String> types = new ArrayList<String>();
         types.add("ALERT");
         params.put("type", types);
-        System.out.println(" Sending a new Alert ("+sender+"): "+header+ " - body: "+body + " --");
+        if(logger.isInfoEnabled()){
+            logger.info(" >>> DeliveryMessageHelper: Sending a new Alert ("+sender+"): "+header+ " - body: "+body + " --");
+        }
         deliverMessage(endpoint, params);
     }
     
