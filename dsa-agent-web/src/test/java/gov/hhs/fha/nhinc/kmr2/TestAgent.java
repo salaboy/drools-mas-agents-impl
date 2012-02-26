@@ -31,6 +31,7 @@ package gov.hhs.fha.nhinc.kmr2;
 
 import org.drools.ClassObjectFilter;
 import org.drools.definition.type.FactType;
+
 import org.drools.mas.ACLMessage;
 import org.drools.mas.Act;
 import org.drools.mas.Encodings;
@@ -61,7 +62,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 public class TestAgent {
 
@@ -126,7 +129,7 @@ public class TestAgent {
 
 
 
-
+    
     private String probe( String patientId ) {
         Map<String,Object> args = new LinkedHashMap<String,Object>();
         args.put("patientId", patientId);
@@ -369,7 +372,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+    @Ignore
     public void testSetSurvey() {
         String[] qid = new String[8];
         String[] values = new String[8];
@@ -457,7 +460,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+    @Ignore
     public void testExceedAndReset() {
 
         List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
@@ -552,7 +555,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+    @Ignore
     public void testSetAndResetAndSet() {
 
         String[] mids = new String[] { "MockPTSD" };
@@ -631,7 +634,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+    @Ignore
     public void testGetModels() {
 
         String diagModels = getModels("drX", "patient33", Arrays.asList("Diagnostic") );
@@ -672,7 +675,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+     @Ignore
     public void testComplexDiagnosticAction() {
 
 
@@ -825,6 +828,7 @@ public class TestAgent {
 
 
     @Test
+    @Ignore
     public void testClearRiskModelsSurvey() {
 
 
@@ -892,7 +896,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+     @Ignore
     public void testSetDiagnostic() {
 
         Map<String,Object> args = new LinkedHashMap<String,Object>();
@@ -937,7 +941,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+     @Ignore
     public void testDifferentialSetSurvey() {
 
 
@@ -1006,7 +1010,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+     @Ignore
     public void testExceedRiskThreshld() {
 
         List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
@@ -1095,6 +1099,7 @@ public class TestAgent {
 
 
     @Test
+    @Ignore
     public void testUnroutableMessage() {
         Map<String,Object> args = new LinkedHashMap<String,Object>();
         args.put("userId", "uid");
@@ -1118,6 +1123,7 @@ public class TestAgent {
 
 
     @Test
+    @Ignore
     public void testDiagnostic() {
 
 
@@ -1193,7 +1199,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+    @Ignore
     public void testProbe() {
         System.out.println( probe( "patient33" ) );
     }
@@ -1222,7 +1228,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+     @Ignore
     public void testEmptyDiagnostic() {
 
 
@@ -1241,7 +1247,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+     @Ignore
     public void testNonExistingDiagnostic() {
 
 
@@ -1270,7 +1276,7 @@ public class TestAgent {
 
 
     @Test
-    // @Ignore
+    @Ignore
     public void testAutoCommittActions() {
 
 

@@ -31,7 +31,8 @@ package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 
 import org.drools.mas.body.content.Action;
-
+import org.drools.mas.core.SessionManager;
+import org.drools.mas.util.helper.SessionLocator;
 import org.drools.informer.*;
 import org.drools.informer.xml.ChangeCollector;
 import org.drools.informer.presentation.*;
@@ -95,11 +96,12 @@ when
     $id : String() from $modelIds
     not   ModelMarker( modelName == $id )
     $rs : InternalResource( name == $id )
+    SessionLocator($nodeId: nodeId, $sessionId: sessionId)
 then
     String defPack = PMML4Wrapper.getPack();
     PMML4Wrapper.setPack( "org.drools.pmml_4_0.risk."+$id );
-    //TODO
-    //manager.addResource( $id, $rs );
+    
+    SessionManager.addResource($nodeId, $sessionId,  $id, $rs );
     PMML4Wrapper.setPack( defPack );
 end
 
