@@ -30,8 +30,10 @@
  package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 import org.drools.io.internal.InternalResource;
+
 import java.util.List;
 import java.util.ArrayList;
+
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
@@ -52,8 +54,6 @@ declare ModelList
     patientId           : String    @key
     tags                : ArrayList @key
     models              : List
-    successStatus       : boolean
-    successMessage      : String
 end
 
 
@@ -65,9 +65,9 @@ when
                   $userId    : this["userId"],
                   $patientId : this["patientId"]
                 )
-    not   ModelList( $patientId, $tags == ["Risk"]; )
+    not   ModelList( patientId == $patientId, tags.size() == 1, tags contains "Risk" )
 then
-    insert( new ModelList( (String) $patientId, new ArrayList( java.util.Arrays.asList("Risk") ), null, true, "(ok)" ) );
+    insert( new ModelList( (String) $patientId, new ArrayList( java.util.Arrays.asList("Risk") ), null ) );
 end
 
 
@@ -81,7 +81,7 @@ when
                 )
     not   ModelList( $patientId, $tags; )
 then
-    insert( new ModelList( (String) $patientId, new ArrayList( (List) $tags ), null, true, "(ok)" ) );
+    insert( new ModelList( (String) $patientId, new ArrayList( (List) $tags ), null ) );
 end
 
 
@@ -133,14 +133,8 @@ query getModels( String $userId, String $patientId, List $types, String $return 
 end
 
 query getRiskModels( String $userId, String $patientId, String $return )
-    $ret    :  ModelList( patientId == $patientId, tags == ["Risk"] )
+    $ret    :  ModelList( patientId == $patientId, tags.size() == 1, tags contains "Risk" )
     $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
 end
 
 
-rule "LogMDL"
-when
-    $m : ModelList()
-then
-    System.out.println(">>>>" + $m);
-end

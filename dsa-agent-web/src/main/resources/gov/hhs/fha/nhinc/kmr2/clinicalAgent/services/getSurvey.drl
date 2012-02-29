@@ -31,18 +31,11 @@ package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 import org.drools.mas.body.content.Action;
 
-import org.drools.informer.*;
-//import org.drools.informer.xml.ChangeCollector;
-import org.drools.informer.presentation.*;
+import org.drools.informer.presentation.SurveyTicket;
+import org.drools.informer.presentation.SurveyGUIAdapter;
+
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
-
-//import org.drools.io.internal.InternalResource;
-//import java.util.List;
-//import java.util.ArrayList;
-
-//import org.drools.pmml_4_0.ModelMarker;
-//import org.drools.pmml_4_0.PMML4Field;
 
 
 

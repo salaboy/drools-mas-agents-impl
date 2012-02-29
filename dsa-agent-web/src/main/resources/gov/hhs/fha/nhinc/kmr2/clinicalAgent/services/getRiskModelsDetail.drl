@@ -53,6 +53,10 @@ import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.risk.*;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
+import org.drools.mas.core.SessionManager;
+import org.drools.mas.util.helper.SessionLocator;
+
+
 
 rule "Action_Request : getRiskModelsDetail"
 when
@@ -102,6 +106,7 @@ then
     PMML4Wrapper.setPack( "org.drools.pmml_4_0.risk."+$id );
     
     SessionManager.addResource($nodeId, $sessionId,  $id, $rs );
+
     PMML4Wrapper.setPack( defPack );
 end
 

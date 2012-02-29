@@ -43,7 +43,6 @@ when
                  $patientId : this["patientId"]
                )
 then
-    System.out.println( "PROBEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe ");
     retract( $a );
 end
 

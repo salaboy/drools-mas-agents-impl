@@ -44,6 +44,7 @@ import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -381,7 +382,6 @@ public class TestAgent {
 
         String xmlSurv = getSurvey( "drX", "99990070", "123456UNIQUESURVEYID" );
 
-
         for ( int j = 1; j < 8; j++ ) {
             qid[j] = getValue( xmlSurv, "//org.drools.informer.presentation.QuestionGUIAdapter/questionName[.='question"+j+"']/../itemId" );
             System.out.println("ID OF Q" + j + " >> " + qid[j] );
@@ -390,6 +390,7 @@ public class TestAgent {
 
         for ( int j = 1; j < 8; j++ ) {
             String val = getValue( xmlSurv, "//org.drools.informer.presentation.QuestionGUIAdapter/itemId[.='"+qid[j]+"']/../successType" );
+            System.out.println( j + " : " + val );
             switch (j) {
                 case 1  :
                 case 2  :
@@ -634,7 +635,6 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testGetModels() {
 
         String diagModels = getModels("drX", "patient33", Arrays.asList("Diagnostic") );
@@ -675,7 +675,7 @@ public class TestAgent {
 
 
     @Test
-     @Ignore
+    @Ignore
     public void testComplexDiagnosticAction() {
 
 
@@ -762,14 +762,14 @@ public class TestAgent {
 
         List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
         String modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
-
+        System.err.println(modelStats);
 
         String sid1 = getValue( modelStats, "//modelId[.='MockPTSD']/../surveyId" );
         String sid2 = getValue( modelStats, "//modelId[.='MockCold']/../surveyId" );
 
         assertNotNull( sid1 );
         assertNotNull( sid2 );
-
+        System.out.println(sid1 + " .............................. " + sid2 );
         String ptsdSurvey = getSurvey( "docX", "patient33", sid1);
         String coldSurvey = getSurvey( "docX", "patient33", sid2);
 
@@ -896,7 +896,7 @@ public class TestAgent {
 
 
     @Test
-     @Ignore
+    @Ignore
     public void testSetDiagnostic() {
 
         Map<String,Object> args = new LinkedHashMap<String,Object>();
@@ -941,7 +941,7 @@ public class TestAgent {
 
 
     @Test
-     @Ignore
+    @Ignore
     public void testDifferentialSetSurvey() {
 
 
@@ -1010,7 +1010,7 @@ public class TestAgent {
 
 
     @Test
-     @Ignore
+    @Ignore
     public void testExceedRiskThreshld() {
 
         List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
@@ -1199,7 +1199,6 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testProbe() {
         System.out.println( probe( "patient33" ) );
     }
@@ -1228,7 +1227,6 @@ public class TestAgent {
 
 
     @Test
-     @Ignore
     public void testEmptyDiagnostic() {
 
 
@@ -1247,7 +1245,7 @@ public class TestAgent {
 
 
     @Test
-     @Ignore
+    @Ignore
     public void testNonExistingDiagnostic() {
 
 
