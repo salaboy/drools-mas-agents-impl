@@ -184,6 +184,12 @@
 
         <resources>
             <resource>
+                <directory>${pom.basedir}/target/generated-sources/DRL</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
                 <directory>${pom.basedir}/target/generated-sources/META-INF</directory>
                 <includes>
                     <include>**/*.*</include>
@@ -244,6 +250,7 @@
                     <generateDefaultImplClasses>true</generateDefaultImplClasses>
                     <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
                     <buildSpecXSDs>true</buildSpecXSDs>
+                    <generateDRL>true</generateDRL>
                 </configuration>
             </plugin>
 
@@ -271,6 +278,7 @@
                         <arg>-Xkey-equality</arg>
                         <arg>-Xsem-accessors</arg>
                         <arg>-Xdefault-constructor</arg>
+                        <arg>-Xmetadata</arg>
                     </args>
                     <removeOldOutput>false</removeOldOutput>
 
