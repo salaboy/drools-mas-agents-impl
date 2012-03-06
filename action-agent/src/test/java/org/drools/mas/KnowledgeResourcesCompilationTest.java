@@ -41,7 +41,7 @@ public class KnowledgeResourcesCompilationTest {
 
     @Before
     public void setUp() {
-         DeleteDbFiles.execute("~", "mydb", false);
+        DeleteDbFiles.execute("~", "mydb", false);
 
         logger.info("Staring DB for white pages ...");
         try {
@@ -53,7 +53,7 @@ public class KnowledgeResourcesCompilationTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws InterruptedException {
         
         logger.info("Stopping DB ...");
         server.stop();
@@ -67,7 +67,7 @@ public class KnowledgeResourcesCompilationTest {
     @Test
     public void compilationTest() {
         
-        ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("test-applicationContext.xml");
         DroolsAgent agent = (DroolsAgent) context.getBean("agent");
         
         assertNotNull(agent);
@@ -77,9 +77,9 @@ public class KnowledgeResourcesCompilationTest {
     }
     
      @Test
-    public void testSimpleRequestToDeliverMessage() {
+    public void testSimpleRequestToDeliverMessage() throws InterruptedException {
         
-        ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("test-applicationContext.xml");
         DroolsAgent agent = (DroolsAgent) context.getBean("agent");
         assertNotNull(agent);
         
@@ -115,12 +115,13 @@ public class KnowledgeResourcesCompilationTest {
 
         
         agent.tell(req);
-
+        
+        Thread.sleep(3000);
+        
         Object result = agent.getAgentAnswers(req.getId());
         assertNotNull(result);
-
         assertEquals(true, result.toString().contains("refId"));
-        assertEquals(true, result.toString().contains("convoId"));
+        assertEquals(true, result.toString().contains("conversationId"));
         agent.dispose();
     }
      @Test

@@ -22,7 +22,7 @@ package org.drools.mas;
 
 import java.util.LinkedHashMap;
 import org.drools.mas.mock.MockFact;
-import org.drools.mas.helpers.SynchronousRequestHelper;
+import org.drools.mas.helpers.RequestHelper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
  * @author salaboy
  */
 public class SynchronousDroolsAgentServiceServiceTest {
-
+    private final String endpoint = "http://localhost:8080/action-agent/services/AsyncAgentService?WSDL";
     public SynchronousDroolsAgentServiceServiceTest() {
     }
 
@@ -57,7 +57,7 @@ public class SynchronousDroolsAgentServiceServiceTest {
 
     @Test
     public void testSimpleInformWithHelper() {
-        SynchronousRequestHelper agentHelper = new SynchronousRequestHelper("http://localhost:8080/action-agent/services/?WSDL");
+        RequestHelper agentHelper = new RequestHelper(endpoint);
 
         MockFact fact = new MockFact("patient1", 18);
 
@@ -72,7 +72,7 @@ public class SynchronousDroolsAgentServiceServiceTest {
 
     @Test
     public void testSimpleInform() {
-        SynchronousRequestHelper agentHelper = new SynchronousRequestHelper("http://localhost:8080/action-agent/services/?WSDL");
+        RequestHelper agentHelper = new RequestHelper(endpoint);
 
         MockFact fact = new MockFact("patient1", 18);
 
@@ -86,8 +86,8 @@ public class SynchronousDroolsAgentServiceServiceTest {
     }
 
     @Test
-    public void testSimpleRequestToDeliverMessage() {
-        SynchronousRequestHelper agentHelper = new SynchronousRequestHelper("http://localhost:8080/action-agent/services/?WSDL");
+    public void testSimpleRequestToDeliverMessage() throws InterruptedException {
+        RequestHelper agentHelper = new RequestHelper(endpoint);
 
         
         LinkedHashMap<String, Object> args = new LinkedHashMap<String, Object>();
@@ -115,7 +115,9 @@ public class SynchronousDroolsAgentServiceServiceTest {
 
 
         agentHelper.invokeRequest("deliverMessage", args);
-
+        
+        Thread.sleep(4000);
+        
         Object result = agentHelper.getReturn(false);
         assertNotNull(result);
 

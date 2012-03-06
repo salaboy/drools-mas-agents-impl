@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Date;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.action.helpers.*;
-
+import org.drools.mas.util.helper.*;
 
 import javax.xml.ws.BindingProvider;
 
@@ -98,6 +98,16 @@ declare MessageDeliveredResponse
     convoId             : String        @key
 end
 
+query deliverMessage( String $refId, String $conversationId,
+                      String $subjectabout,
+                      String $sender, String $mainRecipients, String $secondaryRecipients, String $hiddenRecipients,
+                      String $type, String $header, String $body,
+                      String $priority,
+                      String $deliveryDate, String $status,
+                      String $return )
+       $ret : MessageDeliveredResponse( $refId, $conversationId; )
+       $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
+end
 
 rule "ENTER"
 salience 99999
@@ -156,13 +166,6 @@ rule "Deliver Message Action Reset Result - Clean"
 end
 
 
-rule "Clean Deliver Message Action"
-salience -999
-    when
-        $action: Action( actionName == "deliverMessage" )
-    then
-        retract( $action );
-end
 
 
 
@@ -284,7 +287,7 @@ end
                       )
        $rec :   Recipient( messageId == $convoId, $mobile : mobile )
    then
-       //insert( new SMSMessage( (String) $convoId, $mobile, (String) $header ) );
+       
        DeliverMessageHelper.sendSMS("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
        
    end
@@ -358,18 +361,32 @@ end
 
 
 
-
-
-
-query deliverMessage( String $refId, String $conversationId,
-                      String $subjectabout,
-                      String $sender, String $mainRecipients, String $secondaryRecipients, String $hiddenRecipients,
-                      String $type, String $header, String $body,
-                      String $priority,
-                      String $deliveryDate, String $status,
-                      String $return )
-       $ret : MessageDeliveredResponse( $refId, $conversationId; )
-       $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
+rule " response collector - deliverMessage"
+    when
+        $s : SessionLocator($nodeId: nodeId, $sessionId: sessionId, mind == true)
+        $action: Action( $msgId: msgId, actionName == "deliverMessage",
+                         $refId      : this["refId"],
+                         $cnvId      : this["conversationId"],
+                         $sender		: this["sender"],
+                         $recipients : this["mainRecipients"],
+                         $secRec         : this["secondaryRecipients"],
+                         $hiddenRec      : this["hiddenRecipients"],
+                         $type           : this["type"],
+                        $header         : this["header"],
+                           $body           : this["body"],
+                           $priority       : this["priority"],
+                           $deliveryDate   : this["deliveryDate"],
+                           $status         : this["status"],
+                         $about          : this["subjectAbout"]
+                       )
+        deliverMessage($refId, $cnvId, $about, $sender, $recipients , $secRec, $hiddenRec, $type,  $header,   
+                        $body , $priority , $deliveryDate, $status , $return; )
+    then
+        ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
+        retract( $action );
 end
+
+
+
 
 

@@ -36,7 +36,7 @@ when
     ?mapSession( "action-selection-primary" , $sessionId ; )
 then
     System.out.println("Routing message " + $msgId + " (JSON)" );
-    insert( new Destination($msgId, $sessionId) );
+    insertLogical( new Destination($msgId, $sessionId) );
 end
 
 rule "Route_Encoded_XML"
@@ -46,7 +46,7 @@ when
     ?mapSession( "action-selection-primary" , $sessionId ; )
 then
     System.out.println("Routing message " + $msgId + " (XML)"  );
-    insert( new Destination($msgId, $sessionId) );
+    insertLogical( new Destination($msgId, $sessionId) );
 end
 
 
