@@ -9,50 +9,52 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.util.UUID;
 
+
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public abstract class UIdAble implements SupportsRdfId {
 
-    private String key;
+    private Key key;
 
-    private String actualType;
+    private String dyEntryType;
 
-    private boolean isReference;
+    private boolean dyReference;
 
     @XmlTransient
     public RdfKey getRdfId() {
-        if ( key == null && getUniversalId() != null ) {
-            key = new Key( getUniversalId() ).toString();
+        if ( key == null && getDyEntryId() != null ) {
+            key = new Key( getDyEntryId() );
         }
-        return new Key( key );
+        return key;
     }
 
     public void setRdfId( RdfKey theId ) {
-        key = theId.toString();
-        setUniversalId( key );
+        key = new Key( theId.value() );
+        setDyEntryId( theId.toString() );
     }
 
     @XmlTransient
-    public abstract String getUniversalId();
-    public abstract void setUniversalId( String x );
+    public abstract String getDyEntryId();
+    public abstract void setDyEntryId( String x );
 
-    public String getActualType() {
-        return actualType;
-    }
-
-    public void setActualType(String actualType) {
-        this.actualType = actualType;
-    }
 
     public UIdAble() {
-        setUniversalId( "http://" + UUID.randomUUID().toString() );
+        setDyEntryId( "http://" + UUID.randomUUID().toString() );
     }
 
-    public boolean isReference() {
-        return isReference;
+    public String getDyEntryType() {
+        return dyEntryType;
     }
 
-    public void setReference(boolean reference) {
-        isReference = reference;
+    public void setDyEntryType(String dyEntryType) {
+        this.dyEntryType = dyEntryType;
+    }
+
+    public boolean isDyReference() {
+        return dyReference;
+    }
+
+    public void setDyReference(boolean dyReference) {
+        this.dyReference = dyReference;
     }
 
     @Override
@@ -62,10 +64,10 @@ public abstract class UIdAble implements SupportsRdfId {
 
         UIdAble uIdAble = (UIdAble) o;
 
-        if (isReference != uIdAble.isReference) return false;
-
-        if ( this.getUniversalId() != null ) {
-            return getUniversalId().equals( uIdAble.getUniversalId() );
+        if (isDyReference() != uIdAble.isDyReference()) return false;
+        
+        if ( this.getDyEntryId() != null ) {
+            return getDyEntryId().equals( uIdAble.getDyEntryId() );
         } else {
             return false;
         }
@@ -73,8 +75,8 @@ public abstract class UIdAble implements SupportsRdfId {
 
     @Override
     public int hashCode() {
-        int result = getUniversalId() != null ? getUniversalId().hashCode() : 0;
-        result = 31 * result + (isReference ? 1 : 0);
+        int result = getDyEntryId() != null ? getDyEntryId().hashCode() : 0;
+        result = 31 * result + (isDyReference() ? 1 : 0);
         return result;
     }
 
