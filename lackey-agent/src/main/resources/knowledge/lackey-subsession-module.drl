@@ -1,0 +1,65 @@
+package org.drools.mas;
+
+import org.drools.mas.body.content.*;
+import org.drools.mas.action.message.*;
+import org.drools.mas.action.message.types.*;
+import org.drools.mas.action.message.invokers.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
+import org.drools.mas.AgentID;
+import org.drools.mas.action.helpers.*;
+import org.drools.mas.util.helper.*;
+import org.drools.grid.api.ResourceDescriptor;
+import org.drools.mas.util.MessageContentEncoder;
+declare AgentNotified
+    aid : AgentID
+    resourceId : String
+end
+
+
+
+
+rule "Say Hello"
+when
+    $o: Object()
+then
+    System.out.println("Hi this is the Agent One, Saying Hello -> "+$o);
+end
+
+
+rule "Notify Changed Resources"
+    when
+        $rd: ResourceDescriptor($id: id)
+        $aid: AgentID()
+    then
+        // Notify Agent
+        //RequestHelper.inform();
+        System.out.println("notifying the agent = "+$aid);
+        // Insert AgentNotfied
+        insert(new AgentNotified($aid, $id));
+
+end
+
+query forceInform( String $resourceId, String $agentId,
+                      String $return )
+       $ret : AgentNotified( $agentId, $resourceId; )
+       $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
+end
+
+
+rule " inform collector - forceInform"
+    when
+        $s : SessionLocator($nodeId: nodeId, $sessionId: sessionId, mind == true)
+        $action: Action( $msgId: msgId, actionName == "forceInform",
+                         $desc      : this["descriptor"],
+                         $aid      : this["agentId"]
+                       )
+        forceInform($desc, $aid, $return; )
+    then
+        ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
+        retract( $action );
+end

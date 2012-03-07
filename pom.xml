@@ -14,7 +14,6 @@
         <module>dsa-agent-web</module>
         <module>dsa-agent-client</module>
         <module>dsa-fact-model</module>
-    <module>clinical-agent</module>
     <module>lackey-agent</module>
   </modules>
 

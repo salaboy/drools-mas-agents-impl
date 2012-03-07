@@ -4,9 +4,17 @@
  */
 package org.drools.mas;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import org.drools.grid.api.impl.ResourceDescriptorImpl;
+import org.drools.mas.body.content.Action;
 import org.drools.mas.core.DroolsAgent;
-import org.drools.mas.mock.MockResponseInformer;
+import org.drools.mas.util.ACLMessageFactory;
+import org.drools.mas.util.MessageContentFactory;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
 import org.junit.*;
@@ -66,6 +74,53 @@ public class KnowledgeResourcesCompilationTest {
         DroolsAgent agent = (DroolsAgent) context.getBean("agent");
         
         assertNotNull(agent);
+        
+        agent.dispose();
+        
+    }
+    
+    
+    @Test
+    public void lackeyAgentInformsOtherAgent() throws MalformedURLException, InterruptedException {
+        
+        ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/applicationContext.xml");
+        DroolsAgent agent = (DroolsAgent) context.getBean("agent");
+        
+        assertNotNull(agent);
+        
+        ACLMessageFactory factory = new ACLMessageFactory(Encodings.XML);
+        ResourceDescriptorImpl resourceDescriptorImpl = new ResourceDescriptorImpl();
+        resourceDescriptorImpl.setId("1");
+        resourceDescriptorImpl.setAuthor("salaboy");
+        resourceDescriptorImpl.setName("my resource");
+        resourceDescriptorImpl.setStatus("draft");
+        resourceDescriptorImpl.setVersion("1");
+        resourceDescriptorImpl.setCreationTime(new Date());
+        resourceDescriptorImpl.setType("DRL");
+        resourceDescriptorImpl.setDescription("this is my resource description");
+        resourceDescriptorImpl.setResourceURL(new URL("file:/Users/salaboy/myports.txt"));
+        Map<String, Object> args = new HashMap<String, Object>();
+        
+        args.put("descriptor", resourceDescriptorImpl);
+        
+        AgentID agentID = new AgentID("otherAgent");
+        args.put("agentID", agentID);
+        
+        ACLMessage inf = factory.newInformMessage("", "", resourceDescriptorImpl);
+        agent.tell(inf);
+        
+        ACLMessage inf2 = factory.newInformMessage("", "", agentID);
+        agent.tell(inf2);
+        
+        
+        Action action = MessageContentFactory.newActionContent("forceInform", args);
+        ACLMessage req = factory.newRequestMessage("", "", action);
+
+        
+        agent.tell(req);
+        
+        Thread.sleep(3000);
+        
         
         agent.dispose();
         
