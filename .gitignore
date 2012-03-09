@@ -13,3 +13,5 @@
 /action-agent-helpers/target/
 .DS_Store
 /dsa-agent-web/target/
+/clinical-agent/target/
+/lackey-agent/target/

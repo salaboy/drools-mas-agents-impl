@@ -9,6 +9,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.drools.grid.api.impl.ResourceDescriptorImpl;
 import org.drools.mas.body.content.Action;
@@ -67,23 +68,23 @@ public class KnowledgeResourcesCompilationTest {
      * at least compile without errors. To ensure that the agent can be 
      * initialized correctly
      */
-    @Test
-    public void compilationTest() {
-        
-        ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/applicationContext.xml");
-        DroolsAgent agent = (DroolsAgent) context.getBean("agent");
-        
-        assertNotNull(agent);
-        
-        agent.dispose();
-        
-    }
+//    @Test
+//    public void compilationTest() {
+//        
+//        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+//        DroolsAgent agent = (DroolsAgent) context.getBean("agent");
+//        
+//        assertNotNull(agent);
+//        
+//        agent.dispose();
+//        
+//    }
     
     
     @Test
     public void lackeyAgentInformsOtherAgent() throws MalformedURLException, InterruptedException {
         
-        ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         DroolsAgent agent = (DroolsAgent) context.getBean("agent");
         
         assertNotNull(agent);
@@ -101,10 +102,11 @@ public class KnowledgeResourcesCompilationTest {
         resourceDescriptorImpl.setResourceURL(new URL("file:/Users/salaboy/myports.txt"));
         Map<String, Object> args = new HashMap<String, Object>();
         
-        args.put("descriptor", resourceDescriptorImpl);
+        args.put("descriptor", resourceDescriptorImpl.getId());
         
         AgentID agentID = new AgentID("otherAgent");
-        args.put("agentID", agentID);
+        args.put("agentID", agentID.getName());
+        
         
         ACLMessage inf = factory.newInformMessage("", "", resourceDescriptorImpl);
         agent.tell(inf);
@@ -119,7 +121,16 @@ public class KnowledgeResourcesCompilationTest {
         
         agent.tell(req);
         
-        Thread.sleep(3000);
+        Thread.sleep(4000);
+        
+        List<ACLMessage> agentAnswers = agent.getAgentAnswers(req.getId());
+        assertEquals(2, agentAnswers.size());
+        assertEquals(Act.AGREE, agentAnswers.get(0).getPerformative() );
+        assertEquals(Act.INFORM, agentAnswers.get(1).getPerformative() );
+        
+        System.out.println(" #### agentAnswers: "+agentAnswers);
+        
+        
         
         
         agent.dispose();

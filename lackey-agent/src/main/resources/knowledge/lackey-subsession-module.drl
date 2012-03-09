@@ -15,8 +15,10 @@ import org.drools.mas.action.helpers.*;
 import org.drools.mas.util.helper.*;
 import org.drools.grid.api.ResourceDescriptor;
 import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.helpers.DialogueHelper;
+
 declare AgentNotified
-    aid : AgentID
+    aid : String
     resourceId : String
 end
 
@@ -34,19 +36,21 @@ end
 rule "Notify Changed Resources"
     when
         $rd: ResourceDescriptor($id: id)
-        $aid: AgentID()
+        $aid: AgentID($name: name)
     then
         // Notify Agent
-        //RequestHelper.inform();
-        System.out.println("notifying the agent = "+$aid);
+        System.out.println(">>>>>>>>>>>>>>> notifying the agent = "+$name +" - rd"+$rd );
+        String endpoint = "http://localhost:8080/action-agent/services/AsyncAgentService?WSDL";
+        DialogueHelper helper = new DialogueHelper(endpoint);
+        helper.invokeInform("lackeyAgent", $aid.getName(), $rd );
         // Insert AgentNotfied
-        insert(new AgentNotified($aid, $id));
+        insert(new AgentNotified($name, $id));
 
 end
 
-query forceInform( String $resourceId, String $agentId,
+query forceInform( String $agentId, String $resourceId,
                       String $return )
-       $ret : AgentNotified( $agentId, $resourceId; )
+       $ret: AgentNotified( $agentId, $resourceId; )
        $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
 end
 
@@ -56,10 +60,11 @@ rule " inform collector - forceInform"
         $s : SessionLocator($nodeId: nodeId, $sessionId: sessionId, mind == true)
         $action: Action( $msgId: msgId, actionName == "forceInform",
                          $desc      : this["descriptor"],
-                         $aid      : this["agentId"]
+                         $aid      : this["agentID"]
                        )
-        forceInform($desc, $aid, $return; )
+        forceInform( $aid, $desc, $return; )
     then
+        System.out.println(" >>>>>>>>>>>>>>>>> agent notified "+$return);
         ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
         retract( $action );
 end

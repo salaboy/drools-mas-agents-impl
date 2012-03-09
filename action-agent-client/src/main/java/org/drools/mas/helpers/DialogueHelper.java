@@ -17,8 +17,7 @@ import org.drools.mas.util.ACLMessageFactory;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.util.MessageContentFactory;
 import org.drools.runtime.rule.Variable;
-
-public class RequestHelper {
+public class DialogueHelper {
 
     boolean multiReturnValue = false;
     private AbstractMessageBody returnBody;
@@ -26,21 +25,21 @@ public class RequestHelper {
     private URL endpointURL;
     private QName qname;
 
-    public RequestHelper(String url, Encodings enc) {
+    public DialogueHelper(String url, Encodings enc) {
         try {
             this.endpointURL = new URL(AsyncAgentService.class.getResource("."), url);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(RequestHelper.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DialogueHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.qname = new QName("http://mas.drools.org/", "AsyncAgentService");
         this.encode = enc;
     }
 
-    public RequestHelper(String url) {
+    public DialogueHelper(String url) {
         try {
             this.endpointURL = new URL(AsyncAgentService.class.getResource("."), url);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(RequestHelper.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DialogueHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.qname = new QName("http://mas.drools.org/", "AsyncAgentService");
 
@@ -75,21 +74,21 @@ public class RequestHelper {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(RequestHelper.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DialogueHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         answers = asyncServicePort.getResponses(req.getId());
         System.out.println("^&*^&*(^&(*^(*&^&*(^&*(^&*(^*&(^*(^ ="+answers);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(RequestHelper.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DialogueHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         answers = asyncServicePort.getResponses(req.getId());
         System.out.println("^&*^&*(^&(*^(*&^&*(^&*(^&*(^*&(^*(^ ="+answers);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(RequestHelper.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DialogueHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         answers = asyncServicePort.getResponses(req.getId());

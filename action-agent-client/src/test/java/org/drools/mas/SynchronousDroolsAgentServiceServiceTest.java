@@ -22,7 +22,7 @@ package org.drools.mas;
 
 import java.util.LinkedHashMap;
 import org.drools.mas.mock.MockFact;
-import org.drools.mas.helpers.RequestHelper;
+import org.drools.mas.helpers.DialogueHelper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -57,7 +57,7 @@ public class SynchronousDroolsAgentServiceServiceTest {
 
     @Test
     public void testSimpleInformWithHelper() {
-        RequestHelper agentHelper = new RequestHelper(endpoint);
+        DialogueHelper agentHelper = new DialogueHelper(endpoint);
 
         MockFact fact = new MockFact("patient1", 18);
 
@@ -72,7 +72,7 @@ public class SynchronousDroolsAgentServiceServiceTest {
 
     @Test
     public void testSimpleInform() {
-        RequestHelper agentHelper = new RequestHelper(endpoint);
+        DialogueHelper agentHelper = new DialogueHelper(endpoint);
 
         MockFact fact = new MockFact("patient1", 18);
 
@@ -87,7 +87,7 @@ public class SynchronousDroolsAgentServiceServiceTest {
 
     @Test
     public void testSimpleRequestToDeliverMessage() throws InterruptedException {
-        RequestHelper agentHelper = new RequestHelper(endpoint);
+        DialogueHelper agentHelper = new DialogueHelper(endpoint);
 
         
         LinkedHashMap<String, Object> args = new LinkedHashMap<String, Object>();

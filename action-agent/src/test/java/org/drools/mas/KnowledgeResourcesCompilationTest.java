@@ -117,7 +117,7 @@ public class KnowledgeResourcesCompilationTest {
         agent.tell(req);
         
         Thread.sleep(3000);
-        
+        assertEquals(2, agent.getAgentAnswers(req.getId()).size());
         Object result = agent.getAgentAnswers(req.getId());
         assertNotNull(result);
         assertEquals(true, result.toString().contains("refId"));
