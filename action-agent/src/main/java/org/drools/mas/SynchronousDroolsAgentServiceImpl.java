@@ -83,4 +83,9 @@ public class SynchronousDroolsAgentServiceImpl implements SynchronousDroolsAgent
         }
         return retrieveResponses;
     }
+    
+    public void dispose(){
+        logger.debug(" XXX Disposing Agent -> " + agent.getAgentId());
+        agent.dispose();
+    }
 }

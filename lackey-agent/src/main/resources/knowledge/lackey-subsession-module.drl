@@ -40,7 +40,7 @@ rule "Notify Changed Resources"
     then
         // Notify Agent
         System.out.println(">>>>>>>>>>>>>>> notifying the agent = "+$name +" - rd"+$rd );
-        String endpoint = "http://localhost:8080/action-agent/services/AsyncAgentService?WSDL";
+        String endpoint = "http://localhost:8081/action-agent/services/AsyncAgentService?wsdl";
         DialogueHelper helper = new DialogueHelper(endpoint);
         helper.invokeInform("lackeyAgent", $aid.getName(), $rd );
         // Insert AgentNotfied

@@ -5,9 +5,7 @@
 package org.drools.mas;
 
 import java.util.List;
-import javax.jws.WebMethod;
 import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import org.apache.cxf.feature.Features;
 
@@ -79,6 +77,11 @@ public class AsyncDroolsAgentServiceImpl implements AsyncDroolsAgentService {
             }
         }
         return retrieveResponses;
+    }
+    
+    public void dispose(){
+        logger.debug(" XXX Disposing Agent -> " + agent.getAgentId());
+        agent.dispose();
     }
     
 }

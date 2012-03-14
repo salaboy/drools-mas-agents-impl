@@ -14,4 +14,5 @@ import javax.jws.WebService;
 @WebService
 public interface SynchronousDroolsAgentService {
     List<ACLMessage> tell(ACLMessage message);
+    public void dispose();
 }

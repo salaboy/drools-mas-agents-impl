@@ -24,7 +24,47 @@
 
     <name>KMR2 :: action-agent Agent Web</name>
     
-
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties> 
+                <db.driverClass>org.h2.Driver</db.driverClass> 
+                <db.connectionURL>jdbc:h2:tcp://localhost/~/mydb</db.connectionURL> 
+                <db.username>sa</db.username> 
+                <db.password>sasa</db.password> 
+                <db.dialect>org.hibernate.dialect.H2Dialect</db.dialect>
+                <agent.name>action-agent</agent.name>
+                <agent.node>action-agent-localnode</agent.node>
+                <agent.port>8000</agent.port>
+            </properties> 
+        </profile>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties> 
+                <db.driverClass>com.mysql.jdbc.Driver</db.driverClass> 
+                <db.connectionURL>jdbc:mysql://localhost:3306/drools-grid</db.connectionURL> 
+                <db.username>root</db.username> 
+                <db.password>root</db.password> 
+                <db.dialect>org.hibernate.dialect.MySQL5Dialect</db.dialect>
+                <agent.name>action-agent</agent.name>
+                <agent.node>action-agent-localnode</agent.node>
+                <agent.port>8000</agent.port>
+            </properties> 
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.1.1</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -105,6 +145,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+          <!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    
+                </configuration>
+                
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
@@ -112,6 +171,15 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+            
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
+    
+   
 </project>

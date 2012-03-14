@@ -10,20 +10,20 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
     <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
     <jaxws:endpoint id="agent-ws" 
-                  address="http://localhost:8080/action-agent/services/SyncAgentService"
+                  address="http://localhost:8081/action-agent/services/SyncAgentService"
                   implementor="#agent-service">
     </jaxws:endpoint> 
     <jaxws:endpoint id="async-agent-ws" 
-                  address="http://localhost:8080/action-agent/services/AsyncAgentService"
+                  address="http://localhost:8081/action-agent/services/AsyncAgentService"
                   implementor="#async-agent-service">
     </jaxws:endpoint>
   
-    <bean id="agent-service" class="org.drools.mas.SynchronousDroolsAgentServiceImpl">
+    <bean id="agent-service" class="org.drools.mas.SynchronousDroolsAgentServiceImpl" destroy-method="dispose">
         <property name="agent" ref="agent"/>
         
     </bean> 
     
-    <bean id="async-agent-service" class="org.drools.mas.AsyncDroolsAgentServiceImpl">
+    <bean id="async-agent-service" class="org.drools.mas.AsyncDroolsAgentServiceImpl" destroy-method="dispose">
         <property name="agent" ref="agent"/>
         
     </bean>
@@ -36,8 +36,8 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
         <property name="agentId" value="Agent 1"/>
         <property name="changeset" value="actionAgent_changeset.xml" />
          <!-- by default the mindNodeLocation is local --> 
-        <property name="mindNodeLocation" value="local-agent1"/>
-        <property name="port" value="7000"/>
+        <property name="mindNodeLocation" value="${agent.node}"/>
+        <property name="port" value="${agent.port}"/>
         <property name="subSessions">
             <list>
                 <ref local="agent1-session1"/>
@@ -50,7 +50,7 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
     <bean id="agent1-session1" class="org.drools.mas.core.DroolsAgentConfiguration$SubSessionDescriptor">
         <constructor-arg value="session1"/>
         <constructor-arg value="actionAgent_defSession_changeset.xml"/>
-        <constructor-arg value="local-agent1"/>
+        <constructor-arg value="${agent.node}"/>
     </bean>  
 
 </beans>

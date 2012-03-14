@@ -13,20 +13,61 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>kmr2-agents</artifactId>
-    <groupId>org.drools.mas.kmr2</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>kmr2-agents</artifactId>
+        <groupId>org.drools.mas.kmr2</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <groupId>org.drools.mas.impl</groupId>
     <artifactId>drools-mas-lackey-agent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>Drools MAS :: Lackey Agent Web</name>
-    
+    <name>KMR2 :: Lackey Agent Web</name>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties> 
+                <db.driverClass>org.h2.Driver</db.driverClass> 
+                <db.connectionURL>jdbc:h2:tcp://localhost/~/mydb</db.connectionURL> 
+                <db.username>sa</db.username> 
+                <db.password>sasa</db.password> 
+                <db.dialect>org.hibernate.dialect.H2Dialect</db.dialect>
+                <agent.name>lackey-agent</agent.name>
+                <agent.node>lackey-agent-localnode</agent.node>
+                <agent.port>8100</agent.port>
+            </properties> 
+        </profile>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties> 
+                <db.driverClass>com.mysql.jdbc.Driver</db.driverClass> 
+                <db.connectionURL>jdbc:mysql://localhost:3306/drools-grid</db.connectionURL> 
+                <db.username>root</db.username> 
+                <db.password>root</db.password> 
+                <db.dialect>org.hibernate.dialect.MySQL5Dialect</db.dialect>
+                <agent.name>lackey-agent</agent.name>
+                <agent.node>lackey-agent-localnode</agent.node>
+                <agent.port>8100</agent.port>
+            </properties> 
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.1.1</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,7 +86,7 @@
             <version>2.1</version>
             <scope>provided</scope>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.drools.mas</groupId>
             <artifactId>drools-mas-core</artifactId>
             <version>${project.version}</version>
@@ -55,7 +96,7 @@
             <artifactId>drools-mas-acl</artifactId>
             <version>${project.version}</version>   
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.drools.mas</groupId>
             <artifactId>drools-mas-generic-client</artifactId>
             <version>${project.version}</version>   
@@ -85,17 +126,17 @@
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <version>2.5.1</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.apache.abdera</groupId>
             <artifactId>abdera-client</artifactId>
             <version>1.1.1</version>
-             <exclusions>
-                 <exclusion>
-                     <artifactId>xercesImpl</artifactId>
-                     <groupId>xerces</groupId>
-                 </exclusion>
-             </exclusions>
-         </dependency>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         
         <dependency>
             <groupId>commons-io</groupId>
@@ -126,7 +167,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.1.1</version>
                 <executions>
-                     <execution>
+                    <execution>
      
                         <id>delefe-files</id>
                         <phase>process-resources</phase>
@@ -137,7 +178,7 @@
                             
                             <mainClass>org.h2.tools.DeleteDbFiles</mainClass>
                             <commandlineArgs>
-                               -dir ~
+                                -dir ~
                                 
                             </commandlineArgs>
         
@@ -168,7 +209,7 @@
                     
                 </executions>
             </plugin>
-             <plugin>
+            <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>7.6.0.RC2</version>
@@ -203,7 +244,37 @@
                   
                 </executions>
             </plugin>
+       
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+          <!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    
+                </configuration>
+                
+            </plugin>
+          
+            
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         
     </build>
+    
+    
 </project>

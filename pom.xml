@@ -15,6 +15,7 @@
         <module>dsa-agent-client</module>
         <module>dsa-fact-model</module>
     <module>lackey-agent</module>
+    <module>lackey-agent-client</module>
   </modules>
 
     <repositories>

@@ -15,4 +15,5 @@ import javax.jws.WebService;
 public interface AsyncDroolsAgentService {
     void tell(ACLMessage message);
     List<ACLMessage> getResponses(String msgId);
+    void dispose();
 }

@@ -30,15 +30,15 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
     <bean id="agent1-session1" class="org.drools.mas.core.DroolsAgentConfiguration$SubSessionDescriptor">
         <constructor-arg value="session1"/>
         <constructor-arg value="agent_defSession_changeset.xml"/>
-        <constructor-arg value="local-lackey-agent1"/>
+        <constructor-arg value="${agent.node}"/>
     </bean>  
    
     <bean id="agent1-configuration" class="org.drools.mas.core.DroolsAgentConfiguration">
         <property name="agentId" value="Lackey_Agent"/>
         <property name="changeset" value="agent_changeset.xml" />
         <!-- by default the mindNodeLocation is local --> 
-        <property name="mindNodeLocation" value="local-lackey-agent1"/>
-        <property name="port" value="8000"/>
+        <property name="mindNodeLocation" value="${agent.node}"/>
+        <property name="port" value="${agent.port}"/>
         <property name="subSessions">
             <list>
                 <ref local="agent1-session1"/>
