@@ -20,7 +20,7 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
         <property name="changeset" value="agent_changeset.xml" />
         <!-- by default the mindNodeLocation is local --> 
         <property name="mindNodeLocation" value="local-lackey-agent1"/>
-        <property name="port" value="8000"/>
+        <property name="port" value="9000"/>
         <property name="subSessions">
             <list>
                 <ref local="agent1-session1"/>

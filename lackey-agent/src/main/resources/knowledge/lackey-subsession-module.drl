@@ -14,8 +14,13 @@ import org.drools.mas.AgentID;
 import org.drools.mas.action.helpers.*;
 import org.drools.mas.util.helper.*;
 import org.drools.grid.api.ResourceDescriptor;
+import org.drools.grid.api.impl.ResourceDescriptorImpl;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.helpers.DialogueHelper;
+import gov.hhs.fha.nhinc.guvnorassetsscanner.ScannerTask;
+import gov.hhs.fha.nhinc.guvnorassetsscanner.ScannerTaskFactory;
+import gov.hhs.fha.nhinc.guvnorassetsscanner.io.URLResourceReaderStrategy;
+import java.net.URL;
 
 declare AgentNotified
     aid : String
@@ -32,10 +37,20 @@ then
     System.out.println("Hi this is the Agent One, Saying Hello -> "+$o);
 end
 
+rule "refresh assets"
+    timer ( int: 0s 10s )
+    when
+        $rd: ResourceDescriptorImpl( composite == false ) from ScannerTaskFactory.newScannerTask("file:/Users/salaboy/Projects/drools-mas-agents-impl/lackey-agent/src/test/resources/fullAssets.xml").getResourceDescriptors()
+        
+    then
+        System.out.println(" ### New Resource Descriptor Found -> "+$rd +"-"+ System.currentTimeMillis());
+        insert($rd);
+end
+
 
 rule "Notify Changed Resources"
     when
-        $rd: ResourceDescriptor($id: id)
+        $rd: ResourceDescriptorImpl($id: id)
         $aid: AgentID($name: name)
     then
         // Notify Agent
