@@ -4,8 +4,8 @@
  */
 package gov.hhs.fha.nhinc.guvnorassetsscanner;
 
+import gov.hhs.fha.nhinc.guvnorassetsscanner.abdera.AbderaResourceReaderStrategy;
 import gov.hhs.fha.nhinc.guvnorassetsscanner.authenticator.GuvnorAuthenticatorProvider;
-import gov.hhs.fha.nhinc.guvnorassetsscanner.abdera.ResourceDescriptorTranslator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,15 +15,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.apache.abdera.Abdera;
-import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Entry;
-import org.apache.abdera.model.Feed;
-import org.apache.abdera.protocol.Response;
-import org.apache.abdera.protocol.client.AbderaClient;
-import org.apache.abdera.protocol.client.ClientResponse;
-import org.apache.abdera.protocol.client.RequestOptions;
-import org.apache.commons.io.IOUtils;
 import org.drools.ChangeSet;
 import org.drools.grid.api.CompositeResourceDescriptor;
 import org.drools.grid.api.ResourceDescriptor;
@@ -40,20 +31,30 @@ import org.drools.xml.XmlChangeSetReader;
  */
 public class ScannerTask implements Runnable {
 
-    private String requestURL;
-    private GuvnorAuthenticatorProvider authenticatorProvider;
     private final List<AssetScannerListener> listeners = Collections.synchronizedList(new ArrayList<AssetScannerListener>());
     private final ScheduledExecutorService scheduler;
     
     private SemanticModules changeSetSemanticModules;
+    
+    private ResourceReaderStrategy resourceReaderStrategy;
 
-    public ScannerTask(String guvnorURL, GuvnorAuthenticatorProvider authenticatorProvider) {
-        this.requestURL = guvnorURL;
-        this.authenticatorProvider = authenticatorProvider;
+    protected ScannerTask(){
         this.scheduler = Executors.newScheduledThreadPool(1);
         
         this.changeSetSemanticModules = new SemanticModules();
         this.changeSetSemanticModules.addSemanticModule(new ChangeSetSemanticModule());
+    }
+    
+    public ScannerTask(ResourceReaderStrategy resourceReaderStrategy) {
+        this();
+        this.resourceReaderStrategy = resourceReaderStrategy;
+    }
+    
+    public ScannerTask(String guvnorURL, GuvnorAuthenticatorProvider authenticatorProvider) {
+        this();
+        
+        //default reader streategy: Abdera
+        this.resourceReaderStrategy = new AbderaResourceReaderStrategy(guvnorURL, authenticatorProvider);
     }
     
     public void run() {
@@ -111,75 +112,22 @@ public class ScannerTask implements Runnable {
     }
     
     
-    private List<ResourceDescriptor> getResourceDescriptors(){
-        RequestOptions options = this.createRequestOptions();
-        
-        Abdera abdera = Abdera.getInstance();
-        AbderaClient client = new AbderaClient(abdera);
-        ClientResponse resp = client.get(requestURL, options);
-        
-        if (resp.getType() != Response.ResponseType.SUCCESS) {
-            throw new RuntimeException(resp.getStatusText());
-        }
-        
-        List<ResourceDescriptor> results = new ArrayList<ResourceDescriptor>();
-        
-        Document<Feed> document = resp.getDocument();
-        for (Entry entry : document.getRoot().getEntries()) {
-            results.add(ResourceDescriptorTranslator.toResourceDescriptor(entry));
-        }
-        
-        return results;
+    public List<ResourceDescriptor> getResourceDescriptors(){
+        return this.resourceReaderStrategy.getResourceDescriptors();
     }
     
     private ResourceDescriptor getResourceDescriptor(String url){
-        RequestOptions options = this.createRequestOptions();
-        
-        //TODO: change this to a real encoder
-        url = url.replaceAll("\\s", "%20");
-        Abdera abdera = Abdera.getInstance();
-        AbderaClient client = new AbderaClient(abdera);
-        ClientResponse resp = client.get(url, options);
-        
-        if (resp.getType() != Response.ResponseType.SUCCESS) {
-            throw new RuntimeException(resp.getStatusText());
-        }
-        
-        Document<Entry> document = resp.getDocument();
-        return ResourceDescriptorTranslator.toResourceDescriptor(document.getRoot());
+        return this.resourceReaderStrategy.getResourceDescriptor(url);
     }
     
     private String getAssetContent(String sourceURL) throws IOException{
-        Abdera abdera = Abdera.getInstance();
-        AbderaClient client = new AbderaClient(abdera);
-        RequestOptions options = this.createRequestOptions();
-
-        options.setAccept("application/octet-stream");
-        
-        ClientResponse resp = client.get(sourceURL, options);
-        
-        if (resp.getType() != Response.ResponseType.SUCCESS) {
-            throw new RuntimeException(resp.getStatusText());
-        }
-        
-        return IOUtils.toString(resp.getInputStream());
+        return this.resourceReaderStrategy.getAssetContent(sourceURL);
     }
-    
-    private RequestOptions createRequestOptions() {
-        Abdera abdera = Abdera.getInstance();
-        AbderaClient client = new AbderaClient(abdera);
-        RequestOptions options = client.getDefaultRequestOptions();
 
-        options.setAccept("application/atom+xml");
-
-        //add authorization parameters
-        if (this.authenticatorProvider != null){
-            this.authenticatorProvider.addAuthenticationOptions(options);
-        }
-
-        return options;
+    public void setResourceReaderStrategy(ResourceReaderStrategy resourceReaderStrategy) {
+        this.resourceReaderStrategy = resourceReaderStrategy;
     }
-    
+
     public void addListener(AssetScannerListener listener){
         this.listeners.add(listener);
     }

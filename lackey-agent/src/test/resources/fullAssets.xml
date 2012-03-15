@@ -1,0 +1,112 @@
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title type="text">urn.gov.hhs.fha.nhinc.adapter.fact-asset-feed</title>
+    <entry xml:base="http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/CH1">
+        <title type="text">CH1</title>
+        <summary type="text"></summary>
+        <published>2012-02-28T19:33:07.063Z</published>
+        <author>
+            <name>admin</name>
+        </author>
+        <id>http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/CH1</id>
+        <metadata xmlns="">
+            <archived>
+                <value>false</value>
+            </archived>
+            <uuid>
+                <value>c70cd806-0103-4bd4-8420-963edab7366a</value>
+            </uuid>
+            <state>
+                <value>Draft</value>
+            </state>
+            <format>
+                <value>changeset</value>
+            </format>
+            <created>
+                <value>2012-02-22T14:12:50.231Z</value>
+            </created>
+            <version>
+                <value>2</value>
+            </version>
+            <categories/>
+        </metadata>
+        <content src="$changeSetURL$"/>
+    </entry>
+    
+    <entry xml:base="http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/ProcA">
+        <title type="text">ProcA</title>
+        <summary type="text">sad</summary>
+        <published>2012-02-20T16:38:25.676Z</published>
+        <author>
+            <name>guest</name>
+        </author>
+        <id>http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/ProcA</id>
+        <metadata xmlns="">
+            <archived>
+                <value>false</value>
+            </archived>
+            <uuid>
+                <value>9a143857-388f-4592-937e-825a49aab205</value>
+            </uuid>
+            <state>
+                <value>Draft</value>
+            </state>
+            <format>
+                <value>bpmn2</value>
+            </format>
+            <created>
+                <value>2012-02-18T09:55:20.338Z</value>
+            </created>
+            <version>
+                <value>17</value>
+            </version>
+            <categories>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+            </categories>
+        </metadata>
+        <content src="$process1URL$"/>
+    </entry>
+    <entry xml:base="http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/SomeProcess">
+        <title type="text">SomeProcess</title>
+        <summary type="text"></summary>
+        <published>2012-02-21T13:13:25.217Z</published>
+        <author>
+            <name>guest</name>
+        </author>
+        <id>http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/SomeProcess</id>
+        <metadata xmlns="">
+            <archived>
+                <value>false</value>
+            </archived>
+            <uuid>
+                <value>c2e84ac5-29f1-4a82-ae71-a1eb83f258bf</value>
+            </uuid>
+            <state>
+                <value>Draft</value>
+            </state>
+            <format>
+                <value>bpmn2</value>
+            </format>
+            <created>
+                <value>2012-02-21T09:02:10.943Z</value>
+            </created>
+            <version>
+                <value>2</value>
+            </version>
+            <categories>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+                <value>Allergy</value>
+            </categories>
+        </metadata>
+        <content src="$process1URL$"/>
+    </entry>
+</feed>

@@ -1,0 +1,34 @@
+
+<entry xmlns="http://www.w3.org/2005/Atom" xml:base="http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/Asthma%20Diagnosis">
+    <title type="text">Asthma Diagnosis 1</title>
+    <summary type="text"></summary>
+    <published>2012-02-29T16:19:02.529Z</published>
+    <author>
+        <name>admin</name>
+    </author>
+    <id>http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/Asthma%20Diagnosis</id>
+    <metadata xmlns="">
+        <archived>
+            <value>false</value>
+        </archived>
+        <uuid>
+            <value>7879d6c9-e439-4b48-97f7-0da7f549ad15</value>
+        </uuid>
+        <state>
+            <value>Draft</value>
+        </state>
+        <format>
+            <value>brl</value>
+        </format>
+        <created>
+            <value>2012-01-17T14:19:33.754Z</value>
+        </created>
+        <version>
+            <value>4</value>
+        </version>
+        <categories>
+            <value>Asthma</value>
+        </categories>
+    </metadata>
+    <content src="http://localhost:8080/drools-guvnor/rest/packages/urn.gov.hhs.fha.nhinc.adapter.fact/assets/Asthma%2520Diagnosis/binary"/>
+</entry>

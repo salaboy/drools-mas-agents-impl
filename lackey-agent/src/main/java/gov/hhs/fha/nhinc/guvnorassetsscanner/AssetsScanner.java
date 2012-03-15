@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.drools.grid.api.CompositeResourceDescriptor;
+import org.drools.grid.api.ResourceDescriptor;
 
 /**
  *
@@ -30,16 +31,20 @@ public class AssetsScanner {
     }
 
     
+    public void hydrateInternalResources(CompositeResourceDescriptor resourceDesriptor){
+        this.scannerTask.hydrateInternalResources(resourceDesriptor);
+    }
+    
+    public List<ResourceDescriptor> getResourceDescriptors(){
+        return this.scannerTask.getResourceDescriptors();
+    }
+    
     public void start(){
         this.start(0);
     }
     
     public void start(int delay){
         scheduler.scheduleAtFixedRate(this.scannerTask, delay, this.interval, TimeUnit.SECONDS);
-    }
-    
-    public void hydrateInternalResources(CompositeResourceDescriptor resourceDesriptor){
-        this.scannerTask.hydrateInternalResources(resourceDesriptor);
     }
     
     public void stop(){
