@@ -31,13 +31,15 @@
         >
     <add>
 
+        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/probe.drl" />
+
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/startDiagnosticGuideProcess.drl" />
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/advanceDiagnosticGuideProcess.drl" />
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/setDiagnosticActionStatus.drl" />
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/completeDiagnosticGuideProcess.drl" />
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/getDiagnosticProcessStatus.drl" />
 
-        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/probe.drl" />
+
 
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/getSurvey.drl" />
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/setSurvey.drl" />

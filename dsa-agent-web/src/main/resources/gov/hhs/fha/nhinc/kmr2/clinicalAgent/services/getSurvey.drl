@@ -37,7 +37,7 @@ import org.drools.informer.presentation.SurveyGUIAdapter;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
-
+import org.drools.mas.util.helper.*;
 
 
 rule "Action_Request : getSurvey"
@@ -53,16 +53,22 @@ then
 end
 
 
-rule "Action_Request : getSurvey Cleanup"
-salience -10
-when
-    $a : Action( actionName == "getSurvey" )
-then
-    retract($a);
+
+query getSurvey( String $userId, String $patientId, String $surveyId, SurveyGUIAdapter $return )
+    $return := SurveyGUIAdapter( $surveyId := itemId )
 end
 
 
-query getSurvey( String $userId, String $patientId, String $surveyId, String $return )
-    $ret    :  SurveyGUIAdapter( $surveyId := itemId )
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML);
+rule "Action_Request : getSurvey Cleanup"
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "getSurvey", $msgId : msgId,
+                 $userId : this["userId"],
+                 $patientId : this["patientId"],
+                 $surveyId : this["surveyId"]
+    )
+    ?getSurvey( $userId, $patientId, $surveyId, $return ; )
+then
+    retract($a);
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end

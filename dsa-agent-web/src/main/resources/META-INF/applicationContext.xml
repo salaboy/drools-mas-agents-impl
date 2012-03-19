@@ -6,25 +6,43 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
-
-
     <import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
     <jaxws:endpoint id="agent-ws"
+                    address="http://localhost:8082/clinical-decision-support-agent/services/SyncAgentService"
                     implementor="#agent-service">
     </jaxws:endpoint>
+    <jaxws:endpoint id="async-agent-ws"
+                    address="http://localhost:8082/clinical-decision-support-agent/services/AsyncAgentService"
+                    implementor="#async-agent-service">
+    </jaxws:endpoint>
 
-    <bean id="agent-service" class="org.drools.mas.SynchronousDroolsAgentServiceImpl">
+    <bean id="agent-service" class="org.drools.mas.SynchronousDroolsAgentServiceImpl" destroy-method="dispose">
         <property name="agent" ref="agent"/>
     </bean>
+    <bean id="async-agent-service" class="org.drools.mas.AsyncDroolsAgentServiceImpl" destroy-method="dispose">
+        <property name="agent" ref="agent"/>
+    </bean>
+
+    <bean id="agent-factory" class="org.drools.mas.core.DroolsAgentFactory" factory-method="getInstance"/>
+
+    <bean id="agent" class="org.drools.mas.core.DroolsAgent" factory-bean="agent-factory" factory-method="spawn">
+        <constructor-arg ref="agent1-configuration"/>
+    </bean>
+
 
     <bean id="agent-test-session" class="org.drools.mas.core.DroolsAgentConfiguration$SubSessionDescriptor">
         <constructor-arg value="sessionSurvey"/>
         <constructor-arg value="gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/survey_test.xml"/>
-        <constructor-arg value="local-agent1"/>
+        <constructor-arg value="${agent.node}"/>
     </bean>
 
+    <bean id="another-test-session" class="org.drools.mas.core.DroolsAgentConfiguration$SubSessionDescriptor">
+        <constructor-arg value="demoSession"/>
+        <constructor-arg value="gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/demo_test.xml"/>
+        <constructor-arg value="${agent.node}"/>
+    </bean>
 
     <bean id="agent1-configuration" class="org.drools.mas.core.DroolsAgentConfiguration">
         <property name="agentId" value="Clinical Agent 1"/>
@@ -32,19 +50,14 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
         <property name="defaultSubsessionChangeSet"  value="config/subsession_default.xml" />
 
-        <property name="mindNodeLocation" value="local-agent1"/>
-        <property name="port" value="7000"/>
+        <property name="mindNodeLocation" value="${agent.node}"/>
+        <property name="port" value="${agent.port}"/>
         <property name="subSessions">
             <list>
                 <ref local="agent-test-session"/>
+                <ref local="another-test-session"/>
             </list>
         </property>
-    </bean>
-
-    <bean id="agent-factory" class="org.drools.mas.core.DroolsAgentFactory" factory-method="getInstance"/>
-
-    <bean id="agent" class="org.drools.mas.core.DroolsAgent" factory-bean="agent-factory" factory-method="spawn">
-        <constructor-arg ref="agent1-configuration"/>
     </bean>
 
 </beans>

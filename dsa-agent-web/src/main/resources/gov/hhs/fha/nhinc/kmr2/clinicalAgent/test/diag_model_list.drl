@@ -1,0 +1,50 @@
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.models;
+
+import org.drools.builder.ResourceType;
+
+import org.drools.io.impl.*;
+import org.drools.grid.api.impl.ResourceDescriptorImpl;
+import java.util.*;
+import java.net.URL;
+
+
+rule "Init Descriptors Dx"
+salience 999
+when
+then
+    System.out.println("Insert reference to diagnostic model for late loading");
+    ResourceDescriptorImpl rd = new ResourceDescriptorImpl();
+            rd.setAuthor( "dsotty" );
+            rd.setCategories( new HashSet( Arrays.asList( "E", "Diagnostic" ) ) );
+            rd.setDescription( " Post Traumatic Stress Disorder " );
+            rd.setName( "MockDiag" );
+            rd.setDocumentation( new URL( "http://the-ptsd-doc-is-here.html" ) );
+            rd.setId( "MockDiag" );
+            rd.setStatus( "mock" );
+            rd.setVersion( "0.0" );
+            rd.setType( ResourceType.PMML );
+            rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd_diag.pmml" ).getURL() );
+            rd.setLoaded( false );
+//    insert( rd );
+end
+
+
+rule "Init Descriptors Dec"
+salience 999
+when
+then
+    System.out.println("Insert reference to decision model for late loading");
+    ResourceDescriptorImpl rd = new ResourceDescriptorImpl();
+            rd.setAuthor( "dsotty" );
+            rd.setCategories( new HashSet( Arrays.asList( "E", "Decision" ) ) );
+            rd.setDescription( " Post Traumatic Stress Disorder " );
+            rd.setName( "MockDecision" );
+            rd.setDocumentation( new URL( "http://the-ptsd-doc-is-here.html" ) );
+            rd.setId( "MockDecision" );
+            rd.setStatus( "mock" );
+            rd.setVersion( "0.0" );
+            rd.setType( ResourceType.DRL );
+            rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd_decision.drl" ).getURL() );
+            rd.setLoaded( false );
+    insert( rd );
+end

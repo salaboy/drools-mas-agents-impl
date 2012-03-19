@@ -37,11 +37,7 @@ import org.drools.informer.presentation.*;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
-import org.drools.base.DroolsQuery;
-
-
-
-
+import org.drools.mas.util.helper.*;
 
 
 rule "Action_Request : setSurvey"
@@ -73,14 +69,6 @@ end
 
 
 
-
-rule "Action_Request : retract"
-salience -1000
-when
-    $a : Action( actionName == "setSurvey" )
-then
-    retract( $a );
-end
 
 
 
@@ -130,7 +118,26 @@ end
 
 
 
-query setSurvey( String $userId, String $pid, String $surveyId, String $questionId, String $value, String $return )
-    $ret    :  ChangeGUIAdapter( itemId == $surveyId )
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML);
+query setSurvey( String $userId, String $pid, String $surveyId, String $questionId, String $value, ChangeGUIAdapter $return )
+    $return := ChangeGUIAdapter( itemId == $surveyId )
 end
+
+
+rule "Action_Request : final response"
+salience -1000
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "setSurvey", $msgId : msgId,
+                 $userId : this["userId"],
+                 $patientId : this["patientId"],
+                 $surveyId : this["surveyId"],
+                 $questionId : this["questionId"],
+                 $value : this["answer"]
+               )
+    ?setSurvey( $userId, $patientId, $surveyId, $questionId, $value, $return ; )
+then
+    retract( $a );
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
+end
+
+

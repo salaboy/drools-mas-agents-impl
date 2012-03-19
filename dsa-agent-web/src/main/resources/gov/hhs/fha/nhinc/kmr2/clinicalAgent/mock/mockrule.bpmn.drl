@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/bpmn20" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_FE17YGO4EeGjUvpykT7-XA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:process id="com.sample.bpmm2" drools:packageName="urn.gov.hhs.fha.nhinc.adapter.fact" name="Process 9" isExecutable="true">
+    <bpmn2:startEvent id="_0DF8EA99-2C44-4038-8F68-6C6CF48905DD" drools:bgcolor="#ffffff" name="">
+      <bpmn2:outgoing>_203996CD-ACCC-430C-850D-49D55AF91E51</bpmn2:outgoing>
+      <bpmn2:conditionalEventDefinition id="_FE17YWO4EeGjUvpykT7-XA">
+        <bpmn2:condition xsi:type="bpmn2:tFormalExpression" id="_FE17YmO4EeGjUvpykT7-XA" language="http://www.jboss.org/drools/rule">
+#-#%3Crule%3E
+#-#%20%20%3Cname%3ECondition%20Constraint%3C%2Fname%3E
+#-#%20%20%3CmodelVersion%3E1.0%3C%2FmodelVersion%3E
+#-#%20%20%3Cattributes%2F%3E
+#-#%20%20%3CmetadataList%2F%3E
+#-#%20%20%3Clhs%3E
+#-#%20%20%20%20%3Cfact%3E
+#-#%20%20%20%20%20%20%3CconstraintList%3E
+#-#%20%20%20%20%20%20%20%20%3Cconstraints%3E
+#-#%20%20%20%20%20%20%20%20%20%20%3CfieldConstraint%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3Cvalue%3E33793150512323%3C%2Fvalue%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3Coperator%3E%3D%3D%3C%2Foperator%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3CconstraintValueType%3E1%3C%2FconstraintValueType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3Cexpression%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cparts%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fexpression%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3CfieldName%3EVitalSign.oid%3C%2FfieldName%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3CfieldType%3ENumeric%3C%2FfieldType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3Cid%3EAcinetobacter%20Acid-base%20balance%3C%2Fid%3E
+#-#%20%20%20%20%20%20%20%20%20%20%3C%2FfieldConstraint%3E
+#-#%20%20%20%20%20%20%20%20%20%20%3Corg.drools.guvnor.client.modeldriven.brl.SingleFieldConstraintEBLeftSide%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3Cvalue%3EJones%3C%2Fvalue%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3Coperator%3E%3D%3D%3C%2Foperator%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3CconstraintValueType%3E1%3C%2FconstraintValueType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3Cexpression%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cparts%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fexpression%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3CfieldType%3EString%3C%2FfieldType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3CexpLeftSide%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cparts%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Corg.drools.guvnor.client.modeldriven.brl.ExpressionUnboundFact%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cnext%20class%3D%22field%22%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cprev%20class%3D%22org.drools.guvnor.client.modeldriven.brl.ExpressionUnboundFact%22%20reference%3D%22..%2F..%22%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cnext%20class%3D%22field%22%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cprev%20class%3D%22field%22%20reference%3D%22..%2F..%22%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cnext%20class%3D%22field%22%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cprev%20class%3D%22field%22%20reference%3D%22..%2F..%22%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cname%3EfamilyNameString%3C%2Fname%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CclassType%3Ejava.lang.String%3C%2FclassType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CgenericType%3EString%3C%2FgenericType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fnext%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cname%3EhasLegalNameName%3C%2Fname%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CclassType%3Eowl.test.fact.Name%3C%2FclassType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CgenericType%3EName%3C%2FgenericType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fnext%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cname%3EhasPatientPatient%3C%2Fname%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CclassType%3Eowl.test.fact.Patient%3C%2FclassType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CgenericType%3EPatient%3C%2FgenericType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fnext%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cname%3EVitalSign%3C%2Fname%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CclassType%3EVitalSign%3C%2FclassType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CgenericType%3EVitalSign%3C%2FgenericType%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cfact%20reference%3D%22..%2F..%2F..%2F..%2F..%2F..%2F..%22%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Forg.drools.guvnor.client.modeldriven.brl.ExpressionUnboundFact%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cfield%20reference%3D%22..%2Forg.drools.guvnor.client.modeldriven.brl.ExpressionUnboundFact%2Fnext%22%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cfield%20reference%3D%22..%2Forg.drools.guvnor.client.modeldriven.brl.ExpressionUnboundFact%2Fnext%2Fnext%22%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cfield%20reference%3D%22..%2Forg.drools.guvnor.client.modeldriven.brl.ExpressionUnboundFact%2Fnext%2Fnext%2Fnext%22%2F%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fparts%3E
+#-#%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FexpLeftSide%3E
+#-#%20%20%20%20%20%20%20%20%20%20%3C%2Forg.drools.guvnor.client.modeldriven.brl.SingleFieldConstraintEBLeftSide%3E
+#-#%20%20%20%20%20%20%20%20%3C%2Fconstraints%3E
+#-#%20%20%20%20%20%20%3C%2FconstraintList%3E
+#-#%20%20%20%20%20%20%3CfactType%3EVitalSign%3C%2FfactType%3E
+#-#%20%20%20%20%20%20%3CisNegated%3Efalse%3C%2FisNegated%3E
+#-#%20%20%20%20%3C%2Ffact%3E
+#-#%20%20%3C%2Flhs%3E
+#-#%20%20%3Crhs%2F%3E
+#-#%20%20%3CisNegated%3Efalse%3C%2FisNegated%3E
+#-#%3C%2Frule%3E
+#-#
+#-#
+
+VitalSign(  hasTypeReferenceConceptPointers[0].conceptCodeString == '386725007' , hasPatientPatient.hasLegalNameName.familyNameString == &quot;Jones&quot; )
+</bpmn2:condition>
+      </bpmn2:conditionalEventDefinition>
+    </bpmn2:startEvent>
+    <bpmn2:scriptTask id="_9170F01A-9DF1-4531-AC76-5919ACD1AC64" drools:taskName="Log" name="Log" scriptFormat="http://www.java.com/java">
+      <bpmn2:incoming>_203996CD-ACCC-430C-850D-49D55AF91E51</bpmn2:incoming>
+      <bpmn2:outgoing>_DE055DA7-B6E8-4C9A-B1DE-FE5DD0139460</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_FE17Y2O4EeGjUvpykT7-XA">
+        <bpmn2:dataInput id="_9170F01A-9DF1-4531-AC76-5919ACD1AC64_TaskNameInput" name="TaskName"/>
+        <bpmn2:inputSet id="_FE17ZGO4EeGjUvpykT7-XA"/>
+        <bpmn2:outputSet id="_FE2icGO4EeGjUvpykT7-XA"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_FE2icWO4EeGjUvpykT7-XA">
+        <bpmn2:targetRef>_9170F01A-9DF1-4531-AC76-5919ACD1AC64_TaskNameInput</bpmn2:targetRef>
+        <bpmn2:assignment id="_FE2icmO4EeGjUvpykT7-XA">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_FE2ic2O4EeGjUvpykT7-XA">Log</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_FE2idGO4EeGjUvpykT7-XA">_9170F01A-9DF1-4531-AC76-5919ACD1AC64_TaskNameInput</bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:script>System.out.println(&quot;Logging information!&quot;);</bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:sequenceFlow id="_203996CD-ACCC-430C-850D-49D55AF91E51" sourceRef="_0DF8EA99-2C44-4038-8F68-6C6CF48905DD" targetRef="_9170F01A-9DF1-4531-AC76-5919ACD1AC64"/>
+    <bpmn2:sequenceFlow id="_DE055DA7-B6E8-4C9A-B1DE-FE5DD0139460" sourceRef="_9170F01A-9DF1-4531-AC76-5919ACD1AC64" targetRef="_E4FBA318-10AD-4AEF-A11F-FBAC5AEC78D6"/>
+    <bpmn2:endEvent id="_E4FBA318-10AD-4AEF-A11F-FBAC5AEC78D6" drools:bgcolor="#ffffff" name="">
+      <bpmn2:incoming>_DE055DA7-B6E8-4C9A-B1DE-FE5DD0139460</bpmn2:incoming>
+      <bpmn2:terminateEventDefinition id="_FE2idWO4EeGjUvpykT7-XA"/>
+    </bpmn2:endEvent>
+    <bpmn2:textAnnotation id="_66295486-0669-4470-B5AF-F5DB9B3B4B60">
+      <bpmn2:text>KMRCustom--VitalSign--oid--33793150512323->Acinetobacter Acid-base balance</bpmn2:text>
+    </bpmn2:textAnnotation>
+    <bpmn2:association id="_B971F6B9-7DB5-47CF-91DF-95784784377A" drools:type="none" sourceRef="_66295486-0669-4470-B5AF-F5DB9B3B4B60" targetRef="_0DF8EA99-2C44-4038-8F68-6C6CF48905DD"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="_FE2idmO4EeGjUvpykT7-XA">
+    <bpmndi:BPMNPlane id="_FE2id2O4EeGjUvpykT7-XA" bpmnElement="com.sample.bpmm2">
+      <bpmndi:BPMNShape id="_FE2ieGO4EeGjUvpykT7-XA" bpmnElement="_0DF8EA99-2C44-4038-8F68-6C6CF48905DD">
+        <dc:Bounds height="30.0" width="30.0" x="387.0" y="174.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_FE2ieWO4EeGjUvpykT7-XA" bpmnElement="_9170F01A-9DF1-4531-AC76-5919ACD1AC64">
+        <dc:Bounds height="80.0" width="100.0" x="465.0" y="149.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_FE2iemO4EeGjUvpykT7-XA" bpmnElement="_203996CD-ACCC-430C-850D-49D55AF91E51">
+        <di:waypoint xsi:type="dc:Point" x="402.0" y="189.0"/>
+        <di:waypoint xsi:type="dc:Point" x="515.0" y="189.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_FE2ie2O4EeGjUvpykT7-XA" bpmnElement="_DE055DA7-B6E8-4C9A-B1DE-FE5DD0139460">
+        <di:waypoint xsi:type="dc:Point" x="515.0" y="189.0"/>
+        <di:waypoint xsi:type="dc:Point" x="624.0" y="189.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_FE2ifGO4EeGjUvpykT7-XA" bpmnElement="_E4FBA318-10AD-4AEF-A11F-FBAC5AEC78D6">
+        <dc:Bounds height="28.0" width="28.0" x="610.0" y="175.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_FE2ifWO4EeGjUvpykT7-XA" bpmnElement="_66295486-0669-4470-B5AF-F5DB9B3B4B60">
+        <dc:Bounds height="97.0" width="88.0" x="224.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_FE2ifmO4EeGjUvpykT7-XA" bpmnElement="_B971F6B9-7DB5-47CF-91DF-95784784377A">
+        <di:waypoint xsi:type="dc:Point" x="268.0" y="98.5"/>
+        <di:waypoint xsi:type="dc:Point" x="268.0" y="189.0"/>
+        <di:waypoint xsi:type="dc:Point" x="402.0" y="189.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

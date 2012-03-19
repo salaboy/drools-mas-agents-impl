@@ -36,6 +36,7 @@ import org.drools.pmml_4_0.ModelMarker;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
+import org.drools.grid.api.ResourceDescriptor;
 
 
 rule "Action_Request : setRiskThreshold"
@@ -49,10 +50,9 @@ when
                )
     $h : RiskThreshold( modelId == $modelId, type == $type, threshold != (Integer) $value  )
 then
-    retract( $a );
-    $h.setThreshold( (Integer) $value  );
-    update($h);
-    System.err.println(" Updateing " + $h );
+    modify ($h) {
+        setThreshold( (Integer) $value  );
+    }
 end
 
 rule "Action_Request : setRiskThreshold II"
@@ -67,7 +67,6 @@ when
     not  RiskThreshold( modelId == $modelId, type == $type )
 then
     insert( new RiskThreshold( (String) $modelId, (String) $type, (Integer) $value ) );
-    retract( $a );
 end
 
 
@@ -87,7 +86,7 @@ end
 rule "Clean Threshold"
 when
     $risk : RiskThreshold( $mid : modelId )
-    not InternalResource( name == $mid )
+    not     ResourceDescriptor( name == $mid )
 then
     retract( $risk );
 end
@@ -95,6 +94,27 @@ end
 
 
 
-query setRiskThreshold( String $userId, String $patientId, String $modelId, String $type, Integer $threshold, int $return )
+query setRiskThreshold( String $userId, String $patientId, String $modelId, String $type, Integer $threshold, Integer $return )
     RiskThreshold( $modelId, $type, $return ; )
 end
+
+
+
+rule "Action_Request : setRiskThreshold Cleanup"
+salience -100
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "setRiskThreshold", $msgId : msgId,
+                     $userId    : this["userId"],
+                     $patientId : this["patientId"],
+                     $modelId   : this["modelId"],
+                     $type      : this["type"],
+                     $value     : this["threshold"]
+                   )
+    ?setRiskThreshold( $userId, $patientId, $modelId, $type, $threshold, $return ; )
+then
+    retract($a);
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
+end
+
+

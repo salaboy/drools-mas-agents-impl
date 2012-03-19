@@ -1,4 +1,4 @@
-/*
+/**
  * TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
  * Copyright (c) 2008, Nationwide Health Information Network (NHIN) Connect.
  * All rights reserved.Redistribution and use in source and binary forms,
@@ -39,7 +39,7 @@ import org.drools.informer.presentation.*;
 
 import org.drools.interaction.*;
 
-import org.drools.io.internal.InternalResource;
+import org.drools.grid.api.ResourceDescriptor;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -50,12 +50,11 @@ import org.drools.pmml_4_0.PMML4Wrapper;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
 import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.risk.*;
 
-import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
 import org.drools.mas.core.SessionManager;
-import org.drools.mas.util.helper.SessionLocator;
 
+import org.drools.mas.util.helper.*;
 
 
 rule "Action_Request : getRiskModelsDetail"
@@ -80,12 +79,14 @@ when
                   $patientId : this["patientId"],
                   $modelIds  : this["modelIds"]
                 )
-    $g : GetRiskModelsDetail( )
+    $g : GetRiskModelsDetail( $mids : modelIds )
+    exists String( this not memberOf $mids ) from ( (String[]) $modelIds )
 then
-    $g.setModelIds( java.util.Arrays.asList( (String[]) $modelIds ) );
-    $g.setRiskModels( new ArrayList() );
-    $g.setSuccessStatus( true );
-    update( $g );
+    modify ( $g ) {
+        setModelIds( java.util.Arrays.asList( (String[]) $modelIds ) ),
+        setRiskModels( new ArrayList() );
+    }
+    System.out.println(" UPDATED GRMD " + $g );
 end
 
 
@@ -99,31 +100,46 @@ when
                 )
     $id : String() from $modelIds
     not   ModelMarker( modelName == $id )
-    $rs : InternalResource( name == $id )
-    SessionLocator($nodeId: nodeId, $sessionId: sessionId)
+    $rs : ResourceDescriptor( name == $id )
+    SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == false )
 then
     String defPack = PMML4Wrapper.getPack();
     PMML4Wrapper.setPack( "org.drools.pmml_4_0.risk."+$id );
-    
-    SessionManager.addResource($nodeId, $sessionId,  $id, $rs );
 
-    PMML4Wrapper.setPack( defPack );
+    SessionManager.addResource( $nodeId, $sessionId, $rs );
+    System.out.println("DONE WITH THE LOAD OF A MODEL " + $id + " @ " + new java.util.Date().getTime() );
+
+//    PMML4Wrapper.setPack( defPack );
 end
 
+
+rule "ModelMarking"
+when
+    $mm   : ModelMarker( $id : modelName )
+then
+    System.out.println( "MODEL MARKER DETECTED " + $mm );
+end
 
 rule "Action_Request : getRiskModelsDetail - model info"
 when
     $mm   : ModelMarker( $id : modelName )
-    $res  : InternalResource( name == $id, $descr : description )
+    $res  : ResourceDescriptor( name == $id, $descr : description )
     $grmd : GetRiskModelsDetail( $details : riskModels, modelIds contains $id )
     not     RiskModelDetail( modelId == $id )
 then
+
     RiskModelDetail rmd = new RiskModelDetail();
         rmd.setModelId( $id );
         rmd.setTitle( $descr );
         rmd.setDisease( $descr );
-    $grmd.getRiskModels().add( rmd );
+
+    System.out.println(" CREATE RMD AN ADD" + rmd );
+
     insert( rmd );
+    modify ( $grmd ) {
+        getRiskModels().add( rmd );
+    }
+
 end
 
 
@@ -131,23 +147,19 @@ end
 rule "Action_Request : getRiskModelsDetail - model info refresh"
 when
     $mm   : ModelMarker( $id : modelName )
-    $res  : InternalResource( name == $id, $descr : description )
+    $res  : ResourceDescriptor( name == $id, $descr : description )
     $grmd : GetRiskModelsDetail( $details : riskModels, modelIds contains $id )
     $rmd  : RiskModelDetail( modelId == $id, this not memberOf $details )
 then
-    $grmd.getRiskModels().add( $rmd );
-    update( $rmd );
+    modify ( $grmd ) {
+        getRiskModels().add( $rmd );
+    }
+    System.out.println(" ADDING TO GRMD " + $rmd );
 end
 
 
 
-rule "Action_Request : getRiskModelsDetail - clear"
-salience -9999
-when
-    $a :  Action( actionName == "getRiskModelsDetail" )
-then
-    retract( $a );
-end
+
 
 
 
@@ -165,7 +177,6 @@ when
     $rsk : RiskValue( context == $mid, $val : value )
 then
     System.out.println(" UPDATING RISK VALUE " + $rsk + " on  " + $rmd );
-
     $rmd.setRelativeRisk( (int) Math.round( $val * 100 ) ) ;
 end
 
@@ -278,10 +289,28 @@ end
 
 
 
-query getRiskModelsDetail( String $userId, String $patientId, String[] $modelIds, String $return )
-    $ret    :  GetRiskModelsDetail( )
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
+
+
+query getRiskModelsDetail( String $userId, String $patientId, String[] $modelIds, GetRiskModelsDetail $return )
+    $return    :=  GetRiskModelsDetail( modelIds != null, modelIds.size() == riskModels.size() )
 end
+
+
+rule "Action_Request : getRiskModelsDetail - clear"
+salience -9999
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "getRiskModelsDetail", $msgId : msgId,
+                      $userId    : this["userId"],
+                      $patientId : this["patientId"],
+                      $modelIds  : this["modelIds"]
+                )
+    getRiskModelsDetail( $userId, $patientId, $modelIds, $return ; )
+then
+    retract( $a );
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
+end
+
 
 
 

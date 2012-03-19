@@ -1,0 +1,30 @@
+package org.demo.test
+
+import urn.gov.hhs.fha.nhinc.adapter.fact.ReferenceAdapter;
+import java.util.Collection;
+import java.util.Iterator;
+import org.drools.spi.KnowledgeHelper;
+
+function void insertAll( Collection coll, KnowledgeHelper drools ) {
+    Iterator iter = coll.iterator();
+    while ( iter.hasNext() ) {
+        Object x = iter.next();
+        drools.insert( x );
+    }
+}
+
+rule "Load data from test xml"
+when
+
+then
+    Collection coll = ReferenceAdapter.fromXMLResource( "file:/home/davide/Projects/KMR2/workspace/DAS/drools-mas-agents-impl/dsa-agent-web/src/main/resources/gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/test_data.xml" );
+    insertAll( coll, drools );
+end
+
+
+rule "Log"
+when
+    $o : Object()
+then
+    System.err.println( "\t >>>> " + $o );
+end

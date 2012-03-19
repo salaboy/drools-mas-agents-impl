@@ -43,8 +43,11 @@
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/declares/dxGuide_declares.drl" />
 
 
-        <resource type="CHANGE_SET" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/risk_model_list.xml" />
-        <resource type="CHANGE_SET" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/diag_model_list.xml" />
+        <!--resource type="CHANGE_SET" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/risk_model_list.xml" />
+        <resource type="CHANGE_SET" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/diag_model_list.xml" /-->
+
+        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/risk_model_list.drl" />
+        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/diag_model_list.drl" />
 
 
         <resource type="CHANGE_SET" source="classpath:config/services_changeset.xml" />
@@ -55,8 +58,8 @@
 
 
         <!--  TODO: fix? issue in KnowledgeAgent to load this dynamically -->
-        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd_decision.drl"
-                  name="MockDecision" description="Post Traumatic Stress Disorder" />
+        <!-- resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd_decision.drl"
+                  name="MockDecision" description="Post Traumatic Stress Disorder" /-->
 
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/default/usecase_1.drl" />
 

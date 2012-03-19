@@ -55,7 +55,13 @@ global ACLMessageFactory aclFactory;
 rule "TestMin"
 when
 then
-    insert( new SessionMapping("99990070","sessionSurvey") );
+    insert( new SessionMapping( "99990070","sessionSurvey" ) );
+end
+
+rule "TestAnother"
+when
+then
+    insert( new SessionMapping( "123456","demoSession" ) );
 end
 
 
@@ -64,10 +70,11 @@ salience -1
 when
     $msg : ACLMessage( $msgId : id, $b : body, encoding == Encodings.JSON /* , $patientId : this.inspect("$..name[0]") */ )
     $patientId : String( this != null ) from InspectMessageHelper.inspect( $msg, "$..patientId[0]" )
-    mapSession( $patientId , $sessionId ; )
+//    mapSession( $patientId , $sessionId ; )
 then
-    System.err.println("Routing message " + $msgId + " to session " + $sessionId );
-    insert( new Destination($msgId, $sessionId) );
+//    System.err.println( "Routing message " + $msgId + " to session " + $sessionId );
+//    insertLogical( new Destination($msgId, $sessionId) );
+    insert( new MappingLookup( $msgId, $patientId ) );
 end
 
 rule "Route_Encoded_X"
@@ -75,10 +82,11 @@ salience -1
 when
     $msg : ACLMessage( $msgId : id, $b : body, encoding == Encodings.XML /* , $patientId : this.inspect("$..name[0]") */ )
     $patientId : String( this != null && this != "" ) from InspectMessageHelper.inspect( $msg, "//patientId" )
-    mapSession( $patientId , $sessionId ; )
+//    mapSession( $patientId , $sessionId ; )
 then
-    System.err.println("Routing message " + $msgId + " to session " + $sessionId );
-    insert( new Destination($msgId, $sessionId) );
+//    System.err.println( "Routing message " + $msgId + " to session " + $sessionId );
+//    insertLogical( new Destination($msgId, $sessionId) );
+    insert( new MappingLookup( $msgId, $patientId ) );
 end
 
 
@@ -87,10 +95,11 @@ salience -1
 when
     $msg : ACLMessage( $msgId : id, $b : body, encoding == Encodings.XML /* , $patientId : this.inspect("$..name[0]") */ )
     $patientId : String( this != null && this != "" ) from InspectMessageHelper.inspect( $msg, "//key[. = 'patientId']/../value" )
-    mapSession( $patientId , $sessionId ; )
+//    mapSession( $patientId , $sessionId ; )
 then
-    System.err.println("Routing message " + $msgId + " to session " + $sessionId );
-    insert( new Destination($msgId, $sessionId) );
+//    System.err.println( "Routing message " + $msgId + " to session " + $sessionId );
+//    insertLogical( new Destination($msgId, $sessionId) );
+    insert( new MappingLookup( $msgId, $patientId ) );
 end
 
 

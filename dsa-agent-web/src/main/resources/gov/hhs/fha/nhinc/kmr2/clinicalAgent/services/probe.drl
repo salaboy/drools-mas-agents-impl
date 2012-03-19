@@ -27,7 +27,7 @@
  *    END OF TERMS AND CONDITIONS
  */
 
- package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
 import org.drools.mas.body.content.Action;
 import java.util.List;
@@ -36,25 +36,28 @@ import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.action.helpers.*;
 import org.drools.mas.Encodings;
 
-
-rule "Action_Request : probe"
-when
-    $a : Action( actionName == "probe",
-                 $patientId : this["patientId"]
-               )
-then
-    retract( $a );
-end
+import org.drools.mas.util.helper.*;
 
 
 
-
-query probe( String $patientId, String $return )
-    $ret : List( ) from accumulate (
+query probe( String $patientId, List $return )
+    $return := List( ) from accumulate (
         $o : Object(),
         init( ArrayList l = new ArrayList(); ),
         action( l.add(" >> " + $o.toString() + " \n" ); ),
         result( l )
     )
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML);
 end
+
+
+rule "Action_Request : probe --- "
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "probe", $msgId : msgId,
+                 $patientId : this["patientId"] )
+    ?probe( $patientId, $return ; )
+then
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
+    retract($a);
+end
+

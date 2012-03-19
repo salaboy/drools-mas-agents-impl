@@ -35,6 +35,9 @@ import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
 
+import org.drools.mas.util.helper.*;
+
+
 rule "Action_Request : completeDiagnosticGuideProcess - Complete"
 when
     $a  : Action( actionName == "completeDiagnosticGuideProcess",
@@ -45,9 +48,9 @@ when
                 )
     $dx : DiagnosticGuideProcess( id == $dxProcessId, status == "Started", $steps : diagnosticProcessHistory )
 then
-    $dx.setStatus( "Complete" );
-    update($dx);
-    retract( $a );
+    modify ($dx) {
+        setStatus( "Complete" );
+    }
 end
 
 rule "Action_Request : completeDiagnosticGuideProcess - Cancel"
@@ -61,14 +64,29 @@ when
     $dx : DiagnosticGuideProcess( id == $dxProcessId, status == "Started", canCancel == true )
 then
     retract( $dx );
-    retract( $a );
 end
 
 
 
 
 
-query completeDiagnosticGuideProcess( String $userId, String $patientId, String $dxProcessId, String $status, String $return )
-    $ret    :  DiagnosticGuideProcess()
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
+query completeDiagnosticGuideProcess( String $userId, String $patientId, String $dxProcessId, String $status, DiagnosticGuideProcess $return )
+    $return := DiagnosticGuideProcess()
+end
+
+
+rule "Action_Request : completeDiagnosticGuideProcess - Result"
+salience -100
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a  : Action( actionName == "completeDiagnosticGuideProcess", $msgId : msgId,
+                  $userId      : this["userId"],
+                  $patientId   : this["patientId "],
+                  $dxProcessId : this["dxProcessId"],
+                  $status      : this["status"] == "Complete"
+                )
+    ?completeDiagnosticGuideProcess( $userId, $patientId, $dxProcessId, $status, $return ; )
+then
+    retract( $a );
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end

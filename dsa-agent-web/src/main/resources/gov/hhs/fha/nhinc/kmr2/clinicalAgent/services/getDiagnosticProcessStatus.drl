@@ -35,20 +35,9 @@ import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.*;
 import org.drools.mas.util.MessageContentEncoder;
 import org.drools.mas.Encodings;
 
+import org.drools.mas.util.helper.*;
 
 
-rule "Action_Request : getDiagnosticProcessStatus"
-when
-    $a : Action( actionName == "getDiagnosticProcessStatus",
-                 $userId      : this["userId"],
-                 $patientId   : this["patientId"],
-                 $processId   : this["dxProcessId"],
-                 $refresh     : this["forceRefresh"]
-                )
-then
-    System.out.println(" GET STATUS for " + $processId );
-    retract( $a );
-end
 
 
 rule "Update State on complete"
@@ -56,10 +45,12 @@ salience 10
 when
     $a  : Action( actionName == "getDiagnosticProcessStatus",
                   $dxProcessId   : this["dxProcessId"] )
-    $dx : DiagnosticGuideProcess( id == $dxProcessId, status == "Complete" || == "Cancel" )
+    $dx : DiagnosticGuideProcess( id == $dxProcessId, status == "Complete" || == "Cancel", canAdvance == true )
 then
     System.out.println("Process complete/cancelled, no advance");
-    $dx.setCanAdvance( false );
+    modify ($dx) {
+        setCanAdvance( false );
+    }
 end
 
 
@@ -68,12 +59,14 @@ salience 10
 when
     $a  : Action( actionName == "getDiagnosticProcessStatus",
                   $dxProcessId   : this["dxProcessId"] )
-    $dx : DiagnosticGuideProcess( id == $dxProcessId, status != "Complete" && != "Cancel", $steps : diagnosticProcessHistory )
+    $dx : DiagnosticGuideProcess( id == $dxProcessId, status != "Complete" && != "Cancel", $steps : diagnosticProcessHistory, canAdvance == false )
           DxDecision( current == true, this memberOf $steps, $acts : actions )
           not DxAction( this memberOf $acts, status == "Started" || == "Committed" )
 then
     System.out.println("Here we advance");
-    $dx.setCanAdvance( true );
+    modify ($dx) {
+        setCanAdvance( true );
+    }
 end
 
 rule "Update State by action II"
@@ -81,18 +74,36 @@ salience 10
 when
     $a  : Action( actionName == "getDiagnosticProcessStatus",
                   $dxProcessId   : this["dxProcessId"] )
-    $dx : DiagnosticGuideProcess( id == $dxProcessId, status != "Complete" && != "Cancel", $steps : diagnosticProcessHistory )
+    $dx : DiagnosticGuideProcess( id == $dxProcessId, status != "Complete" && != "Cancel", $steps : diagnosticProcessHistory, canAdvance == true )
           DxDecision( current == true, this memberOf $steps, $acts : actions )
           exists( DxAction( this memberOf $acts, status == "Started" || == "Committed" ) )
 then
     System.out.println("Pending action, no advance");
-    $dx.setCanAdvance( false );
+    modify ($dx) {
+        setCanAdvance( false );
+    }
 end
 
 
 
 
-query getDiagnosticProcessStatus( String $userId, String $patientId, String $dxProcessId, boolean $refresh, String $return )
-    $ret    :  DiagnosticGuideProcess( id == $dxProcessId )
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
+query getDiagnosticProcessStatus( String $userId, String $patientId, String $dxProcessId, boolean $refresh, DiagnosticGuideProcess $return )
+    $return := DiagnosticGuideProcess( id == $dxProcessId )
+end
+
+
+rule "Action_Request : getDiagnosticProcessStatus"
+salience -100
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "getDiagnosticProcessStatus", $msgId : msgId,
+                 $userId      : this["userId"],
+                 $patientId   : this["patientId"],
+                 $processId   : this["dxProcessId"],
+                 $refresh     : this["forceRefresh"]
+                )
+    ?getDiagnosticProcessStatus( $userId, $patientId, $dxProcessId, $refresh, $return ; )
+then
+    retract( $a );
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end

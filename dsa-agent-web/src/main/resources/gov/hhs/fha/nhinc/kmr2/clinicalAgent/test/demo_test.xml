@@ -27,11 +27,15 @@
   ~    END OF TERMS AND CONDITIONS
   -->
 
-<change-set xmlns='http://drools.org/drools-5.0/change-set' xmlns:xs='http://www.w3.org/2001/XMLSchema-instance'
-  xs:schemaLocation='http://drools.org/drools-5.0/change-set http://anonsvn.jboss.org/repos/labs/labs/jbossrules/trunk/drools-api/src/main/resources/change-set-1.0.0.xsd'>
-	<add>
-            <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd.ref" name="MockPTSD" description="Post Traumatic Stress Disorder" categories="E,Risk" />
-            <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_cold.ref" name="MockCold" description="Uncommon Cold" categories="E,Risk" />
-            <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_diab.ref" name="MockDiabetes" description="Sweet And Sour Diabetes" categories="Risk" />
+<change-set xmlns='http://drools.org/drools-5.0/change-set' xmlns:xs='http://www.w3.org/2001/XMLSchema-instance'>
+    <!-- Contents for the test data-driven rule subsession -->
+
+    <add>
+
+        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/probe.drl" />
+        <resource type="BPMN2" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mockrule.bpmn.drl" />
+
+        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/testLoader.drl" />
+
 	</add>
 </change-set>

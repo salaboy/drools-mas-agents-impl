@@ -40,7 +40,7 @@ import org.drools.informer.generator.annotations.AllowedAnswers;
 declare DiagnosticGuideProcess
    id                       : String                @key
    status                   : String                        = "n/a"
-   message                  : String
+//   message                  : String
    decModel                 : String
    diagModel                : String
    disease                  : String
@@ -48,7 +48,7 @@ declare DiagnosticGuideProcess
    canAdvance               : boolean                       = false
    canCancel                : boolean                       = false
    actions                  : java.util.HashSet
-   successStatus            : boolean                       = true
+//   successStatus            : boolean                       = true
 end
 
 

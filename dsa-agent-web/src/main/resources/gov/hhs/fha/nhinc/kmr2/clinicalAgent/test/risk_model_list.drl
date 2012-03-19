@@ -1,0 +1,71 @@
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.models;
+
+import org.drools.builder.ResourceType;
+import org.drools.io.impl.*;
+import org.drools.grid.api.impl.ResourceDescriptorImpl;
+import java.util.*;
+import java.net.URL;
+
+
+
+rule "Init Cold Descriptors"
+salience 999
+when
+then
+    System.out.println("Insert reference to cold risk model for late loading");
+    ResourceDescriptorImpl rd = new ResourceDescriptorImpl();
+            rd.setAuthor( "dsotty" );
+            rd.setCategories( new HashSet( Arrays.asList( "E", "Risk" ) ) );
+            rd.setDescription( "Uncommon Cold" );
+            rd.setName( "MockCold" );
+            rd.setDocumentation( new URL( "http://the-cold-doc-is-here.html" ) );
+            rd.setId( "MockCold" );
+            rd.setStatus( "mock" );
+            rd.setVersion( "0.0" );
+            rd.setType( ResourceType.PMML );
+            rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_cold.pmml" ).getURL() );
+            rd.setLoaded( false );
+//    insert( rd );
+end
+
+rule "Init Diabetes Descriptors"
+salience 999
+when
+then
+    System.out.println("Insert reference to diabetes risk model for late loading");
+    ResourceDescriptorImpl rd = new ResourceDescriptorImpl();
+            rd.setAuthor( "dsotty" );
+            rd.setCategories( new HashSet( Arrays.asList( "Risk" ) ) );
+            rd.setDescription( " Particularly Nasty Triabetes " );
+            rd.setName( "MockDiabetes" );
+            rd.setDocumentation( new URL( "http://the-diab-doc-is-here.html" ) );
+            rd.setId( "MockDiabetes" );
+            rd.setStatus( "mock" );
+            rd.setVersion( "0.0" );
+            rd.setType( ResourceType.PMML );
+            rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_diab.pmml" ).getURL() );
+            rd.setLoaded( false );
+//    insert( rd );
+end
+
+rule "Init PTSD Descriptors"
+salience 999
+when
+then
+    System.out.println("Insert reference to PTSD risk model for late loading");
+    ResourceDescriptorImpl rd = new ResourceDescriptorImpl();
+            rd.setAuthor( "dsotty" );
+            rd.setCategories( new HashSet( Arrays.asList( "E", "Risk" ) ) );
+            rd.setDescription( " Post-Traumatic Stress Disorder " );
+            rd.setName( "MockPTSD" );
+            rd.setDocumentation( new URL( "http://the-ptsd-doc-is-here.html" ) );
+            rd.setId( "MockPTSD" );
+            rd.setStatus( "mock" );
+            rd.setVersion( "0.0" );
+            rd.setType( ResourceType.PMML );
+            rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd.pmml" ).getURL() );
+            rd.setLoaded( false );
+    insert( rd );
+    System.out.println("Done Insert reference ");
+end
+

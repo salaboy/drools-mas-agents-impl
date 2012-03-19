@@ -116,8 +116,8 @@ end
 declare SetDxActionReturn
     actionId          : String          @key
     actionStatus      : String
-    successStatus     : boolean         = true
-    statusMessage     : String          = "(ok)"
+//    successStatus     : boolean         = true
+//    statusMessage     : String          = "(ok)"
 end
 
 
@@ -128,7 +128,9 @@ when
               )
        not SetDxActionReturn( $actionId ; )
 then
-    insert( new SetDxActionReturn( (String) $actionId, null, false, "Result initialized but not set") );
+    //TODO : CAUSE ERROR!
+    // false, "Result initialized but not set"
+    insert( new SetDxActionReturn( (String) $actionId, null ) );
 end
 
 
@@ -143,8 +145,8 @@ when
  $r  : SetDxActionReturn( $actionId ; )
 then
     $r.setActionStatus( $status );
-    $r.setSuccessStatus( true );
-    $r.setStatusMessage( "(ok)" );
+//    $r.setSuccessStatus( true );
+//    $r.setStatusMessage( "(ok)" );
     update ( $r );
 end
 

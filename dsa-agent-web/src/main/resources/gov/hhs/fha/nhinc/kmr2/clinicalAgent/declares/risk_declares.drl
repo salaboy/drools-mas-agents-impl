@@ -36,8 +36,6 @@ declare GetRiskModelsDetail
 //    patientId           : String
     modelIds            : List
     riskModels          : List
-    successStatus       : boolean       = false
-    statusMessage       : String        = "(ok)"
 end
 
 declare RiskModelDetail

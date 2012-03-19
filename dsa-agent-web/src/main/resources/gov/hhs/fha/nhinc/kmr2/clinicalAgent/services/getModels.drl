@@ -27,9 +27,9 @@
  *    END OF TERMS AND CONDITIONS
  */
 
- package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.services;
 
-import org.drools.io.internal.InternalResource;
+import org.drools.grid.api.ResourceDescriptor;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -39,6 +39,7 @@ import org.drools.mas.Encodings;
 
 import org.drools.pmml_4_0.ModelMarker;
 
+import org.drools.mas.util.helper.*;
 
 
 
@@ -87,54 +88,80 @@ end
 
 
 
-rule "Action_Request : getModels Clear"
-when
-    $a :  Action( actionName == "getModels" || == "getRiskModels" )
-then
-    retract( $a );
-end
 
 
 
 rule "Combine with threshold"
 when
-    InternalResource( $id : name, $type : description, $tags : categories  )
+    ResourceDescriptor( $id : name, $type : description, $tags : categories  )
     RiskThreshold( modelId == $id, type == "Display", $thold : threshold )
 then
+    System.out.println(" Combine with th");
     insertLogical( new ModelElement( $id, new ArrayList($tags), $type, $type, $thold ) );
 end
 
 rule "Default threshold"
 when
-    InternalResource( $id : name, $type : description, $tags : categories )
+    ResourceDescriptor( $id : name, $type : description, $tags : categories )
     not RiskThreshold( modelId == $id, type == "Display" )
     ?defaultRiskThreshold( $def ; )
 then
+    System.out.println(" Set default th");
     insertLogical( new ModelElement( $id, new ArrayList($tags), $type, $type, $def ) );
 end
 
 
 rule "Listing"
+no-loop
 when
     $ml : ModelList( $queryTags : tags )
     $list : List( $num : size ) from accumulate (
         $m : ModelElement( tags.containsAll($queryTags) )
         collectList( $m )
     )
-
 then
-    $ml.setModels( new ArrayList( $list ) );
+    System.out.println( "UPDATING MODEL LIST TO " + $list );
+    modify ( $ml ) {
+        setModels( new ArrayList( $list ) );
+    }
 end
 
 
-query getModels( String $userId, String $patientId, List $types, String $return )
-    $ret    :  ModelList( patientId == $patientId, tags == $types )
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
+query getModels( String $userId, String $patientId, List $types, ModelList $return )
+    $return :=  ModelList( patientId == $patientId, tags == $types )
 end
 
-query getRiskModels( String $userId, String $patientId, String $return )
-    $ret    :  ModelList( patientId == $patientId, tags.size() == 1, tags contains "Risk" )
-    $return := String() from MessageContentEncoder.encode($ret, Encodings.XML)
+query getRiskModels( String $userId, String $patientId, ModelList $return )
+    $return :=  ModelList( patientId == $patientId, tags.size() == 1, tags contains "Risk" )
 end
 
 
+
+rule "Action_Request : getModels Clear"
+salience -100
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "getModels", $msgId : msgId,
+                      $userId    : this["userId"],
+                      $types     : this["types"],
+                      $patientId : this["patientId"]
+                    )
+    getModels( $userId, $patientId, $types, $return ; )
+then
+    retract( $a );
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
+end
+
+rule "Action_Request : getRiskModels Clear"
+salience -100
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "getRiskModels", $msgId : msgId,
+                      $userId    : this["userId"],
+                      $patientId : this["patientId"]
+                    )
+    getRiskModels( $userId, $patientId, $return ; )
+then
+    retract( $a );
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
+end
