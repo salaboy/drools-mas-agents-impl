@@ -54,7 +54,7 @@ public class KnowledgeResourcesCompilationTest {
 
     @After
     public void tearDown() throws InterruptedException {
-        
+
         logger.info("Stopping DB ...");
         server.stop();
         logger.info("DB Stopped!");
@@ -66,23 +66,38 @@ public class KnowledgeResourcesCompilationTest {
      */
     @Test
     public void compilationTest() {
-        
+
         ApplicationContext context = new ClassPathXmlApplicationContext("test-applicationContext.xml");
         DroolsAgent agent = (DroolsAgent) context.getBean("agent");
-        
+
         assertNotNull(agent);
-        
+
         agent.dispose();
-        
+
     }
     
-     @Test
+    
+    private void waitForResponse( DroolsAgent agent, String id ) {
+        do {
+            try {
+                Thread.sleep( 1000 );
+                System.out.println( "Waiting for messages, now : " + agent.getAgentAnswers( id ).size() );
+            } catch (InterruptedException e) {
+                fail( e.getMessage() );
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        } while ( agent.getAgentAnswers( id ).size() < 2 );
+
+    }
+
+
+    @Test
     public void testSimpleRequestToDeliverMessage() throws InterruptedException {
-        
+
         ApplicationContext context = new ClassPathXmlApplicationContext("test-applicationContext.xml");
         DroolsAgent agent = (DroolsAgent) context.getBean("agent");
         assertNotNull(agent);
-        
+
         LinkedHashMap<String, Object> args = new LinkedHashMap<String, Object>();
         args.put("refId", "284d7e8d-6853-46cb-bef2-3c71e565f90d");
         args.put("conversationId", "502ed27e-682d-43b3-ac2a-8bba3b597d13");
@@ -107,16 +122,18 @@ public class KnowledgeResourcesCompilationTest {
         args.put("status", "New");
 
 
-        
+
         ACLMessageFactory factory = new ACLMessageFactory(Encodings.XML);
 
         Action action = MessageContentFactory.newActionContent("deliverMessage", args);
         ACLMessage req = factory.newRequestMessage("", "", action);
 
-        
+
         agent.tell(req);
-        
-        Thread.sleep(3000);
+
+        waitForResponse( agent, req.getId() );
+
+
         assertEquals(2, agent.getAgentAnswers(req.getId()).size());
         Object result = agent.getAgentAnswers(req.getId());
         assertNotNull(result);
@@ -124,10 +141,11 @@ public class KnowledgeResourcesCompilationTest {
         assertEquals(true, result.toString().contains("conversationId"));
         agent.dispose();
     }
-     @Test
+
+    @Test
     public void encoderTest(){
         MockFact fact = new MockFact("salaboy", Integer.SIZE);
         System.out.println(" result = "+MessageContentEncoder.encode(fact, Encodings.XML));
-        
-    } 
+
+    }
 }

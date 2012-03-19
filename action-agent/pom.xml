@@ -43,10 +43,7 @@
         </profile>
         <profile>
             <id>prod</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties> 
+            <properties>
                 <db.driverClass>com.mysql.jdbc.Driver</db.driverClass> 
                 <db.connectionURL>jdbc:mysql://localhost:3306/drools-grid</db.connectionURL> 
                 <db.username>root</db.username> 
@@ -158,7 +155,6 @@
                 <version>2.2</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    
                 </configuration>
                 
             </plugin>

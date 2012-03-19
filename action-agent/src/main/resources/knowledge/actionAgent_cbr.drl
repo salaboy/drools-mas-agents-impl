@@ -33,20 +33,18 @@ end
 rule "Route_Encoded_JSON"
 when
     $msg : ACLMessage( $msgId : id, $b : body, encoding == Encodings.JSON  )
-    ?mapSession( "action-selection-primary" , $sessionId ; )
 then
     System.out.println("Routing message " + $msgId + " (JSON)" );
-    insertLogical( new Destination($msgId, $sessionId) );
+    insert( new MappingLookup( $msgId, "action-selection-primary" ) );
 end
 
 rule "Route_Encoded_XML"
 
 when
     $msg : ACLMessage( $msgId : id, $b : body, encoding == Encodings.XML )
-    ?mapSession( "action-selection-primary" , $sessionId ; )
 then
     System.out.println("Routing message " + $msgId + " (XML)"  );
-    insertLogical( new Destination($msgId, $sessionId) );
+    insert( new MappingLookup( $msgId, "action-selection-primary" ) );
 end
 
 
