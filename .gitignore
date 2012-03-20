@@ -16,3 +16,5 @@
 /clinical-agent/target/
 /lackey-agent/target/
 /lackey-agent-client/target/
+/dsa-fact-model/target/
+target/

@@ -21,6 +21,7 @@
 package org.drools.mas;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import org.drools.mas.mock.MockFact;
 import org.drools.mas.helpers.DialogueHelper;
 import org.junit.After;
@@ -35,7 +36,7 @@ import static org.junit.Assert.*;
  * @author salaboy
  */
 public class SynchronousDroolsAgentServiceServiceTest {
-    private final String endpoint = "http://localhost:8080/action-agent/services/AsyncAgentService?WSDL";
+    private final String endpoint = "http://localhost:8081/action-agent/services/AsyncAgentService?WSDL";
     public SynchronousDroolsAgentServiceServiceTest() {
     }
 
@@ -112,18 +113,16 @@ public class SynchronousDroolsAgentServiceServiceTest {
         args.put("priority", "Critical");
         args.put("deliveryDate", "Tue Oct 11 23:46:36 CEST 2011");
         args.put("status", "New");
-
-
-        agentHelper.invokeRequest("deliverMessage", args);
+        String invokeRequestId = agentHelper.invokeRequest("deliverMessage", args);
         
         Thread.sleep(4000);
+      
+        List<ACLMessage> agentAnswers = agentHelper.getAgentAnswers(invokeRequestId);
+        assertEquals(2, agentAnswers.size());
+        assertEquals(Act.AGREE, agentAnswers.get(0).getPerformative());
+        assertEquals(Act.INFORM, agentAnswers.get(1).getPerformative());
         
-        Object result = agentHelper.getReturn(false);
-        assertNotNull(result);
-
-        System.out.println("Results = "+result);
-
-        assertEquals(true, result.toString().contains("refId"));
-        assertEquals(true, result.toString().contains("convoId"));
+        //        assertEquals(true, result.toString().contains("refId"));
+        //        assertEquals(true, result.toString().contains("convoId"));
     }
 }

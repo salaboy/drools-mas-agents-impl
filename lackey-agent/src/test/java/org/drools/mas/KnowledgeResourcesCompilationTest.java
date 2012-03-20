@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.drools.builder.ResourceType;
 
 /**
  *
@@ -97,7 +98,7 @@ public class KnowledgeResourcesCompilationTest {
         resourceDescriptorImpl.setStatus("draft");
         resourceDescriptorImpl.setVersion("1");
         resourceDescriptorImpl.setCreationTime(new Date());
-        resourceDescriptorImpl.setType("DRL");
+        resourceDescriptorImpl.setType(ResourceType.DRL);
         resourceDescriptorImpl.setDescription("this is my resource description");
         resourceDescriptorImpl.setResourceURL(new URL("file:/Users/salaboy/myports.txt"));
         Map<String, Object> args = new HashMap<String, Object>();

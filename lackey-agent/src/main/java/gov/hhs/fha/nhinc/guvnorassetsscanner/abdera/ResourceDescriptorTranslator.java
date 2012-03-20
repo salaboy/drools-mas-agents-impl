@@ -18,7 +18,7 @@ import org.apache.abdera.model.ExtensibleElement;
 import org.drools.grid.api.ResourceDescriptor;
 import org.drools.grid.api.impl.CompositeResourceDescriptorImpl;
 import org.drools.grid.api.impl.ResourceDescriptorImpl;
-
+import org.drools.builder.ResourceType;
 /**
  *
  * @author esteban
@@ -52,8 +52,12 @@ public class ResourceDescriptorTranslator {
         }else{
             descriptor = new ResourceDescriptorImpl();
         }
-        
-        descriptor.setType(format);
+        if(format.equals(CHANGE_SET_FORMAT)){
+            descriptor.setType(ResourceType.CHANGE_SET);
+        }
+        if(format.equals("DRL")){
+            descriptor.setType(ResourceType.DRL);
+        }
         
         //UUID
         String uuid = ((ExtensibleElement) metadataExtension.getExtension(UUID)).getSimpleExtension(VALUE);

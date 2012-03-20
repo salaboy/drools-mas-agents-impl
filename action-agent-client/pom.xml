@@ -132,8 +132,8 @@
                         </goals>
                         <configuration>
                             <wsdlUrls>
-                                <wsdlUrl>http://localhost:8080/action-agent/services/AsyncAgentService?WSDL</wsdlUrl>    
-                                <wsdlUrl>http://localhost:8080/action-agent/services/SyncAgentService?WSDL</wsdlUrl>
+                                <wsdlUrl>http://localhost:8081/action-agent/services/AsyncAgentService?WSDL</wsdlUrl>    
+                                <wsdlUrl>http://localhost:8081/action-agent/services/SyncAgentService?WSDL</wsdlUrl>
                             </wsdlUrls>
                             <staleFile>${project.build.directory}/jaxws/stale/.wsdl.stale</staleFile>
                         </configuration>
@@ -222,6 +222,10 @@
             <artifactId>h2</artifactId>
             <version>1.3.162</version>
         </dependency>
-     
+         <dependency>
+            <groupId>org.drools.mas</groupId>
+            <artifactId>drools-mas-generic-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
