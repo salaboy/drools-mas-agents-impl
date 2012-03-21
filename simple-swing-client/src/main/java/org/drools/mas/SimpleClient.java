@@ -7,8 +7,11 @@ package org.drools.mas;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import org.drools.mas.helpers.DialogueHelper;
 
 /**
@@ -16,13 +19,18 @@ import org.drools.mas.helpers.DialogueHelper;
  * @author salaboy
  */
 public class SimpleClient extends javax.swing.JFrame {
+
     private String endpoint;
     private DialogueHelper helper;
+    private TableModel tm = new MockFactTableModel();
     /**
      * Creates new form SimpleClient
      */
     public SimpleClient() {
         initComponents();
+        
+        
+        
     }
 
     /**
@@ -35,9 +43,19 @@ public class SimpleClient extends javax.swing.JFrame {
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        messageIdTextField = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         informButton = new javax.swing.JButton();
         requestButton = new javax.swing.JButton();
+        disconfirmButton = new javax.swing.JButton();
+        informButton2 = new javax.swing.JButton();
+        jPanel6 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        factsjTable = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
@@ -52,17 +70,39 @@ public class SimpleClient extends javax.swing.JFrame {
         endpointTextField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        messageIdTextField = new javax.swing.JTextField();
 
         fileChooser.setDialogTitle("Choose an Ontology File (OWL)");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Interaction Status"));
+
+        jLabel3.setText("Last MessageId: ");
+
+        org.jdesktop.layout.GroupLayout jPanel4Layout = new org.jdesktop.layout.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jLabel3)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(messageIdTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(333, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel3)
+                    .add(messageIdTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Actions"));
 
-        informButton.setText("Inform");
+        informButton.setText("Confirm");
         informButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 informButtonActionPerformed(evt);
@@ -76,16 +116,34 @@ public class SimpleClient extends javax.swing.JFrame {
             }
         });
 
+        disconfirmButton.setText("Disconfirm");
+        disconfirmButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                disconfirmButtonActionPerformed(evt);
+            }
+        });
+
+        informButton2.setText("Refresh Facts");
+        informButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                informButton2ActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(requestButton)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(informButton)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(disconfirmButton)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(requestButton)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(informButton2)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -93,9 +151,68 @@ public class SimpleClient extends javax.swing.JFrame {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(informButton)
-                    .add(requestButton))
+                    .add(requestButton)
+                    .add(disconfirmButton)
+                    .add(informButton2))
                 .add(26, 26, 26))
         );
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Facts"));
+
+        factsjTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(factsjTable);
+
+        org.jdesktop.layout.GroupLayout jPanel6Layout = new org.jdesktop.layout.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane2)
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        org.jdesktop.layout.GroupLayout jPanel5Layout = new org.jdesktop.layout.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel5Layout.createSequentialGroup()
+                .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jPanel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Interaction", jPanel5);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Agent Answers"));
 
@@ -134,7 +251,7 @@ public class SimpleClient extends javax.swing.JFrame {
                         .add(jButton5)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jButton6)
-                        .add(0, 0, Short.MAX_VALUE))
+                        .add(0, 100, Short.MAX_VALUE))
                     .add(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .add(jScrollPane1)))
@@ -150,9 +267,11 @@ public class SimpleClient extends javax.swing.JFrame {
                     .add(lastMessageIdTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jButton6))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        jTabbedPane1.addTab("Debug", jPanel2);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Configuration"));
 
@@ -194,12 +313,12 @@ public class SimpleClient extends javax.swing.JFrame {
                         .add(ontologyTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 336, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jButton2)))
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(99, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
+                .add(67, 67, 67)
                 .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel1)
                     .add(endpointTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -209,58 +328,24 @@ public class SimpleClient extends javax.swing.JFrame {
                     .add(jLabel2)
                     .add(ontologyTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jButton2))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(446, Short.MAX_VALUE))
         );
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Interaction Status"));
-
-        jLabel3.setText("Last MessageId: ");
-
-        org.jdesktop.layout.GroupLayout jPanel4Layout = new org.jdesktop.layout.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jLabel3)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(messageIdTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel3)
-                    .add(messageIdTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jTabbedPane1.addTab("Configuration", jPanel3);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
-                .add(jPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jTabbedPane1)
                 .addContainerGap())
         );
 
@@ -270,12 +355,12 @@ public class SimpleClient extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.endpoint = endpointTextField.getText();
-        if(this.endpoint != null && !this.endpoint.equals("")){
+        if (this.endpoint != null && !this.endpoint.equals("")) {
             this.helper = new DialogueHelper(endpoint);
-        }else{
+        } else {
             this.notificationTextArea.setText(
-                        notificationTextArea.getText() + "\n" 
-                    + " ### ERROR: helper cannot be created with endpoint: "+this.endpoint);
+                    notificationTextArea.getText() + "\n"
+                    + " ### ERROR: helper cannot be created with endpoint: " + this.endpoint);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -298,44 +383,55 @@ public class SimpleClient extends javax.swing.JFrame {
 
     private void informButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_informButtonActionPerformed
         // TODO add your handling code here:
-        if(this.helper != null){
-            String messageId = helper.invokeInform("","", null);
-            this.messageIdTextField.setText(messageId);
-            this.lastMessageIdTextField.setText(messageId);
-        }else{
+        if (this.helper != null) {
+            int selectedRow = factsjTable.getSelectedRow();
+            if(!((MockFactTableModel)factsjTable.getModel()).isInformed(selectedRow)){
+                MockFactUI fact = ((MockFactTableModel)factsjTable.getModel()).getFacts().get(selectedRow);
+                System.out.println(" >>> INFORMING FACT:  "+fact);
+                String messageId = helper.invokeInform("", "", fact);
+                this.messageIdTextField.setText(messageId);
+                this.lastMessageIdTextField.setText(messageId);
+                ((MockFactTableModel)factsjTable.getModel()).informFact(selectedRow);
+            }else{
+                this.notificationTextArea.setText(
+                    notificationTextArea.getText() + "\n"
+                    + " ### WARN: this fact was already informed, not informing again");
+            }
+            
+        } else {
             this.notificationTextArea.setText(
-                        notificationTextArea.getText() + "\n" 
-                    + " ### ERROR: DialogueHelper null check the endpoint: "+this.endpoint);
+                    notificationTextArea.getText() + "\n"
+                    + " ### ERROR: DialogueHelper null check the endpoint: " + this.endpoint);
         }
     }//GEN-LAST:event_informButtonActionPerformed
 
     private void requestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_requestButtonActionPerformed
         // TODO add your handling code here:
-        if(this.helper != null){
+        if (this.helper != null) {
             String messageId = helper.invokeRequest("", null);
             this.messageIdTextField.setText(messageId);
             this.lastMessageIdTextField.setText(messageId);
-        }else{
+        } else {
             this.notificationTextArea.setText(
-                        notificationTextArea.getText() + "\n" 
-                    + " ### ERROR: DialogueHelper null check the endpoint: "+this.endpoint);
+                    notificationTextArea.getText() + "\n"
+                    + " ### ERROR: DialogueHelper null check the endpoint: " + this.endpoint);
         }
     }//GEN-LAST:event_requestButtonActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
         String text = this.lastMessageIdTextField.getText();
-        if(this.helper != null){
+        if (this.helper != null) {
             List<ACLMessage> agentAnswers = this.helper.getAgentAnswers(text);
-            for(ACLMessage msg : agentAnswers){
+            for (ACLMessage msg : agentAnswers) {
                 this.notificationTextArea.setText(
                         notificationTextArea.getText() + "\n"
-                        + " >>> "+msg); 
+                        + " >>> " + msg);
             }
-        }else{
+        } else {
             this.notificationTextArea.setText(
-                        notificationTextArea.getText() + "\n" 
-                    + " ### ERROR: No Answers Could Be retreived check the endpoint: "+this.endpoint);
+                    notificationTextArea.getText() + "\n"
+                    + " ### ERROR: No Answers Could Be retreived check the endpoint: " + this.endpoint);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -343,6 +439,36 @@ public class SimpleClient extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.notificationTextArea.setText("");
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void disconfirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconfirmButtonActionPerformed
+        // TODO add your handling code here:
+         if (this.helper != null) {
+            int selectedRow = factsjTable.getSelectedRow();
+            if(((MockFactTableModel)factsjTable.getModel()).isInformed(selectedRow)){
+                MockFactUI fact = ((MockFactTableModel)factsjTable.getModel()).getFacts().get(selectedRow);
+                System.out.println(" >>> DISCONFIRM FACT:  "+fact);
+                String messageId = helper.invokeDisconfirm("", "", fact);
+                this.messageIdTextField.setText(messageId);
+                this.lastMessageIdTextField.setText(messageId);
+                ((MockFactTableModel)factsjTable.getModel()).disconfirmFact(selectedRow);
+            }else{
+                this.notificationTextArea.setText(
+                    notificationTextArea.getText() + "\n"
+                    + " ### WARN: this fact was already disconfirmed, not disconfirming again");
+            }
+            
+        } else {
+            this.notificationTextArea.setText(
+                    notificationTextArea.getText() + "\n"
+                    + " ### ERROR: DialogueHelper null check the endpoint: " + this.endpoint);
+        }
+    }//GEN-LAST:event_disconfirmButtonActionPerformed
+
+    private void informButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_informButton2ActionPerformed
+        // TODO add your handling code here:
+        factsjTable.setModel(tm);
+        
+    }//GEN-LAST:event_informButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -386,9 +512,12 @@ public class SimpleClient extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton disconfirmButton;
     private javax.swing.JTextField endpointTextField;
+    private javax.swing.JTable factsjTable;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JButton informButton;
+    private javax.swing.JButton informButton2;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton5;
@@ -401,7 +530,11 @@ public class SimpleClient extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField lastMessageIdTextField;
     private javax.swing.JTextField messageIdTextField;
     private javax.swing.JTextArea notificationTextArea;
