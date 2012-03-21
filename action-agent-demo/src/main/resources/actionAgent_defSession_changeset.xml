@@ -4,5 +4,12 @@
     <add>
         <resource type="DRL" source="classpath:org/drools/mas/acl_common.drl" />
         <resource type="DRL" source="classpath:knowledge/delivery.drl" />
+        <resource type="CHANGE_SET" source="classpath:org/drools/informer/informer-changeset.xml" />
+        <resource type="CHANGE_SET" source="classpath:org/drools/informer/interaction/interaction-changeset.xml" />
+        <resource type="DRL" source="classpath:rules/WorkItemHandlers.drl" />
+        
+        <!-- demo resources -->
+        <resource type="DRL" source="classpath:knowledge/demo/demoSessionConfiguration.drl" />
+        <resource type="BPMN2" source="classpath:knowledge/demo/process1.bpmn" />
     </add>
 </change-set>

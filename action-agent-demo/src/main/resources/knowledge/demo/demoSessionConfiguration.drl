@@ -1,0 +1,11 @@
+package org.drools.mas.demo;
+
+import gov.hhs.fha.nhinc.workitemhandlers.*;
+
+rule "WI Handlers Configuration"
+when
+then
+    BaseCommunicationServiceTaskHandler handler = new BaseCommunicationServiceTaskHandler(kcontext.getKnowledgeRuntime());
+
+    ((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).getWorkItemManager().registerWorkItemHandler("CommunicationTask", handler);
+end
