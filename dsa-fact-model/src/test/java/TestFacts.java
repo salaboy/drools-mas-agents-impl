@@ -1,5 +1,6 @@
 import junit.framework.Assert;
 import org.drools.io.impl.ClassPathResource;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import urn.gov.hhs.fha.nhinc.adapter.fact.*;
@@ -36,9 +37,9 @@ public class TestFacts {
         cp.addContextSystemCode( "vocabCode" );
         cp.addContextSystemLabel( "vocabLabel" );
 
-        ValueUnitPair vp = new ValueUnitPairImpl();
+        Quantitative vp = new QuantitativeImpl();
         vp.addUnit( "mu" );
-        vp.addVal( "val" );
+        vp.addVal( 0.43f );
 
         VitalSign sign = new VitalSignImpl();
         sign.addDateTimeCreated( new Date() );
@@ -131,15 +132,15 @@ public class TestFacts {
             "                    <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                    <dyReference>false</dyReference>\n" +
             "                    <dyEntryId>b0047ff5-10b7-40ee-85e9-449b99b8fbdc</dyEntryId>\n" +
-            "                    <conceptCode>danno</conceptCode>\n" +
             "                    <conceptLabel>DANNO VistA</conceptLabel>\n" +
+            "                    <conceptCode>danno</conceptCode>\n" +
             "                </hasDataSource>\n" +
             "                <hasPatientID>\n" +
             "                    <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                    <dyReference>false</dyReference>\n" +
             "                    <dyEntryId>6b94606e-2f00-4dda-94a3-5c79ca984a1c</dyEntryId>\n" +
-            "                    <conceptCode>http://patients.kmr.org/danno/2-1</conceptCode>\n" +
             "                    <conceptLabel>Patient Fred Jone</conceptLabel>\n" +
+            "                    <conceptCode>http://patients.kmr.org/danno/2-1</conceptCode>\n" +
             "                </hasPatientID>\n" +
             "                <hasLegalName>\n" +
             "                    <dyEntryType>Name</dyEntryType>\n" +
@@ -157,8 +158,8 @@ public class TestFacts {
             "                    <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                    <dyReference>false</dyReference>\n" +
             "                    <dyEntryId>f4be872b-711e-426b-a998-329379a46bfe</dyEntryId>\n" +
-            "                    <conceptCode>danno</conceptCode>\n" +
             "                    <conceptLabel>DANNO VistA</conceptLabel>\n" +
+            "                    <conceptCode>danno</conceptCode>\n" +
             "                </hasDataSource>\n" +
             "                <hasLegalName>\n" +
             "                    <dyEntryType>Name</dyEntryType>\n" +
@@ -171,8 +172,8 @@ public class TestFacts {
             "                    <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                    <dyReference>false</dyReference>\n" +
             "                    <dyEntryId>e274565d-268e-43c8-a167-19cdec1f39bb</dyEntryId>\n" +
-            "                    <conceptCode>http://patients.kmr.org/danno/200-1</conceptCode>\n" +
             "                    <conceptLabel>Agent Joe Smith</conceptLabel>\n" +
+            "                    <conceptCode>http://patients.kmr.org/danno/200-1</conceptCode>\n" +
             "                </hasAgentID>\n" +
             "            </performedBy>\n" +
             "            <dateTimeCreated>2002-05-30T09:00:00</dateTimeCreated>\n" +
@@ -181,15 +182,15 @@ public class TestFacts {
             "                <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                <dyReference>false</dyReference>\n" +
             "                <dyEntryId>2978352a-964e-44d9-9c0f-338e5baff972</dyEntryId>\n" +
-            "                <conceptCode>danno</conceptCode>\n" +
             "                <conceptLabel>DANNO VistA</conceptLabel>\n" +
+            "                <conceptCode>danno</conceptCode>\n" +
             "            </hasDataSource>\n" +
             "            <hasTypeReference>\n" +
             "                <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                <dyReference>false</dyReference>\n" +
             "                <dyEntryId>63040897-f300-4037-8137-54b63396d087</dyEntryId>\n" +
-            "                <conceptCode>386725007</conceptCode>\n" +
             "                <conceptLabel>BODY TEMPERATURE</conceptLabel>\n" +
+            "                <conceptCode>386725007</conceptCode>\n" +
             "            </hasTypeReference>\n" +
             "            <hasVitalSignResult>\n" +
             "                <dyEntryType>ValueUnitPair</dyEntryType>\n" +
@@ -216,8 +217,8 @@ public class TestFacts {
             "                    <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                    <dyReference>false</dyReference>\n" +
             "                    <dyEntryId>d10be252-8b0d-4126-81c5-c6de8d56885b</dyEntryId>\n" +
-            "                    <conceptCode>danno</conceptCode>\n" +
             "                    <conceptLabel>DANNO VistA</conceptLabel>\n" +
+            "                    <conceptCode>danno</conceptCode>\n" +
             "                </hasDataSource>\n" +
             "                <hasLegalName>\n" +
             "                    <dyEntryType>Name</dyEntryType>\n" +
@@ -230,8 +231,8 @@ public class TestFacts {
             "                    <dyEntryType>ConceptPointer</dyEntryType>\n" +
             "                    <dyReference>false</dyReference>\n" +
             "                    <dyEntryId>2a38ae73-f107-4d71-a886-68ebed7e7b2f</dyEntryId>\n" +
-            "                    <conceptCode>http://patients.kmr.org/danno/200-2</conceptCode>\n" +
             "                    <conceptLabel>Agent Bill Kid</conceptLabel>\n" +
+            "                    <conceptCode>http://patients.kmr.org/danno/200-2</conceptCode>\n" +
             "                </hasAgentID>\n" +
             "            </performedBy>\n" +
             "            <dateTimeCreated>2002-05-30T09:00:00</dateTimeCreated>\n" +
@@ -269,25 +270,13 @@ public class TestFacts {
 
 
     @Test
+    @Ignore("XML Source is oudated")
     public void testFromXMLFactList() throws JAXBException {
 
         ObjectFactory factory = new ObjectFactory();
         JAXBContext jaxbContext = JAXBContext.newInstance(factory.getClass().getPackage().getName());
 
         Unmarshaller unmarshal = jaxbContext.createUnmarshaller();
-//
-//        FactList list = (FactList) unmarshal.unmarshal( new StringReader( testList ) );
-//
-//        assertEquals( 2, list.getContains().size() );
-//
-//        ReferenceAdapter loader = unmarshal.getAdapter(ReferenceAdapter.class);
-//
-//        assertEquals( 21, loader.getObjects().size() );
-//
-//        for ( Object o : loader.getObjects() ) {
-//            System.err.println( o );
-//        }
-
 
         String inXSD = "kmr2_$impl.xsd";
         String xml = testList;
@@ -322,7 +311,6 @@ public class TestFacts {
         } catch ( IOException ex ) {
             fail( ex.getMessage() );
         }
-
 
 
     }
