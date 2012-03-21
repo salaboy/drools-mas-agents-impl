@@ -69,6 +69,44 @@ public class MockFactUI implements Serializable{
     public String toString() {
         return "MockFact{" + "id=" + id + ", name=" + name + ", descr=" + descr + ", prop1=" + prop1 + ", prop2=" + prop2 + '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MockFactUI other = (MockFactUI) obj;
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+            return false;
+        }
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+            return false;
+        }
+        if ((this.descr == null) ? (other.descr != null) : !this.descr.equals(other.descr)) {
+            return false;
+        }
+        if ((this.prop1 == null) ? (other.prop1 != null) : !this.prop1.equals(other.prop1)) {
+            return false;
+        }
+        if ((this.prop2 == null) ? (other.prop2 != null) : !this.prop2.equals(other.prop2)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 31 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 31 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 31 * hash + (this.descr != null ? this.descr.hashCode() : 0);
+        hash = 31 * hash + (this.prop1 != null ? this.prop1.hashCode() : 0);
+        hash = 31 * hash + (this.prop2 != null ? this.prop2.hashCode() : 0);
+        return hash;
+    }
     
     
     
