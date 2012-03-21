@@ -6,7 +6,10 @@ package org.drools.mas;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.table.AbstractTableModel;
+import urn.gov.hhs.fha.nhinc.adapter.fact.Fact;
+import urn.gov.hhs.fha.nhinc.adapter.fact.IndividualFactory;
 
 /**
  *
@@ -14,32 +17,48 @@ import javax.swing.table.AbstractTableModel;
  */
 public class MockFactTableModel extends AbstractTableModel {
 
-    String[] columnNames = {"Id",
+    String[] columnNames = {
         "Name",
-        "Descr",
-        "prop1",
-        "prop2", "Confirmed?"};
-    private List<MockFactUI> facts = new ArrayList<MockFactUI>(10);
-    private Boolean[] informedFacts = new Boolean[10];
+        "Type",
+        "Created",
+        "Confirmed?"};
+    private List<Fact> facts = new ArrayList<Fact>(10);
+    private List<String> names = new ArrayList<String>();
+    private Boolean[] informedFacts;
+
     public MockFactTableModel() {
-        for(int i = 0; i <10; i ++){
-            facts.add(new MockFactUI(new Long(i), "name"+i, "descr"+i, "prop1"+i, "prop2"+i));
-            informedFacts[i]=false;
+        Map<String, Object> map = IndividualFactory.getNamedIndividuals();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getValue() instanceof Fact) {
+                names.add(entry.getKey());
+                facts.add((Fact) entry.getValue());
+            }
+            informedFacts = new Boolean[facts.size()];
+            for(int i = 0; i < informedFacts.length; i++){
+                informedFacts[i] = false;
+            }
+//            System.out.println("Entry: "+entry.getValue());
+//            System.out.println("Entry: "+entry.getKey());
+//            ((Fact)object).getClass().getName(); --> remove Impl
+//                ((Fact)object).date
+
+
         }
-        
+
     }
-    
-    public void informFact(int index){
+
+    public void informFact(int index) {
         informedFacts[index] = true;
     }
-    public void disconfirmFact(int index){
+
+    public void disconfirmFact(int index) {
         informedFacts[index] = false;
     }
-    
-    public boolean isInformed(int index){
+
+    public boolean isInformed(int index) {
         return informedFacts[index];
     }
-   
+
     @Override
     public String getColumnName(int i) {
         return columnNames[i];
@@ -54,29 +73,23 @@ public class MockFactTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int i, int i1) {
-        MockFactUI fact = facts.get(i);
-        switch(i1){
+        Fact fact = facts.get(i);
+        switch (i1) {
             case 0:
-                return fact.getId();
+                return names.get(i);
             case 1:
-                return fact.getName();
+                return fact.getClass().getName();
             case 2:
-                return fact.getDescr();
+                return fact.getDateTimeCreatedDate();
             case 3:
-                return fact.getProp1();    
-            case 4:
-                return fact.getProp2(); 
-            case 5:
-                return informedFacts[i];   
+                return informedFacts[i];
             default:
-                  return "Wrong Index Bro??";
+                return "Wrong Index Bro??";
         }
-        
+
     }
 
-    public List<MockFactUI> getFacts() {
+    public List<Fact> getFacts() {
         return facts;
     }
-    
-    
 }

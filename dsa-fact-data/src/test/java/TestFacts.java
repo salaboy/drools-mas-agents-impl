@@ -1,3 +1,4 @@
+
 import junit.framework.Assert;
 import org.drools.io.impl.ClassPathResource;
 import org.junit.Test;

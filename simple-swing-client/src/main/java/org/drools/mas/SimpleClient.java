@@ -7,12 +7,15 @@ package org.drools.mas;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.JFileChooser;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.drools.mas.helpers.DialogueHelper;
+import urn.gov.hhs.fha.nhinc.adapter.fact.ClinicalFact;
+import urn.gov.hhs.fha.nhinc.adapter.fact.Fact;
+import urn.gov.hhs.fha.nhinc.adapter.fact.IndividualFactory;
 
 /**
  *
@@ -29,8 +32,7 @@ public class SimpleClient extends javax.swing.JFrame {
     public SimpleClient() {
         initComponents();
         
-        
-        
+       
     }
 
     /**
@@ -386,7 +388,7 @@ public class SimpleClient extends javax.swing.JFrame {
         if (this.helper != null) {
             int selectedRow = factsjTable.getSelectedRow();
             if(!((MockFactTableModel)factsjTable.getModel()).isInformed(selectedRow)){
-                MockFactUI fact = ((MockFactTableModel)factsjTable.getModel()).getFacts().get(selectedRow);
+                Fact fact = ((MockFactTableModel)factsjTable.getModel()).getFacts().get(selectedRow);
                 System.out.println(" >>> INFORMING FACT:  "+fact);
                 String messageId = helper.invokeInform("", "", fact);
                 this.messageIdTextField.setText(messageId);
@@ -445,7 +447,7 @@ public class SimpleClient extends javax.swing.JFrame {
          if (this.helper != null) {
             int selectedRow = factsjTable.getSelectedRow();
             if(((MockFactTableModel)factsjTable.getModel()).isInformed(selectedRow)){
-                MockFactUI fact = ((MockFactTableModel)factsjTable.getModel()).getFacts().get(selectedRow);
+                Fact fact = ((MockFactTableModel)factsjTable.getModel()).getFacts().get(selectedRow);
                 System.out.println(" >>> DISCONFIRM FACT:  "+fact);
                 String messageId = helper.invokeDisconfirm("", "", fact);
                 this.messageIdTextField.setText(messageId);
