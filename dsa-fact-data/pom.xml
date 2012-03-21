@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2011 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <name>KMR2 :: Use Case Facts 1</name>
+
+    <groupId>org.drools.mas.dsa</groupId>
+    <artifactId>dsa-fact-data-case1</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <drools.version>5.4.0-SNAPSHOT</drools.version>
+        <jpa.provider>hibernate</jpa.provider>
+        <!--jpa.provider>datanucleus</jpa.provider-->
+    </properties>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-shapes-reasoner-generator</artifactId>
+            <version>5.4.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.clarkparsia</groupId>
+            <artifactId>Empire-core</artifactId>
+            <version>0.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.drools.mas.dsa</groupId>
+            <artifactId>dsa-fact-model</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <repositories>
+        <repository>
+            <id>repo1</id>
+            <name>Maven2 Repo 1</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+
+        <repository>
+            <id>aduna</id>
+            <name>Aduna Software</name>
+            <url>http://repo.aduna-software.org/maven2/releases/</url>
+        </repository>
+
+    </repositories>
+
+
+    <build>
+
+        <resources>
+            <resource>
+                <directory>${pom.basedir}/target/generated-sources/xjc</directory>
+                <includes>
+                    <include>**/*.index</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>include-generated-sources</id>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${pom.basedir}/target/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-shapes-generator-plugin</artifactId>
+                <version>${drools.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>cast</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectory>${pom.basedir}/target</outputDirectory>
+                    <ontology>${pom.basedir}/src/main/resources/kmrPatient1.ttl</ontology>
+                    <modelName>kmr2Case1</modelName>
+
+                    <delegateInference>true</delegateInference>
+                    <generateInterfaces>false</generateInterfaces>
+                    <generateInterfaceJar>false</generateInterfaceJar>
+                    <generateTraitDRL>false</generateTraitDRL>
+                    <generateDefaultImplClasses>false</generateDefaultImplClasses>
+                    <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
+                    <buildSpecXSDs>false</buildSpecXSDs>
+                    <generateDRL>false</generateDRL>
+
+                    <generateIndividuals>true</generateIndividuals>
+                </configuration>
+            </plugin>
+
+
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

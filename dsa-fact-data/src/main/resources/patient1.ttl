@@ -1,0 +1,251 @@
+@prefix fact: <urn:gov:hhs:fha:nhinc:adapter:fact#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix patient1: <http://socraticgrid.org/patient1#> .
+@prefix : <http://www.semanticweb.org/owl/owlapi/turtle#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://socraticgrid.org/patient1> .
+
+<http://socraticgrid.org/patient1> rdf:type owl:Ontology ;
+                                   
+                                   owl:versionInfo "Created with TopBraid Composer"^^xsd:string ;
+                                   
+                                   owl:imports <urn:gov:hhs:fha:nhinc:adapter:fact> .
+
+
+#################################################################
+#
+#    Annotation properties
+#
+#################################################################
+
+
+
+
+#################################################################
+#
+#    Datatypes
+#
+#################################################################
+
+
+
+
+#################################################################
+#
+#    Individuals
+#
+#################################################################
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Anastrozole
+
+fact:Anastrozole rdf:type owl:NamedIndividual ,
+                          fact:ConceptPointer ;
+                 
+                 fact:conceptCode "108774000"^^xsd:string ;
+                 
+                 fact:contextSystemCode "2.16.840.1.113883.6.96"^^xsd:string ;
+                 
+                 fact:conceptLabel "Anastrozole"^^xsd:string ;
+                 
+                 fact:contextSystemLabel "SNOMED-CT"^^xsd:string .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Estrogen_Receptor_Assay
+
+fact:Estrogen_Receptor_Assay rdf:type owl:NamedIndividual ,
+                                      fact:ConceptPointer ;
+                             
+                             fact:contextSystemCode "2.16.840.1.113883.6.96"^^xsd:string ;
+                             
+                             fact:dateTimeUpdated "2010-03-16T10:03:14Z"^^xsd:dateTime ;
+                             
+                             fact:dateTimeCreated "2010-03-16T10:03:14Z"^^xsd:dateTime ;
+                             
+                             fact:dateTimeReported "2010-03-16T10:03:14Z"^^xsd:dateTime ;
+                             
+                             fact:conceptCode "83302001"^^xsd:string ;
+                             
+                             fact:conceptLabel "Estrogen_Receptor_Assay"^^xsd:string ;
+                             
+                             fact:contextSystemLabel "SNOMED-CT"^^xsd:string .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Fibrocystic_Breast_Disease
+
+fact:Fibrocystic_Breast_Disease rdf:type owl:NamedIndividual ,
+                                         fact:ConceptPointer ;
+                                
+                                fact:contextSystemCode "2.16.840.1.113883.6.96"^^xsd:string ;
+                                
+                                fact:conceptCode "27431007"^^xsd:string ;
+                                
+                                fact:conceptLabel "Fibrocystic_Breast_Disease"^^xsd:string ;
+                                
+                                fact:contextSystemLabel "SNOMED-CT"^^xsd:string .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#General_Surgery
+
+fact:General_Surgery rdf:type owl:NamedIndividual ,
+                              fact:ConceptPointer ;
+                     
+                     fact:contextSystemCode "2.16.840.1.113883.6.101"^^xsd:string ;
+                     
+                     fact:conceptCode "208600000X"^^xsd:string ;
+                     
+                     fact:conceptLabel "General Surgery"^^xsd:string ;
+                     
+                     fact:contextSystemLabel "NUCC"^^xsd:string .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Invasive_Ductal_Carcinoma
+
+fact:Invasive_Ductal_Carcinoma rdf:type owl:NamedIndividual ,
+                                        fact:ConceptPointer ;
+                               
+                               fact:contextSystemCode "2.16.840.1.113883.6.96"^^xsd:string ;
+                               
+                               fact:dateTimeCreated "2010-03-16T10:03:14Z"^^xsd:dateTime ;
+                               
+                               fact:dateTimeReported "2010-03-16T10:03:14Z"^^xsd:dateTime ;
+                               
+                               fact:dateTimeUpdated "2010-03-16T10:03:14Z"^^xsd:dateTime ;
+                               
+                               fact:conceptCode "278054005"^^xsd:string ;
+                               
+                               fact:conceptLabel "Invasive_Ductal_Carcinoma"^^xsd:string ;
+                               
+                               fact:contextSystemLabel "SNOMED-CT"^^xsd:string .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Jane_Doe
+
+fact:Jane_Doe rdf:type owl:NamedIndividual ,
+                       fact:Patient ;
+              
+              fact:hasLegalName [ rdf:type fact:Name ;
+                                  fact:familyName "Doe"^^xsd:string ;
+                                  fact:firstName "Jane"^^xsd:string ;
+                                  fact:middleName "Karen"^^xsd:string
+                                ] .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Jane_Doe_ConsultOrder_1
+
+fact:Jane_Doe_ConsultOrder_1 rdf:type owl:NamedIndividual ,
+                                      fact:ConsultOrder ;
+                             
+                             fact:dateTimeOfOrder "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                             
+                             fact:dateTimeReported "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                             
+                             fact:dateTimeCreated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                             
+                             fact:hasTypeReference fact:General_Surgery ;
+                             
+                             fact:hasPatient fact:Jane_Doe .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Jane_Doe_Diagnosis_1
+
+fact:Jane_Doe_Diagnosis_1 rdf:type owl:NamedIndividual ,
+                                   fact:Diagnosis ;
+                          
+                          fact:dateTimeCreated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                          
+                          fact:dateTimeUpdated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                          
+                          fact:dateTimeReported "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                          
+                          fact:hasTypeReference fact:Invasive_Ductal_Carcinoma ;
+                          
+                          fact:hasPatient fact:Jane_Doe ;
+                          
+                          fact:hasEffectiveDates [ rdf:type fact:TimeInterval ;
+                                                   fact:startDateTime "2012-03-16T10:03:14Z"^^xsd:dateTime
+                                                 ] .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Jane_Doe_Diagnosis_2
+
+fact:Jane_Doe_Diagnosis_2 rdf:type owl:NamedIndividual ,
+                                   fact:Diagnosis ;
+                          
+                          fact:dateTimeReported "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                          
+                          fact:dateTimeCreated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                          
+                          fact:dateTimeUpdated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                          
+                          fact:hasTypeReference fact:Fibrocystic_Breast_Disease ;
+                          
+                          fact:hasPatient fact:Jane_Doe .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Jane_Doe_LabTestResult_1
+
+fact:Jane_Doe_LabTestResult_1 rdf:type owl:NamedIndividual ,
+                                       fact:LabTestResult ;
+                              
+                              fact:dateTimeCreated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                              
+                              fact:dateTimeReported "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                              
+                              fact:hasTypeReference fact:Estrogen_Receptor_Assay ;
+                              
+                              fact:hasPatient fact:Jane_Doe ;
+                              
+                              fact:hasResultValue fact:Positive ;
+                              
+                              fact:hasEffectiveDates [ rdf:type fact:TimeInterval ;
+                                                       fact:startDateTime "2012-03-16T10:03:14Z"^^xsd:dateTime
+                                                     ] .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Jane_Doe_SingleMedication_1
+
+fact:Jane_Doe_SingleMedication_1 rdf:type owl:NamedIndividual ,
+                                          fact:SingleMedication ;
+                                 
+                                 fact:dateTimeReported "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                                 
+                                 fact:dateTimeCreated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                                 
+                                 fact:dateTimeUpdated "2012-03-16T10:03:14Z"^^xsd:dateTime ;
+                                 
+                                 fact:hasTypeReference fact:Anastrozole ;
+                                 
+                                 fact:hasPatient fact:Jane_Doe ;
+                                 
+                                 fact:hasEffectiveDates [ rdf:type fact:TimeInterval ;
+                                                          fact:startDateTime "2012-03-16T10:03:14Z"^^xsd:dateTime
+                                                        ] .
+
+
+
+###  urn:gov:hhs:fha:nhinc:adapter:fact#Positive
+
+fact:Positive rdf:type owl:NamedIndividual ,
+                       fact:Qualitative ;
+              
+              fact:label "Positive"^^xsd:string .
+
+
+
+
+###  Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net
+
