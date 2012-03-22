@@ -1,6 +1,24 @@
-package org.drools.mas.demo;
+package org.drools.informer.interaction;
 
 import gov.hhs.fha.nhinc.workitemhandlers.*;
+import org.drools.base.DroolsQuery;
+import org.drools.informer.generator.*;
+import org.drools.informer.*;
+import org.drools.mas.body.content.*;
+import org.drools.mas.action.message.*;
+import org.drools.mas.action.message.types.*;
+import org.drools.mas.action.message.invokers.*;
+import org.drools.mas.*;
+import org.drools.mas.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
+import org.drools.mas.util.MessageContentEncoder;
+import org.drools.mas.action.helpers.*;
+import org.drools.mas.util.helper.*;
+
 
 rule "WI Handlers Configuration"
 when
@@ -8,4 +26,63 @@ then
     BaseCommunicationServiceTaskHandler handler = new BaseCommunicationServiceTaskHandler(kcontext.getKnowledgeRuntime());
 
     ((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).getWorkItemManager().registerWorkItemHandler("CommunicationTask", handler);
+end
+
+
+rule "DispatchImpl"
+salience -200
+when
+    $ticket : InteractionTicket( $ticketId : id,
+                                 $inters : interactions,
+                                 $source : source  )
+    $convo  : TicketActor( $convoId, $ticketId, $actorId ; )
+    conversationAlerts( $ticketId, $actorId, $formIds, $bodies, $channels ; )
+    Integer( this > 0 ) from $channels.size()
+then
+    /*
+    int risk = (int) Math.round(100*$value);
+    String body = "";
+    for ( int j = 0; j < $formIds.size(); j ++ ) {
+        java.util.Map vars = new java.util.HashMap(10);
+        vars.put("title", $model );
+        vars.put("patient", $pat );
+        vars.put("disease", $model );
+        vars.put("risk", risk );
+        vars.put("provider", $pro );
+        vars.put("nonRisk", 100-risk );
+        vars.put("surveyId", $formIds.get(j) );
+
+        CompiledTemplate template = (CompiledTemplate)  gov.hhs.fha.nhinc.kmr2.TemplateBuilder.getRegistry().getNamedTemplate( (String) $bodies.get(j) );
+        body += ( TemplateRuntime.execute ( template, null, vars ).toString() );
+    }
+    */
+
+    String body = "Hello World. This is the Action Agent";
+    String header = "Important!!";
+
+    String $pro = "1"; //LDAP UID
+    String $pat = "99990070";
+
+    java.util.LinkedHashMap map = new java.util.LinkedHashMap();
+    map.put("refId", $ticketId );
+    map.put("conversationId", $convoId );
+    map.put("subjectAbout", new String[] { $pat, $pro, $actorId } );  
+    map.put("sender", $pro );                 
+    map.put("mainRecipients", new String[] { $actorId } );          
+    map.put("secondaryRecipients", new String[0] );     
+    map.put("hiddenRecipients", new String[0] ); 
+    map.put("type", $channels.get(0) );  //ALERT, SMS
+    map.put("header", header );
+    map.put("body", body );
+    map.put("priority", "Critical" );
+    map.put("deliveryDate", new java.util.Date() );
+    map.put("status", "New" );                       
+
+    System.out.println(map);
+
+
+    System.out.println( " ******************************* Deliver to " + $actorId + "  : >> " + $formIds + " in " + $convo + " using " + $channels.get(0) );
+    
+    insert(MessageContentFactory.newActionContent("deliverMessage", map));
+
 end

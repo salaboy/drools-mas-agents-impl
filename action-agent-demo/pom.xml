@@ -150,6 +150,15 @@
     <build>
         <finalName>action-agent</finalName>
         <plugins>
+<plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <configuration>
+          <stopPort>9966</stopPort> 
+          <stopKey>jetty-stop</stopKey>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+        </configuration>
+      </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>

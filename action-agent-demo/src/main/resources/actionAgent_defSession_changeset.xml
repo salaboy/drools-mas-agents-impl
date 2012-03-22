@@ -11,5 +11,8 @@
         <!-- demo resources -->
         <resource type="DRL" source="classpath:knowledge/demo/demoSessionConfiguration.drl" />
         <resource type="BPMN2" source="classpath:knowledge/demo/process1.bpmn" />
+        <!--resource type="BPMN2" source="classpath:knowledge/demo/process2.bpmn" />
+        <resource type="BPMN2" source="classpath:knowledge/demo/process3.bpmn" />
+        <resource type="BPMN2" source="classpath:knowledge/demo/process4.bpmn" /-->
     </add>
 </change-set>

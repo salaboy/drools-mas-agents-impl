@@ -194,7 +194,7 @@ when
 then
     System.out.println( "I'm calling the LDAP Service here for " + $id );
    
-    Map<String, String> results = LDAPHelper.queryEntity("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",$id);
+    Map<String, String> results = LDAPHelper.queryEntity("http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL",$id);
         $ent.setCn( (String)results.get("cn") );
         $ent.setMobile( (String)results.get("mobile") );
         $ent.setEmployeeNumber( (String)results.get("employerNumber") );
@@ -288,7 +288,7 @@ end
        $rec :   Recipient( messageId == $convoId, $mobile : mobile )
    then
        
-       DeliverMessageHelper.sendSMS("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
+       DeliverMessageHelper.sendSMS("http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
        
    end
 
@@ -320,8 +320,10 @@ end
                args.put( "patient", $pat );
                args.put( "provider", $pro );
 
+               System.out.println("----->  Delivering Alert to Presentation Services");
+
            String finalBody = (String) org.mvel2.templates.TemplateRuntime.execute( org.mvel2.templates.TemplateCompiler.compileTemplate( (String) $body ), args );
-           DeliverMessageHelper.sendAlert( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",
+           DeliverMessageHelper.sendAlert( "http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL",
                                            (String) $convoId,
                                            (String) $header,
                                            finalBody,
@@ -348,7 +350,7 @@ end
                           )
            $rec :   Recipient( messageId == $convoId )
        then
-   	        DeliverMessageHelper.sendAlert( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",
+   	        DeliverMessageHelper.sendAlert( "http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL",
    	                                        (String) $convoId,
    	                                        (String) $header,
    	                                        (String) $status,
@@ -382,7 +384,7 @@ rule " response collector - deliverMessage"
         deliverMessage($refId, $cnvId, $about, $sender, $recipients , $secRec, $hiddenRec, $type,  $header,   
                         $body , $priority , $deliveryDate, $status , $return; )
     then
-        ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
+//        ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
         retract( $action );
 end
 
