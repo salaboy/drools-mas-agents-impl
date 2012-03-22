@@ -65,12 +65,9 @@ public class SimpleClient extends javax.swing.JFrame {
         lastMessageIdTextField = new javax.swing.JTextField();
         jButton6 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        ontologyTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         endpointTextField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
 
         fileChooser.setDialogTitle("Choose an Ontology File (OWL)");
 
@@ -266,8 +263,6 @@ public class SimpleClient extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Configuration"));
 
-        jLabel2.setText("Ontology:");
-
         jLabel1.setText("Endpoint:");
 
         endpointTextField.setText("http://192.168.5.49:8081/action-agent/services/AsyncAgentService?wsdl");
@@ -279,34 +274,18 @@ public class SimpleClient extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Choose");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel3Layout.createSequentialGroup()
-                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel3Layout.createSequentialGroup()
-                        .add(17, 17, 17)
-                        .add(jLabel1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(endpointTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 336, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jButton1))
-                    .add(jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(jLabel2)
-                        .add(18, 18, 18)
-                        .add(ontologyTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 336, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jButton2)))
-                .addContainerGap(144, Short.MAX_VALUE))
+                .add(17, 17, 17)
+                .add(jLabel1)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(endpointTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 336, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jButton1)
+                .addContainerGap(158, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -316,12 +295,7 @@ public class SimpleClient extends javax.swing.JFrame {
                     .add(jLabel1)
                     .add(endpointTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jButton1))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel2)
-                    .add(ontologyTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jButton2))
-                .addContainerGap(481, Short.MAX_VALUE))
+                .addContainerGap(517, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Configuration", jPanel3);
@@ -356,23 +330,6 @@ public class SimpleClient extends javax.swing.JFrame {
                     + " ### ERROR: helper cannot be created with endpoint: " + this.endpoint);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        int returnVal = fileChooser.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try {
-                // What to do with the file, e.g. display it in a TextArea
-                //textarea.read(, null);
-                ontologyTextField.setText(file.getAbsolutePath());
-                FileReader fileReader = new FileReader(file.getAbsolutePath());
-            } catch (IOException ex) {
-                System.out.println("problem accessing file" + file.getAbsolutePath());
-            }
-        } else {
-            System.out.println("File access cancelled by user.");
-        }            // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
 
     private void informButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_informButtonActionPerformed
         // TODO add your handling code here:
@@ -499,11 +456,9 @@ public class SimpleClient extends javax.swing.JFrame {
     private javax.swing.JButton informButton;
     private javax.swing.JButton informButton2;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
@@ -518,6 +473,5 @@ public class SimpleClient extends javax.swing.JFrame {
     private javax.swing.JTextField lastMessageIdTextField;
     private javax.swing.JTextField messageIdTextField;
     private javax.swing.JTextArea notificationTextArea;
-    private javax.swing.JTextField ontologyTextField;
     // End of variables declaration//GEN-END:variables
 }
