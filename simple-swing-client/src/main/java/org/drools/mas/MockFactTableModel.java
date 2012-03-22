@@ -19,7 +19,6 @@ public class MockFactTableModel extends AbstractTableModel {
 
     String[] columnNames = {
         "Name",
-        "Type",
         "Created",
         "Confirmed?"};
     private List<Fact> facts = new ArrayList<Fact>(10);
@@ -78,10 +77,8 @@ public class MockFactTableModel extends AbstractTableModel {
             case 0:
                 return names.get(i);
             case 1:
-                return fact.getClass().getName();
-            case 2:
                 return fact.getDateTimeCreatedDate();
-            case 3:
+            case 2:
                 return informedFacts[i];
             default:
                 return "Wrong Index Bro??";

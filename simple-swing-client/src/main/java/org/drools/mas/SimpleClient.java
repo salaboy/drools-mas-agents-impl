@@ -23,7 +23,7 @@ import urn.gov.hhs.fha.nhinc.adapter.fact.IndividualFactory;
  */
 public class SimpleClient extends javax.swing.JFrame {
 
-    private String endpoint;
+    private String endpoint = "http://192.168.5.49:8081/action-agent/services/AsyncAgentService?wsdl";
     private DialogueHelper helper;
     private TableModel tm = new MockFactTableModel();
     /**
@@ -31,7 +31,7 @@ public class SimpleClient extends javax.swing.JFrame {
      */
     public SimpleClient() {
         initComponents();
-        
+         factsjTable.setModel(tm);
        
     }
 
@@ -52,7 +52,6 @@ public class SimpleClient extends javax.swing.JFrame {
         messageIdTextField = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         informButton = new javax.swing.JButton();
-        requestButton = new javax.swing.JButton();
         disconfirmButton = new javax.swing.JButton();
         informButton2 = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
@@ -104,21 +103,14 @@ public class SimpleClient extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Actions"));
 
-        informButton.setText("Confirm");
+        informButton.setText("Assert");
         informButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 informButtonActionPerformed(evt);
             }
         });
 
-        requestButton.setText("Request");
-        requestButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                requestButtonActionPerformed(evt);
-            }
-        });
-
-        disconfirmButton.setText("Disconfirm");
+        disconfirmButton.setText("Retract");
         disconfirmButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 disconfirmButtonActionPerformed(evt);
@@ -141,8 +133,6 @@ public class SimpleClient extends javax.swing.JFrame {
                 .add(informButton)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(disconfirmButton)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(requestButton)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(informButton2)
                 .addContainerGap())
@@ -153,7 +143,6 @@ public class SimpleClient extends javax.swing.JFrame {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(informButton)
-                    .add(requestButton)
                     .add(disconfirmButton)
                     .add(informButton2))
                 .add(26, 26, 26))
@@ -180,14 +169,14 @@ public class SimpleClient extends javax.swing.JFrame {
             jPanel6Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane2)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -253,7 +242,7 @@ public class SimpleClient extends javax.swing.JFrame {
                         .add(jButton5)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jButton6)
-                        .add(0, 100, Short.MAX_VALUE))
+                        .add(0, 145, Short.MAX_VALUE))
                     .add(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .add(jScrollPane1)))
@@ -269,7 +258,7 @@ public class SimpleClient extends javax.swing.JFrame {
                     .add(lastMessageIdTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jButton6))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -280,6 +269,8 @@ public class SimpleClient extends javax.swing.JFrame {
         jLabel2.setText("Ontology:");
 
         jLabel1.setText("Endpoint:");
+
+        endpointTextField.setText("http://192.168.5.49:8081/action-agent/services/AsyncAgentService?wsdl");
 
         jButton1.setText("Apply");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -315,7 +306,7 @@ public class SimpleClient extends javax.swing.JFrame {
                         .add(ontologyTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 336, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jButton2)))
-                .addContainerGap(99, Short.MAX_VALUE))
+                .addContainerGap(144, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -330,7 +321,7 @@ public class SimpleClient extends javax.swing.JFrame {
                     .add(jLabel2)
                     .add(ontologyTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jButton2))
-                .addContainerGap(446, Short.MAX_VALUE))
+                .addContainerGap(481, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Configuration", jPanel3);
@@ -406,19 +397,6 @@ public class SimpleClient extends javax.swing.JFrame {
                     + " ### ERROR: DialogueHelper null check the endpoint: " + this.endpoint);
         }
     }//GEN-LAST:event_informButtonActionPerformed
-
-    private void requestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_requestButtonActionPerformed
-        // TODO add your handling code here:
-        if (this.helper != null) {
-            String messageId = helper.invokeRequest("", null);
-            this.messageIdTextField.setText(messageId);
-            this.lastMessageIdTextField.setText(messageId);
-        } else {
-            this.notificationTextArea.setText(
-                    notificationTextArea.getText() + "\n"
-                    + " ### ERROR: DialogueHelper null check the endpoint: " + this.endpoint);
-        }
-    }//GEN-LAST:event_requestButtonActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
@@ -541,6 +519,5 @@ public class SimpleClient extends javax.swing.JFrame {
     private javax.swing.JTextField messageIdTextField;
     private javax.swing.JTextArea notificationTextArea;
     private javax.swing.JTextField ontologyTextField;
-    private javax.swing.JButton requestButton;
     // End of variables declaration//GEN-END:variables
 }

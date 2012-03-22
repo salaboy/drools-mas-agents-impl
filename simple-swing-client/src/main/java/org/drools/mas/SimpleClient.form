@@ -148,8 +148,6 @@
                           <Component id="informButton" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="disconfirmButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="requestButton" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="informButton2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -162,7 +160,6 @@
                           <EmptySpace max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="informButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="requestButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="disconfirmButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="informButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -174,23 +171,15 @@
               <SubComponents>
                 <Component class="javax.swing.JButton" name="informButton">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Confirm"/>
+                    <Property name="text" type="java.lang.String" value="Assert"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="informButtonActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="requestButton">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Request"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="requestButtonActionPerformed"/>
-                  </Events>
-                </Component>
                 <Component class="javax.swing.JButton" name="disconfirmButton">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Disconfirm"/>
+                    <Property name="text" type="java.lang.String" value="Retract"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="disconfirmButtonActionPerformed"/>
@@ -220,7 +209,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="645" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -229,7 +218,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="408" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="443" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -313,7 +302,7 @@
                           <Component id="jButton6" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="554" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="566" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -398,7 +387,7 @@
                               <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="139" max="32767" attributes="0"/>
+                      <EmptySpace pref="144" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -436,6 +425,9 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="endpointTextField">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="http://192.168.5.49:8081/action-agent/services/AsyncAgentService?wsdl"/>
+              </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jButton1">
               <Properties>
