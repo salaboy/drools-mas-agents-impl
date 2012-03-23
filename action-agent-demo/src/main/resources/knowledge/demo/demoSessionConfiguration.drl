@@ -27,8 +27,8 @@ then
 
     ((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).getWorkItemManager().registerWorkItemHandler("CommunicationTask", handler);
     
-((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).addEventListener(new org.drools.event.rule.DebugWorkingMemoryEventListener(System.out));
-((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).addEventListener(new org.drools.event.rule.DebugAgendaEventListener(System.out));
+    //((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).addEventListener(new org.drools.event.rule.DebugWorkingMemoryEventListener(System.out));
+    //((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).addEventListener(new org.drools.event.rule.DebugAgendaEventListener(System.out));
     
 end
 
@@ -46,23 +46,6 @@ when
     conversationAlerts( $ticketId, $actorId, $formIds, $bodies, $channels ; )
     Integer( this > 0 ) from $channels.size()
 then
-    /*
-    int risk = (int) Math.round(100*$value);
-    String body = "";
-    for ( int j = 0; j < $formIds.size(); j ++ ) {
-        java.util.Map vars = new java.util.HashMap(10);
-        vars.put("title", $model );
-        vars.put("patient", $pat );
-        vars.put("disease", $model );
-        vars.put("risk", risk );
-        vars.put("provider", $pro );
-        vars.put("nonRisk", 100-risk );
-        vars.put("surveyId", $formIds.get(j) );
-
-        CompiledTemplate template = (CompiledTemplate)  gov.hhs.fha.nhinc.kmr2.TemplateBuilder.getRegistry().getNamedTemplate( (String) $bodies.get(j) );
-        body += ( TemplateRuntime.execute ( template, null, vars ).toString() );
-    }
-    */
 
     String template = (String) $bodies.get(0);
     String body = "";

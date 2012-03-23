@@ -28,7 +28,7 @@
       <bpmn2:dataInputAssociation id="_OzOYaHQjEeG0cLyF7TxQag">
         <bpmn2:targetRef>_EC09E5E6-9491-41B7-A6DB-73437BEA4877_ConfigurationInput</bpmn2:targetRef>
         <bpmn2:assignment id="_OzOYaXQjEeG0cLyF7TxQag">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_OzOYanQjEeG0cLyF7TxQag">[{&quot;receiver&quot;: &quot;1&quot;_U_U_ &quot;channel&quot;: &quot;ALERT&quot;_U_U_ &quot;template&quot;: &quot;template1&quot;_U_U_ &quot;timeout&quot;: &quot;0s&quot;}]</bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_OzOYanQjEeG0cLyF7TxQag">[{&quot;receiver&quot;: &quot;1&quot;_U_U_ &quot;channel&quot;: &quot;ALERT&quot;_U_U_ &quot;template&quot;: &quot;template1&quot;_U_U_ &quot;timeout&quot;: &quot;10s&quot;}]</bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_OzOYa3QjEeG0cLyF7TxQag">_EC09E5E6-9491-41B7-A6DB-73437BEA4877_ConfigurationInput</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>

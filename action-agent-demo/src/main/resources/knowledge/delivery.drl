@@ -23,6 +23,7 @@ global java.util.Map channels;
 declare Entity
     @Traitable
     id                  : String        @key
+    messageId           : String        @key
     resolved            : boolean                   = false
     cn                  : String
     mobile              : String
@@ -44,19 +45,19 @@ end
 declare trait Patient extends OrgEntity
 
     id                  : String        @key
-    messageId           : String
+    messageId           : String        @key
 end
 
 declare trait Provider extends OrgEntity
 
     id                  : String        @key
-    messageId           : String
+    messageId           : String        @key
 end
 
 declare trait Recipient extends OrgEntity
 
     id                  : String        @key
-    messageId           : String
+    messageId           : String        @key
 end
 
 declare trait MainRecipient extends Recipient
@@ -109,7 +110,6 @@ query deliverMessage( String $refId, String $conversationId,
        $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
 end
 
-/*
 rule "ENTER"
 salience 99999
 when
@@ -118,7 +118,6 @@ then
     System.out.println("************************************************* " + $o );
 end
 
-
 rule "Q"
 salience 99999
 when
@@ -126,7 +125,6 @@ when
 then
     System.out.println("********************QRYYY***************************** " + $o );
 end
-*/
 
 // totally useless rule, except for debug :)
 rule "Deliver Message Action Found"
@@ -187,17 +185,18 @@ rule "Insert Subject-About Entities"
                        )
         $id : String() from $subjectAbout
     then
-        insertLogical( new Entity( $id ) );
-end
+//        insertLogical( new Entity( $id ) );
+//end
+//
+//
+//rule "Resolve"
+//when
+//    $ent : Entity( $id : id, resolved == false )
+//then
 
-
-rule "Resolve"
-no-loop true
-when
-    $ent : Entity( $id : id, resolved == false )
-then
+    Entity $ent = new Entity( $id, (String) $cnvId );
     System.out.println( "I'm calling the LDAP Service here for " + $id );
-    retract ($ent);
+   
     Map<String, String> results = LDAPHelper.queryEntity("http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL",$id);
         $ent.setCn( (String)results.get("cn") );
         $ent.setMobile( (String)results.get("mobile") );
@@ -206,7 +205,7 @@ then
         $ent.setGender( (String)results.get("gender") );
 
     $ent.setResolved( true );
-    insert( $ent );
+    insertLogical( $ent );
 end
 
 
@@ -218,7 +217,7 @@ when
                          $subjectAbout : this["subjectAbout"]
                        )
     $pid : String() from ( (String[]) $subjectAbout )[0]
-    $ent : Entity( id == $pid, resolved == true )
+    $ent : Entity( id == $pid, messageId == $cnvId, resolved == true )
 then
     System.out.println( "The patient ID IS  " + $pid );
     Patient pat = don( $ent, Patient.class, true );
@@ -235,7 +234,7 @@ when
                          $recipients : this["mainRecipients"]
                        )
     $rid : String() from ( (String[]) $recipients )
-    $ent : Entity( id == $rid, resolved == true )
+    $ent : Entity( id == $rid, messageId == $cnvId, resolved == true )
 then
     System.out.println( "The recipient ID IS  " + $rid );
     MainRecipient rec = don( $ent, MainRecipient.class, true );
@@ -251,7 +250,7 @@ when
                          $cnvId      : this["conversationId"],
                          $sender     : this["sender"]
                        )
-    $ent : Entity( id == $sender, resolved == true )
+    $ent : Entity( id == $sender, messageId == $cnvId, resolved == true )
 then
     System.out.println( "The provider ID IS  " + $sender );
     Provider pro = don( $ent, Provider.class, true );
@@ -291,9 +290,13 @@ end
                       )
        $rec :   Recipient( messageId == $convoId, $mobile : mobile )
    then
-       
+       System.out.println("+++++++++++Sendig SMS");
+        System.out.println("\tMobile: "+$mobile);
+        System.out.println("\tRecipient: "+$rec);
+
        DeliverMessageHelper.sendSMS("http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
        
+       retract($action);
    end
 
 
@@ -324,7 +327,10 @@ end
                args.put( "patient", $pat );
                args.put( "provider", $pro );
 
-               System.out.println("----->  Delivering Alert to Presentation Services");
+           System.out.println("+++++++++++Sendig Alert");
+           System.out.println("\tRecipient: "+$rec);
+           System.out.println("\tPatient: "+$pat);
+           System.out.println("\tProvider: "+$pro);
 
            String finalBody = (String) org.mvel2.templates.TemplateRuntime.execute( org.mvel2.templates.TemplateCompiler.compileTemplate( (String) $body ), args );
            DeliverMessageHelper.sendAlert( "http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL",
@@ -334,6 +340,7 @@ end
                                            (String) $sender,
                                            $rec.getId(),
                                            (String[])$about );
+          retract( $action );
                                   
    end
 
@@ -361,12 +368,12 @@ end
    	                                        (String) $sender,
    	                                        $rec.getId() ,
                                                 (String[])$about);
-               
+               retract( $action );
    end
 
 
 
-
+/*
 rule " response collector - deliverMessage"
     when
         $s : SessionLocator($nodeId: nodeId, $sessionId: sessionId, mind == true)
@@ -388,18 +395,7 @@ rule " response collector - deliverMessage"
         deliverMessage($refId, $cnvId, $about, $sender, $recipients , $secRec, $hiddenRec, $type,  $header,   
                         $body , $priority , $deliveryDate, $status , $return; )
     then
-//        ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
-        retract( $action );
-end
-
-/*
-rule "Log Objects"
-salience 999999
-when
-    $o: Object()
-then
-    System.out.println("Object log: "+$o);
+        //ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
+        
 end
 */
-
-
