@@ -26,6 +26,10 @@ then
     BaseCommunicationServiceTaskHandler handler = new BaseCommunicationServiceTaskHandler(kcontext.getKnowledgeRuntime());
 
     ((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).getWorkItemManager().registerWorkItemHandler("CommunicationTask", handler);
+    
+((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).addEventListener(new org.drools.event.rule.DebugWorkingMemoryEventListener(System.out));
+((org.drools.impl.StatefulKnowledgeSessionImpl)kcontext.getKnowledgeRuntime()).addEventListener(new org.drools.event.rule.DebugAgendaEventListener(System.out));
+    
 end
 
 
@@ -59,74 +63,33 @@ then
         body += ( TemplateRuntime.execute ( template, null, vars ).toString() );
     }
     */
+
     String template = (String) $bodies.get(0);
     String body = "";
-    String header = "You have time sensitive treatment recommendations for a patient waiting for you. Please login to
-the your portal account, or review using mobile MedAlert.";
+    String header = "";
     if(template.equals("template1")){
-        //header = "";
-        body = “It is recommended that invasive breast cancer patients be offered Breast MRI if there is a)
-                discrepancy regarding the extent of disease from clinical examination, mammography or ultrasound
-                assessment, b) if breast density precludes accurate mammographic assessment, or c) to assess
-                tumour size if breast conserving surgery is being considered for invasive lobular cancer.”;
+        header = "Recommendation 1";
+        body = "It is recommended that invasive breast cancer patients be offered Breast MRI if there is<br>a) discrepancy regarding the extent of disease from clinical examination, mammography or ultrasound assessment, b) if breast density precludes accurate mammographic assessment, or c) to assess tumour size if breast conserving surgery is being considered for invasive lobular cancer.";
     }
     if(template.equals("template2")){
-        //header = "";
-        body = “ER and PR should be measured in all patients with breast cancer. The primary purpose of measuring
-                these receptors is to identify patients with breast cancer that can be treated with hormone therapy.
-                In combination with established prognostic factors (i.e., tumor stage, tumor grade, and number
-                of lymph node metastases), ER and PR may also be used for determining short-term prognosis in
-                patients with newly diagnosed breast cancer
-
-                Please indicate whether you accept this recommendation using the choices offered below. If you
-                accept, an appropriate order will be filed electroinically on your behalf. If you would like to change
-                the order for any reason, please select 'Modify' to edit as appropriate.”;
+        header = "Recommendation 2";
+        body = "ER and PR should be measured in all patients with breast cancer. The primary purpose of measuring these receptors is to identify patients with breast cancer that can be treated with hormone therapy. In combination with established prognostic factors (i.e., tumor stage, tumor grade, and number of lymph node metastases), ER and PR may also be used for determining short-term prognosis in patients with newly diagnosed breast cancer.<br>Please indicate whether you accept this recommendation using the choices offered below. If you accept, an appropriate order will be filed electroinically on your behalf. If you would like to change the order for any reason, please select 'Modify' to edit as appropriate.";
     }
     if(template.equals("template3")){
-        //header = "";
-        body = “HER-2 should be measured in all patients with invasive breast cancer. The primary purpose of
-                measuring HER-2 is to select patients with breast cancer that may be treated with trastuzumab.
-
-                HER-2 may also identify patients that preferentially benefit from anthracycline-based adjuvant
-                chemotherapy
-                Please indicate whether you accept this recommendation using the choices offered below. If you
-                accept, an appropriate order will be filed electroinically on your behalf. If you would like to change
-                the order for any reason, please select “Modify” to edit as appropriate.”;
+        header = "Recommendation 3";
+        body = "HER-2 should be measured in all patients with invasive breast cancer. The primary purpose of measuring HER-2 is to select patients with breast cancer that may be treated with trastuzumab.<br><br>HER-2 may also identify patients that preferentially benefit from anthracycline-based adjuvant chemotherapy.<br>Please indicate whether you accept this recommendation using the choices offered below. If you accept, an appropriate order will be filed electroinically on your behalf. If you would like to change the order for any reason, please select 'Modify' to edit as appropriate.";
     }
     if(template.equals("template4")){
-        //header = "";
-        body = “Dear Jane,
-
-                Your recent Estrogen Receptor Assay has been resulted and is positive. This is good news and
-                enables us to consider hormonal therapy. As we discussed previously, we should explore your
-                options in person. My next available appointment is Tuesday, March 27th at 1400 in the Woman’s
-                Helath Clinic.
-
-                Please indicate whether you accept this appointment using the choices offered below. If you accept,
-                your appointment will be booked automatically on your behalf. If you would like to change the
-                appointment time for any reason, please select “Modify” and select a more appropriate time.
-
-                In the meantime, feel free to consult the educational material in the patient portal. If you have any
-                questions, email me.
-
-                Sincerely,
-                Dr. Emory Fry”;
+        header = "Lab Test Result is ready";
+        body = "Dear Jane,<br><br>Your recent Estrogen Receptor Assay has been resulted and is positive. This is good news and enables us to consider hormonal therapy. As we discussed previously, we should explore your options in person. My next available appointment is Tuesday, March 27th at 1400 in the Woman's Helath Clinic.<br><br>Please indicate whether you accept this appointment using the choices offered below. If you accept, your appointment will be booked automatically on your behalf. If you would like to change the appointment time for any reason, please select “Modify” and select a more appropriate time.<br><br>In the meantime, feel free to consult the educational material in the patient portal. If you have any questions, email me.<br>Sincerely,<br>Dr. Emory Fry";
     }
     if(template.equals("template5")){
-        //header = "";
-        body = “Patients with early invasive breast cancer should have a baseline dual energy X-ray absorptiometry
-                (DEXA) scan to assess bone mineral density if they are starting adjuvant aromatase inhibitor
-                treatment. No recent scan can be located.
-
-                Please indicate whether you would like to order the recommended DEXA scan using the choices
-                offered below. If you accept, an appropriate order will be filed electroinically on your behalf. If you
-                would like to change the order for any reason, please select “Modify” to edit as appropriate.”
-
-                Escalate the following SMS text message if a response is not received within 4 mins of either alert
-                delivery:
-
-                You have time sensitive treatment recommendations for a patient waiting for you. Please login to
-                the your portal account, or review using mobile MedAlert.”;
+        header = "Recommendation 4";
+        body = "Patients with early invasive breast cancer should have a baseline dual energy X-ray absorptiometry (DEXA) scan to assess bone mineral density if they are starting adjuvant aromatase inhibitor treatment. No recent scan can be located.<br>Please indicate whether you would like to order the recommended DEXA scan using the choices offered below. If you accept, an appropriate order will be filed electroinically on your behalf. If you would like to change the order for any reason, please select “Modify” to edit as appropriate.";
+    }
+    if (template.equals("template6")){
+        header = "You have time sensitive treatment recommendations for a patient waiting for you. Please login to the your portal account, or review using mobile MedAlert.";
+        body = "";
     }
 
     
@@ -138,8 +101,8 @@ the your portal account, or review using mobile MedAlert.";
     map.put("refId", $ticketId );
     map.put("conversationId", $convoId );
     map.put("subjectAbout", new String[] { $pat, $pro, $actorId } );  
-    //map.put("sender", $pro );                 
-    map.put("sender", "CDS System" );                 
+    map.put("sender", $pro );                 
+    //map.put("sender", "CDS System" );                 
     map.put("mainRecipients", new String[] { $actorId } );          
     map.put("secondaryRecipients", new String[0] );     
     map.put("hiddenRecipients", new String[0] ); 

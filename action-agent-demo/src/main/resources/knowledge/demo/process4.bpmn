@@ -28,7 +28,7 @@
       <bpmn2:dataInputAssociation id="_Fldrh3QnEeG0cLyF7TxQag">
         <bpmn2:targetRef>_1DD3BD76-8E53-4D60-A12F-7184990F321F_ConfigurationInput</bpmn2:targetRef>
         <bpmn2:assignment id="_FldriHQnEeG0cLyF7TxQag">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_FldriXQnEeG0cLyF7TxQag">[{&quot;receiver&quot;: &quot;fry.emory&quot;_U_U_ &quot;channel&quot;: &quot;ALERT&quot;_U_U_ &quot;template&quot;: &quot;template5&quot;_U_U_ &quot;timeout&quot;: &quot;0s&quot;}_U_U_ {&quot;receiver&quot;: &quot;fry.emory&quot;_U_U_ &quot;channel&quot;: &quot;SMS&quot;_U_U_ &quot;template&quot;: &quot;template6&quot;_U_U_ &quot;timeout&quot;: &quot;240s&quot;}]</bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_FldriXQnEeG0cLyF7TxQag">[{&quot;receiver&quot;: &quot;1&quot;_U_U_ &quot;channel&quot;: &quot;ALERT&quot;_U_U_ &quot;template&quot;: &quot;template5&quot;_U_U_ &quot;timeout&quot;: &quot;60s&quot;}_U_U_ {&quot;receiver&quot;: &quot;1&quot;_U_U_ &quot;channel&quot;: &quot;SMS&quot;_U_U_ &quot;template&quot;: &quot;template6&quot;_U_U_ &quot;timeout&quot;: &quot;1s&quot;}]</bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_FldrinQnEeG0cLyF7TxQag">_1DD3BD76-8E53-4D60-A12F-7184990F321F_ConfigurationInput</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
@@ -42,6 +42,10 @@
       <bpmn2:outgoing>_DC490574-67DC-4E59-B296-0D33345218A5</bpmn2:outgoing>
       <bpmn2:conditionalEventDefinition id="_FldrjHQnEeG0cLyF7TxQag">
         <bpmn2:condition xsi:type="bpmn2:tFormalExpression" id="_FldrjXQnEeG0cLyF7TxQag" language="http://www.jboss.org/drools/rule">
+            
+            urn.gov.hhs.fha.nhinc.adapter.fact.Medication($d1: hasTypeReferenceConceptPointers)
+            urn.gov.hhs.fha.nhinc.adapter.fact.ConceptPointer(conceptCodeString == "108774000") from $d1
+            
         </bpmn2:condition>
       </bpmn2:conditionalEventDefinition>
     </bpmn2:startEvent>
@@ -52,7 +56,7 @@
     <bpmn2:association id="_E0C3E669-4A99-49E6-8A07-E2843F224BC0" drools:type="none" sourceRef="_760D3881-DCB0-4D58-8203-1CE1E1219CA6" targetRef="_7973F7DD-54E5-4158-9F23-A651E6A252EA"/>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="_FldrjnQnEeG0cLyF7TxQag">
-    <bpmndi:BPMNPlane id="_Fldrj3QnEeG0cLyF7TxQag" bpmnElement="com.sample.bpmm2">
+    <bpmndi:BPMNPlane id="_Fldrj3QnEeG0cLyF7TxQag" bpmnElement="process4">
       <bpmndi:BPMNShape id="_FldrkHQnEeG0cLyF7TxQag" bpmnElement="_1DD3BD76-8E53-4D60-A12F-7184990F321F">
         <dc:Bounds height="81.0" width="120.0" x="390.0" y="134.0"/>
       </bpmndi:BPMNShape>

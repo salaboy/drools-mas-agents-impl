@@ -109,6 +109,7 @@ query deliverMessage( String $refId, String $conversationId,
        $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
 end
 
+/*
 rule "ENTER"
 salience 99999
 when
@@ -117,6 +118,7 @@ then
     System.out.println("************************************************* " + $o );
 end
 
+
 rule "Q"
 salience 99999
 when
@@ -124,6 +126,7 @@ when
 then
     System.out.println("********************QRYYY***************************** " + $o );
 end
+*/
 
 // totally useless rule, except for debug :)
 rule "Deliver Message Action Found"
@@ -189,11 +192,12 @@ end
 
 
 rule "Resolve"
+no-loop true
 when
     $ent : Entity( $id : id, resolved == false )
 then
     System.out.println( "I'm calling the LDAP Service here for " + $id );
-   
+    retract ($ent);
     Map<String, String> results = LDAPHelper.queryEntity("http://192.168.5.49:9763/PresentationServices/DSAIntegration?WSDL",$id);
         $ent.setCn( (String)results.get("cn") );
         $ent.setMobile( (String)results.get("mobile") );
@@ -202,7 +206,7 @@ then
         $ent.setGender( (String)results.get("gender") );
 
     $ent.setResolved( true );
-    update( $ent );
+    insert( $ent );
 end
 
 
@@ -388,7 +392,14 @@ rule " response collector - deliverMessage"
         retract( $action );
 end
 
-
-
+/*
+rule "Log Objects"
+salience 999999
+when
+    $o: Object()
+then
+    System.out.println("Object log: "+$o);
+end
+*/
 
 

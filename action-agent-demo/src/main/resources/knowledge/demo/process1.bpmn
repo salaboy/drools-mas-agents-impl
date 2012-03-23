@@ -63,7 +63,7 @@
     <bpmn2:association id="_0C674980-BE4B-4305-A7FB-663E814FF5B1" drools:type="none" sourceRef="_F614D04F-02B2-4BF3-8F49-CEFB1B4CFD32" targetRef="_47653149-1C97-402E-A4EB-E2F01206D15E"/>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="_OzO_cXQjEeG0cLyF7TxQag">
-    <bpmndi:BPMNPlane id="_OzO_cnQjEeG0cLyF7TxQag" bpmnElement="com.sample.bpmm2">
+    <bpmndi:BPMNPlane id="_OzO_cnQjEeG0cLyF7TxQag" bpmnElement="process1">
       <bpmndi:BPMNShape id="_OzO_c3QjEeG0cLyF7TxQag" bpmnElement="_EC09E5E6-9491-41B7-A6DB-73437BEA4877">
         <dc:Bounds height="80.0" width="100.0" x="349.0" y="135.0"/>
       </bpmndi:BPMNShape>

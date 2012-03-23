@@ -28,7 +28,7 @@
       <bpmn2:dataInputAssociation id="_6S5AhnQlEeG0cLyF7TxQag">
         <bpmn2:targetRef>_1DD3BD76-8E53-4D60-A12F-7184990F321F_ConfigurationInput</bpmn2:targetRef>
         <bpmn2:assignment id="_6S5Ah3QlEeG0cLyF7TxQag">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_6S5AiHQlEeG0cLyF7TxQag">[{&quot;receiver&quot;: &quot;doe.jane&quot;_U_U_ &quot;channel&quot;: &quot;ALERT&quot;_U_U_ &quot;template&quot;: &quot;template4&quot;_U_U_ &quot;timeout&quot;: &quot;0s&quot;}]</bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_6S5AiHQlEeG0cLyF7TxQag">[{&quot;receiver&quot;: &quot;99990070&quot;_U_U_ &quot;channel&quot;: &quot;ALERT&quot;_U_U_ &quot;template&quot;: &quot;template4&quot;_U_U_ &quot;timeout&quot;: &quot;0s&quot;}]</bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_6S5AiXQlEeG0cLyF7TxQag">_1DD3BD76-8E53-4D60-A12F-7184990F321F_ConfigurationInput</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
@@ -42,7 +42,7 @@
       <bpmn2:conditionalEventDefinition id="_6S5Ai3QlEeG0cLyF7TxQag">
         <bpmn2:condition xsi:type="bpmn2:tFormalExpression" id="_6S5AjHQlEeG0cLyF7TxQag" language="http://www.jboss.org/drools/rule">
             
-            urn.gov.hhs.fha.nhinc.adapter.fact.LabTestResult($d1: hasTypeReferenceConceptPointers, hasResultValueQualitative.XXXX == "Positive")
+            urn.gov.hhs.fha.nhinc.adapter.fact.LabTestResult($d1: hasTypeReferenceConceptPointers, hasResultValueQualitative.labelString == "Positive")
             urn.gov.hhs.fha.nhinc.adapter.fact.ConceptPointer(conceptCodeString == "83302001") from $d1
             
         </bpmn2:condition>
@@ -56,7 +56,7 @@
     <bpmn2:association id="_3411DE0B-848A-40A7-B733-4B4E35D97AF2" drools:type="none" sourceRef="_FECAE284-3E68-411A-8EC8-A3F177C48685" targetRef="_CC28319E-99C5-4A09-BBF5-4512346ED721"/>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="_6S5AjXQlEeG0cLyF7TxQag">
-    <bpmndi:BPMNPlane id="_6S5AjnQlEeG0cLyF7TxQag" bpmnElement="com.sample.bpmm2">
+    <bpmndi:BPMNPlane id="_6S5AjnQlEeG0cLyF7TxQag" bpmnElement="process3">
       <bpmndi:BPMNShape id="_6S5Aj3QlEeG0cLyF7TxQag" bpmnElement="_1DD3BD76-8E53-4D60-A12F-7184990F321F">
         <dc:Bounds height="81.0" width="120.0" x="390.0" y="134.0"/>
       </bpmndi:BPMNShape>
