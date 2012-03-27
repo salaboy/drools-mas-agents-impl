@@ -30,12 +30,11 @@
 package gov.hhs.fha.nhinc.kmr2;
 
 import org.drools.ClassObjectFilter;
-import org.drools.base.TypeResolver;
 import org.drools.definition.type.FactType;
-import org.drools.io.impl.ClassPathResource;
 import org.drools.mas.ACLMessage;
 import org.drools.mas.Act;
 import org.drools.mas.Encodings;
+import org.drools.mas.body.acts.Failure;
 import org.drools.mas.body.acts.Inform;
 import org.drools.mas.core.DroolsAgent;
 import org.drools.mas.util.ACLMessageFactory;
@@ -139,7 +138,7 @@ public class TestAgent {
     }
 
 
-    
+
     private String probe( String patientId ) throws InterruptedException {
         Map<String,Object> args = new LinkedHashMap<String,Object>();
         args.put("patientId", patientId);
@@ -150,12 +149,29 @@ public class TestAgent {
         waitForResponse( req.getId() );
 
         ACLMessage ans = mainAgent.getAgentAnswers( req.getId() ).get( 1 );
-        return ret(ans);
+        try {
+            return ret(ans);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
-    private String ret(ACLMessage ans) {
+
+
+    private static class FailureException extends Exception {
+        private FailureException(String message) {
+            super( "FAILURE:" + message );
+        }
+    }
+
+    private String ret(ACLMessage ans) throws FailureException {
+
         if ( ! ans.getPerformative().equals( Act.INFORM ) ) {
             System.err.println( ans );
+        }
+
+        if ( ans.getPerformative().equals( Act.FAILURE ) ) {
+            throw new FailureException( ((Failure) ans.getBody()).getCause().getData().toString() );
         }
         assertEquals( Act.INFORM, ans.getPerformative() );
         MessageContentEncoder.decodeBody( ans.getBody(), Encodings.XML );
@@ -176,7 +192,11 @@ public class TestAgent {
         waitForResponse( req.getId() );
 
         ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
-        return ret(ans);
+        try {
+            return ret(ans);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
     private String setSurvey( String userId, String patientId, String surveyId, String questionId, String value ) {
@@ -193,7 +213,11 @@ public class TestAgent {
         waitForResponse( set.getId() );
 
         ACLMessage ans = mainAgent.getAgentAnswers(set.getId()).get(1);
-        return ret(ans);
+        try {
+            return ret(ans);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
     private void setRiskThreshold(String userId, String patientId, String modelId, String type, Integer value) {
@@ -204,8 +228,11 @@ public class TestAgent {
         args.put("modelId",modelId);
         args.put("type",type);
         args.put("threshold",value);
+
         ACLMessage setThold = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("setRiskThreshold", args) );
         mainAgent.tell(setThold);
+
+        waitForResponse( setThold.getId() );
     }
 
     private String getModels( String userId, String patientId, List tags ) {
@@ -214,13 +241,18 @@ public class TestAgent {
         args.put("patientId",patientId);
         args.put("types", tags);
         ACLMessage req = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("getModels", args));
+
         mainAgent.tell(req);
 
         waitForResponse( req.getId() );
 
         ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
 
-        return ret(ans);
+        try {
+            return ret(ans);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
     private String getRiskModels( String userId, String patientId ) {
@@ -234,10 +266,14 @@ public class TestAgent {
 
         ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
 
-        return ret(ans);
+        try {
+            return ret(ans);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
-    private String getRiskModesDetail(String userId, String patientId, String[] modelsIds) {
+    private String getRiskModelsDetail(String userId, String patientId, String[] modelsIds) {
         Map<String,Object> args = new LinkedHashMap<String,Object>();
 
 
@@ -252,7 +288,11 @@ public class TestAgent {
         waitForResponse( req.getId() );
 
         ACLMessage ans = mainAgent.getAgentAnswers(req.getId()).get(1);
-        return ret( ans );
+        try {
+            return ret(ans);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
 
@@ -272,7 +312,11 @@ public class TestAgent {
 //        MessageContentEncoder.decodeBody( ans.getBody(), Encodings.XML );
 //        String dxProcessId = (String) ((Inform) ans.getBody()).getProposition().getData();
 //        return dxProcessId;
-        return ret(ans);
+        try {
+            return ret(ans);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
     public String getDiagnosticProcessStatus( String userId, String patientId, String dxProcessId, boolean forceRefresh ) {
@@ -288,25 +332,43 @@ public class TestAgent {
         waitForResponse( reqStatus.getId() );
 
         ACLMessage ans2 = mainAgent.getAgentAnswers( reqStatus.getId() ).get( 1 );
-        return ret( ans2 );
+        try {
+            return ret(ans2);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
     }
 
-    public String setDiagnosticActionStatus(String userId, String patientId, String dxProcessId, String actionId, String status) {
-        Map<String,Object> args = new LinkedHashMap<String,Object>();
-        args.clear();
-        args.put("userId", userId);
-        args.put("patientId", patientId );
-        args.put("dxProcessId",dxProcessId);
-        args.put("actionId",actionId);
-        args.put("status",status);
+    public String setDiagnosticActionStatus( String userId, String patientId, String dxProcessId, String actionCtrlQuestId, String status ) {
 
-        ACLMessage reqAction = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("setDiagnosticActionStatus", args) );
-        mainAgent.tell(reqAction);
+        System.out.println( "Setting action status " + status + " for action ctrl quest id " + actionCtrlQuestId );
 
-        waitForResponse( reqAction.getId() );
+        String ctrl = getSurvey( userId, patientId, actionCtrlQuestId );
+        String txQid = getValue( ctrl, "//questionName[.='transition']/../itemId" );
 
-        ACLMessage ans = mainAgent.getAgentAnswers(reqAction.getId()).get(1);
-        return ret( ans ).replaceAll("<string>","").replaceAll("</string>","") ;
+        System.err.println( "Lloking up " + actionCtrlQuestId + " vs " + txQid );
+
+
+        if ( "Started".equals( status ) ) {
+            setSurvey( userId, patientId, actionCtrlQuestId, txQid, "START" );
+        } else if ( "Complete".equals( status ) ) {
+            setSurvey( userId, patientId, actionCtrlQuestId, txQid, "COMPLETE" );
+        }
+
+
+
+
+        String statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
+
+        if ( status.contains( "Complete" ) ) {
+            System.err.println( statusXML );
+        }
+
+        String ans = getValue( statusXML, "//questionnaireId[.='"+ actionCtrlQuestId + "']/../status" );
+
+
+        System.out.println( "ACTION STATE " + ans );
+        return ans;
 
     }
 
@@ -317,9 +379,10 @@ public class TestAgent {
         args.put("dxProcessId",dxProcessId);
         ACLMessage reqStatus = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("advanceDiagnosticGuideProcess", args) );
 
+
         mainAgent.tell(reqStatus);
 //           ACLMessage ans2 = mainResponseInformer.getResponses(reqStatus).get(1);
-
+        waitForResponse( reqStatus.getId() );
     }
 
 
@@ -333,7 +396,7 @@ public class TestAgent {
 
         mainAgent.tell(reqStatus);
 //           ACLMessage ans2 = mainResponseInformer.getResponses(reqStatus).get(1);
-
+        waitForResponse( reqStatus.getId() );
     }
 
 
@@ -374,6 +437,21 @@ public class TestAgent {
         }
         return null;
     }
+
+    private String lookupInBody(String statusXML, String actionName) {
+        String body = getValue( statusXML, "//" + testDecModel + "." + actionName + "/body" );
+
+        System.err.println( body );
+
+        int start = body.indexOf("id=");
+        if ( start > 0 ) {
+            int end = body.indexOf( "\'", start+4 );
+
+            return body.substring( start +4, end );
+        }
+        return null;
+    }
+
 
     private static final String testDecModel = "gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision";
 
@@ -493,41 +571,42 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testExceedAndReset() {
 
         List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
-        String modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        String modelStats = getRiskModelsDetail("docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
 
 
         FactType alertType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "Alert");
         Class alertClass = alertType.getFactClass();
-        Collection alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
-        assertEquals( 0, alerts.size() );
+        FactType xType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "TicketActor");
 
 
+        Collection alerts = mainAgent.getInnerSession("patient33").getObjects(new ClassObjectFilter(alertClass));
+        assertEquals( 0, alerts.size());
 
-        String sid1 = getValue( modelStats, "//modelId[.='MockPTSD']/../surveyId" );
-        assertNotNull( sid1 );
 
-        String ptsdSurvey = getSurvey( "docX", "patient33", sid1);
+        String sid1 = getValue(modelStats, "//modelId[.='MockPTSD']/../surveyId");
+        assertNotNull(sid1);
+
+        String ptsdSurvey = getSurvey("docX", "patient33", sid1);
 
         String gender = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId" );
-        String deployments = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId" );
+        String deployments = getValue(ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId");
         String alcohol = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Alcohol']/../itemId" );
         String age = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Age']/../itemId" );
 
-        assertNotNull( gender );
-        assertNotNull( deployments );
+        assertNotNull(gender);
+        assertNotNull(deployments );
         assertNotNull( age );
 
-        setSurvey( "drX", "patient33", sid1, deployments, "1" );
-        setSurvey( "drX", "patient33", sid1, gender, "female" );
-        setSurvey( "drX", "patient33", sid1, alcohol, "yes" );
-        setSurvey( "drX", "patient33", sid1, age, "30" );
+        setSurvey("drX", "patient33", sid1, deployments, "1");
+        setSurvey("drX", "patient33", sid1, gender, "female");
+        setSurvey( "drX", "patient33", sid1, alcohol, "yes");
+        setSurvey("drX", "patient33", sid1, age, "30" );
 
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
-        assertEquals( "30", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
+        modelStats = getRiskModelsDetail("docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
+        assertEquals("30", getValue(modelStats, "//modelId[.='MockPTSD']/../relativeRisk"));
 
 
         setRiskThreshold( "drX", "patient33", "MockPTSD", "Alert", 25 );
@@ -538,36 +617,34 @@ public class TestAgent {
         sleep(12000);
         alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
         assertEquals( 0, alerts.size() );
+        Collection zalerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(xType.getFactClass()) );
+        assertEquals( 0, zalerts.size() );
+
+
 
 
         for ( Object o :  mainAgent.getInnerSession("patient33").getObjects() )
             System.err.println( o );
 
 
-
-
-
         setSurvey( "drX", "patient33", sid1, age, "1" );
 
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        modelStats = getRiskModelsDetail("docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
         assertEquals( "16", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
 
 
         setSurvey( "drX", "patient33", sid1, age, "40" );
 
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        modelStats = getRiskModelsDetail("docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
         assertEquals( "35", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
 
 
 
-
-
-
-        FactType xType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "TicketActor");
-        Collection zalerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(xType.getFactClass()) );
+        zalerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(xType.getFactClass()) );
         for (Object o : zalerts) {
             System.err.println(o);
         }
+
 
 
         alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
@@ -575,7 +652,6 @@ public class TestAgent {
             System.err.println(o);
         }
         assertEquals( 2, alerts.size() );
-
 
 
     }
@@ -589,20 +665,19 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testSetAndResetAndSet() {
 
         String[] mids = new String[] { "MockPTSD" };
 
-        String modelStats = getRiskModesDetail( "docX", "patient33", mids );
+        String modelStats = getRiskModelsDetail("docX", "patient33", mids);
 
         String sid1 = getValue( modelStats, "//modelId[.='MockPTSD']/../surveyId" );
         assertNotNull( sid1 );
 
-        String ptsdSurvey = getSurvey( "docX", "patient33", sid1);
+        String ptsdSurvey = getSurvey("docX", "patient33", sid1);
 
         String gender = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId" );
-        String deployments = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId" );
+        String deployments = getValue(ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId");
         String alcohol = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Alcohol']/../itemId" );
         String age = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Age']/../itemId" );
 
@@ -615,45 +690,45 @@ public class TestAgent {
         System.out.println( set );
         set = setSurvey( "drX", "patient33", sid1, gender, "female" );
         System.out.println( set );
-        set = setSurvey( "drX", "patient33", sid1, alcohol, "yes" );
+        set = setSurvey("drX", "patient33", sid1, alcohol, "yes" );
         System.out.println( set );
         set = setSurvey( "drX", "patient33", sid1, age, "30" );
-        System.out.println( set );
+        System.out.println(set);
 
-        modelStats = getRiskModesDetail( "docX", "patient33", mids );
-        assertEquals( "30", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
+        modelStats = getRiskModelsDetail("docX", "patient33", mids);
+        assertEquals("30", getValue(modelStats, "//modelId[.='MockPTSD']/../relativeRisk"));
         assertEquals( "Average", getValue( modelStats, "//modelId[.='MockPTSD']/../severity" ) );
 
 
 
 
         set = setSurvey( "drX", "patient33", sid1, age, null );
-        System.out.println( set );
+        System.out.println(set);
         set = setSurvey( "drX", "patient33", sid1, gender, null );
         System.out.println( set );
 
-        modelStats = getRiskModesDetail( "docX", "patient33", mids );
+        modelStats = getRiskModelsDetail("docX", "patient33", mids);
         assertEquals( "-1", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
-        assertEquals( "n/a", getValue( modelStats, "//modelId[.='MockPTSD']/../severity" ) );
+        assertEquals("n/a", getValue(modelStats, "//modelId[.='MockPTSD']/../severity"));
 
 
 
         set = setSurvey( "drX", "patient33", sid1, age, "25" );
-        modelStats = getRiskModesDetail( "docX", "patient33", mids );
-        assertEquals( "-1", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
+        modelStats = getRiskModelsDetail("docX", "patient33", mids);
+        assertEquals( "-1", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk"));
         assertEquals( "n/a", getValue( modelStats, "//modelId[.='MockPTSD']/../severity" ) );
 
 
 
         set = setSurvey( "drX", "patient33", sid1, gender, "male" );
-        modelStats = getRiskModesDetail( "docX", "patient33", mids );
+        modelStats = getRiskModelsDetail("docX", "patient33", mids);
         assertEquals( "38", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
         assertEquals( "Average", getValue( modelStats, "//modelId[.='MockPTSD']/../severity" ) );
 
 
 
         set = setSurvey( "drX", "patient33", sid1, age, "30" );
-        modelStats = getRiskModesDetail( "docX", "patient33", mids );
+        modelStats = getRiskModelsDetail("docX", "patient33", mids);
         assertEquals( "40", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
         assertEquals( "Average", getValue( modelStats, "//modelId[.='MockPTSD']/../severity" ) );
 
@@ -668,7 +743,6 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testGetModels() {
 
         String diagModels = getModels("drX", "patient33", Arrays.asList("Diagnostic") );
@@ -676,7 +750,7 @@ public class TestAgent {
         System.out.println( diagModels );
 
         List<String> diagList = getModels( diagModels );
-        assertEquals(1, diagList.size());
+        assertEquals( 1, diagList.size() );
         assertTrue( diagList.containsAll( Arrays.asList("MockDiag" ) ) );
 
 
@@ -781,7 +855,7 @@ public class TestAgent {
         completeDiagnosticGuideProcess( "docX", "patient33", dxProcessId, "Complete"  );
 
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
-        assertEquals( "Complete", getValue( statusXML, "//gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DiagnosticGuideProcess/status" ) );
+        assertEquals( "Complete", getValue( statusXML, "//" + testDecModel + "DiagnosticGuideProcess/status" ) );
 
     }
 
@@ -792,11 +866,10 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testGetRiskModelsDetail() {
 
         List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
-        String modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        String modelStats = getRiskModelsDetail("docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
         System.err.println(modelStats);
 
         String sid1 = getValue( modelStats, "//modelId[.='MockPTSD']/../surveyId" );
@@ -804,18 +877,18 @@ public class TestAgent {
 
         assertNotNull( sid1 );
         assertNotNull( sid2 );
-        assertTrue( sid1.length() > 1 );
-        assertTrue( sid2.length() > 1 );
+        assertTrue(sid1.length() > 1);
+        assertTrue(sid2.length() > 1);
 
 
 
-        System.out.println(sid1 + " .............................. " + sid2 );
+        System.out.println(sid1 + " .............................. " + sid2);
         String ptsdSurvey = getSurvey( "docX", "patient33", sid1);
         String coldSurvey = getSurvey( "docX", "patient33", sid2);
 
         System.out.println("@#*" + coldSurvey);
 
-        String gender = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId" );
+        String gender = getValue(ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId");
         String deployments = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId" );
         String alcohol = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Alcohol']/../itemId" );
         String age = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Age']/../itemId" );
@@ -825,21 +898,21 @@ public class TestAgent {
         assertNotNull( gender );
         assertNotNull( deployments );
         assertNotNull( age );
-        assertNotNull( temperature );
+        assertNotNull( temperature);
 
-        setSurvey( "drX", "patient33", sid1, deployments, "1" );
+        setSurvey("drX", "patient33", sid1, deployments, "1");
 
-        setSurvey( "drX", "patient33", sid1, gender, "female" );
+        setSurvey("drX", "patient33", sid1, gender, "female");
         setSurvey( "drX", "patient33", sid1, alcohol, "yes" );
         setSurvey( "drX", "patient33", sid1, age, "30" );
 
         setSurvey( "drX", "patient33", sid2, temperature, "39" );
 
-        setRiskThreshold( "drX", "patient33", "MockPTSD", "Alert", 35 );
+        setRiskThreshold("drX", "patient33", "MockPTSD", "Alert", 35);
 
 
 
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        modelStats = getRiskModelsDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
 
 
         System.out.println( modelStats );
@@ -864,59 +937,55 @@ public class TestAgent {
     }
 
 
-
-
-
     @Test
-    @Ignore
     public void testClearRiskModelsSurvey() {
 
         String[] modelsIds = new String[] {"MockCold"};
-        String modelStats = getRiskModesDetail( "docX", "patient33", modelsIds  );
+        String modelStats = getRiskModelsDetail("docX", "patient33", modelsIds);
 
         String sid2 = getValue( modelStats, "//modelId[.='MockCold']/../surveyId" );
 
 
-        assertNotNull( sid2 );
+        assertNotNull(sid2);
 
-        String coldSurvey = getSurvey( "docX", "patient33", sid2);
+        String coldSurvey = getSurvey("docX", "patient33", sid2);
         System.out.println("@#*" + coldSurvey);
 
-        String temperature = getValue( coldSurvey, "//questionName[.='MockCold_Temp']/../itemId" );
-        assertNotNull( temperature );
+        String temperature = getValue(coldSurvey, "//questionName[.='MockCold_Temp']/../itemId");
+        assertNotNull(temperature);
 
         for ( int j = 0; j < 5; j++ ) {
             System.out.println("\n");
             System.err.println("\n");
         }
-        System.out.println(  getSurvey( "docX", "patient33", sid2) );
+        System.out.println(getSurvey("docX", "patient33", sid2));
         for ( int j = 0; j < 5; j++ ) {
             System.out.println("\n");
             System.err.println("\n");
         }
 
-        setSurvey( "drX", "patient33", sid2, temperature, "null" );
+        setSurvey("drX", "patient33", sid2, temperature, "null");
 
         setSurvey( "drX", "patient33", sid2, temperature, "39" );
 
 
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds  );
+        modelStats = getRiskModelsDetail("docX", "patient33", modelsIds);
 
 
 
-        assertEquals( "22", getValue( modelStats, "//modelId[.='MockCold']/../relativeRisk" ) );
+        assertEquals("22", getValue(modelStats, "//modelId[.='MockCold']/../relativeRisk"));
 
 
         setSurvey( "drX", "patient33", sid2, temperature, "null" );
 
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds  );
+        modelStats = getRiskModelsDetail("docX", "patient33", modelsIds);
         assertEquals( "-1", getValue( modelStats, "//modelId[.='MockCold']/../relativeRisk" ) );
 
 
 
 
         setSurvey( "drX", "patient33", sid2, temperature, "35" );
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds  );
+        modelStats = getRiskModelsDetail("docX", "patient33", modelsIds);
 
         assertEquals( "30", getValue( modelStats, "//modelId[.='MockCold']/../relativeRisk" ) );
 
@@ -930,10 +999,9 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testSetDiagnostic() {
 
-        Map<String,Object> args = new LinkedHashMap<String,Object>();
+
 
         String dxProcessReturn = startDiagnosticGuideProcess( "docX", "patient33", "Post Traumatic Stress Disorder");
         String dxProcessId = getValue( dxProcessReturn, "//dxProcessId" );
@@ -944,30 +1012,23 @@ public class TestAgent {
         String statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
 
         String actionId = getValue( statusXML, "//" + testDecModel + ".AskAlcohol/actionId" );
+        String actionQuestId = getValue( statusXML, "//" + testDecModel + ".AskAlcohol/questionnaireId" );
         assertNotNull( actionId );
 
 
         System.err.println(statusXML);
 
-        String stat1 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionId, "Started" );
-        stat1 = getValue( stat1, "//actionStatus" );
+        String stat1 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionQuestId, "Started" );
         assertEquals("Started", stat1);
 
-        String stat2 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionId, "Committed" );
-        stat2 = getValue( stat2, "//actionStatus" );
-        assertEquals("Committed", stat2);
 
-        String stat3 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionId, "Complete" );
-        stat3 = getValue( stat3, "//actionStatus" );
-        assertEquals("Complete", stat3);
+        String stat3 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionQuestId, "Complete" );
+        assertEquals("Completed", stat3);
 
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
         System.out.println( statusXML );
 
         completeDiagnosticGuideProcess( "drX", "patient33", dxProcessId, "Complete" );
-
-
-
 
     }
 
@@ -977,9 +1038,6 @@ public class TestAgent {
     @Test
     @Ignore
     public void testDifferentialSetSurvey() {
-
-
-        Map<String,Object> args = new LinkedHashMap<String,Object>();
 
         String dxProcessReturn = startDiagnosticGuideProcess( "docX", "patient33", "Post Traumatic Stress Disorder");
         String dxProcessId = getValue( dxProcessReturn, "//dxProcessId" );
@@ -993,13 +1051,15 @@ public class TestAgent {
 
 
         String testActionId = getValue( statusXML, "//" + testDecModel + ".DoExcruciatinglyPainfulTest/actionId" );
-        String testQuestId = getValue( statusXML, "//" + testDecModel + ".DoExcruciatinglyPainfulTest/questionnaireId" );
+        String testActionQuestId = getValue( statusXML, "//" + testDecModel + ".DoExcruciatinglyPainfulTest/questionnaireId" );
+//        String testQuestId = getValue( statusXML, "//" + testDecModel + ".DoExcruciatinglyPainfulTest/questionnaireId" );
         assertNotNull( testActionId );
-        assertNotNull( testQuestId );
+//        assertNotNull( testQuestId );
 
-        String stat1 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, testActionId, "Started" );
-        stat1 = getValue( stat1, "//actionStatus" );
+        String stat1 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, testActionQuestId, "Started" );
         assertEquals("Started", stat1);
+
+        String testQuestId = lookupInBody( statusXML, "DoExcruciatinglyPainfulTest");
 
         String survXML = getSurvey( "drX", "patient33", testQuestId );
         String confirmQid = getValue( survXML, "//questionName[.='confirm']/../itemId" );
@@ -1016,7 +1076,7 @@ public class TestAgent {
 
 
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
-        assertEquals( "true", getValue( statusXML, "//" + testDecModel + ".DoExcruciatinglyPainfulTest/confirm" ) );
+//        assertEquals( "true", getValue( statusXML, "//" + testDecModel + ".DoExcruciatinglyPainfulTest/confirm" ) );
         assertEquals( "Started", getValue( statusXML, "//" + testDecModel + ".DoExcruciatinglyPainfulTest/status" ) );
 
         sleep( 2500 );
@@ -1033,33 +1093,27 @@ public class TestAgent {
         completeDiagnosticGuideProcess( "docX", "patient33", dxProcessId, "Complete"  );
 
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
-        assertEquals( "Complete", getValue( statusXML, "//gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DiagnosticGuideProcess/status" ) );
+        assertEquals( "Complete", getValue( statusXML, "//" + testDecModel + "DiagnosticGuideProcess/status" ) );
 
     }
 
 
-
-
-
-
-
     @Test
-    @Ignore
     public void testExceedRiskThreshold() {
 
         List<String> modelsIds = getElements(getRiskModels("docX", "patient33"), "//modelId");
-        String modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        String modelStats = getRiskModelsDetail("docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
 
 
         String sid1 = getValue( modelStats, "//modelId[.='MockPTSD']/../surveyId" );
         assertNotNull( sid1 );
 
-        String ptsdSurvey = getSurvey( "docX", "patient33", sid1);
+        String ptsdSurvey = getSurvey("docX", "patient33", sid1);
 
         System.out.println(ptsdSurvey);
 
-        String gender = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId" );
-        String deployments = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId" );
+        String gender = getValue(ptsdSurvey, "//questionName[.='MockPTSD_Gender']/../itemId");
+        String deployments = getValue(ptsdSurvey, "//questionName[.='MockPTSD_Deployments']/../itemId" );
         String alcohol = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Alcohol']/../itemId" );
         String age = getValue( ptsdSurvey, "//questionName[.='MockPTSD_Age']/../itemId" );
 
@@ -1067,12 +1121,12 @@ public class TestAgent {
         assertNotNull( deployments );
         assertNotNull( age );
 
-        setSurvey( "drX", "patient33", sid1, deployments, "1" );
-        setSurvey( "drX", "patient33", sid1, gender, "female" );
+        setSurvey("drX", "patient33", sid1, deployments, "1");
+        setSurvey("drX", "patient33", sid1, gender, "female");
         setSurvey( "drX", "patient33", sid1, alcohol, "yes" );
         setSurvey( "drX", "patient33", sid1, age, "30" );
 
-        modelStats = getRiskModesDetail( "docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]) );
+        modelStats = getRiskModelsDetail("docX", "patient33", modelsIds.toArray(new String[modelsIds.size()]));
         System.out.println( modelStats );
         assertEquals( "30", getValue( modelStats, "//modelId[.='MockPTSD']/../relativeRisk" ) );
 
@@ -1081,13 +1135,14 @@ public class TestAgent {
 
 
 
-
+        
 
 
         FactType alertType = mainAgent.getInnerSession("patient33").getKnowledgeBase().getFactType("org.drools.informer.interaction", "Alert");
         Class alertClass = alertType.getFactClass();
 
         Collection alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
+
 
 
         String patientAlertSurveyId = null;
@@ -1100,25 +1155,10 @@ public class TestAgent {
             String form = getSurvey( dest, "patient33", formId );
             assertNotNull( form );
 
-            String type = getValue( form, "//surveyClass" );
-            if ("org.kmr2.mock.PatientAcknowledgment".equals( type ) ) {
+            ackQuestionId = getValue( form, "//org.drools.informer.presentation.QuestionGUIAdapter/questionName[.='transition']/../itemId" );
 
-                patientAlertSurveyId = getValue( form, "//org.drools.informer.presentation.SurveyGUIAdapter/itemId" );
-
-                ackQuestionId = getValue( form, "//org.drools.informer.presentation.QuestionGUIAdapter/questionName[.='ack']/../itemId" );
-
-                assertEquals( formId, patientAlertSurveyId );
-                assertNotNull(ackQuestionId);
-            }
-
+            setSurvey( "patient33", "patient33", formId, ackQuestionId, "COMPLETE" );
         }
-
-
-        setSurvey( "patient33", "patient33", patientAlertSurveyId, ackQuestionId, "accept" );
-
-
-        sleep(12000);
-
 
         alerts = mainAgent.getInnerSession("patient33").getObjects( new ClassObjectFilter(alertClass) );
         assertEquals( 0, alerts.size() );
@@ -1133,7 +1173,6 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testUnroutableMessage() {
         Map<String,Object> args = new LinkedHashMap<String,Object>();
         args.put("userId", "uid");
@@ -1143,9 +1182,9 @@ public class TestAgent {
         mainAgent.tell(req);
 
         for ( Object o : mainAgent.getMind().getObjects() ) {
-        System.out.println( "MIND OBEJT " +o );
+            System.out.println( "MIND OBEJT " +o );
         }
-        
+
         List<ACLMessage> resp =  mainAgent.getAgentAnswers(req.getId());
         assertEquals( 1, resp.size() );
         assertEquals( Act.NOT_UNDERSTOOD, resp.get( 0 ).getPerformative() );
@@ -1159,60 +1198,86 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testDiagnostic() {
 
 
-
-        Map<String,Object> args = new LinkedHashMap<String,Object>();
-
         String dxProcessReturn = startDiagnosticGuideProcess( "docX", "patient33", "Post Traumatic Stress Disorder");
         String dxProcessId = getValue( dxProcessReturn, "//dxProcessId" );
-
 
         assertNotNull( dxProcessId );
 
         String statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
 
+//        System.err.println( statusXML );
 
-        System.err.println(statusXML);
+
 
         String actionId = getValue( statusXML, "//" + testDecModel + ".AskAlcohol/actionId" );
         String actionQuestId = getValue( statusXML, "//" + testDecModel + ".AskAlcohol/questionnaireId" );
         assertNotNull( actionId );
 
-        String stat1 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionId, "Started" );
-        stat1 = getValue( stat1, "//actionStatus" );
+        String stat1 = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionQuestId, "Started" );
+
         assertEquals("Started", stat1);
 
-        String survXML = getSurvey( "drX", "patient33", actionQuestId );
+
+
+        String actionBodyId = lookupInBody( statusXML, "AskAlcohol");
+
+        String survXML = getSurvey( "drX", "patient33", actionBodyId );
         String alcoholQid = getValue( survXML, "//questionName[.='question']/../itemId" );
 
-        System.err.println(alcoholQid);
+        System.err.println( alcoholQid );
+
+
 
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
         assertEquals( "false", getValue( statusXML, "//canAdvance") );
 
 
 
-        setSurvey( "drX", "patient33", actionQuestId, alcoholQid, "true" );
+        setSurvey( "drX", "patient33", actionBodyId, alcoholQid, "true" );
 
-        survXML = getSurvey( "drX", "patient33", actionQuestId );
 
-//        String stat = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionId, "Complete" );
-//        assertEquals( "Complete", stat );
+
+        survXML = getSurvey( "drX", "patient33", actionBodyId );
+
+
+        System.err.println( survXML );
+
+
+
+        String stat = setDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionQuestId, "Complete" );
+        assertEquals( "Completed", stat );
+
+
+
 
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
 
-        assertEquals( "true", getValue( statusXML, "//actionId[.='"+ actionId + "']/../question" ) );
-        assertEquals( "Complete", getValue( statusXML, "//actionId[.='"+ actionId + "']/../status" ) );
+
+
+        assertEquals( "Completed", getValue( statusXML, "//actionId[.='"+ actionId + "']/../status" ) );
         assertEquals( "Not Started", getValue( statusXML, "//" + testDecModel + ".AskDeployment/status" ) );
 
 
+
         assertEquals( "true", getValue( statusXML, "//canAdvance") );
+        assertEquals( "false", getValue( statusXML, "//canCancel") );
+
+
+
         advanceDiagnosticProcessStatus( "drX", "patient33", dxProcessId );
 
+
+
+
+
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
+
+
+
+
         assertEquals( "true", getValue( statusXML, "//canAdvance") );
 
 
@@ -1220,23 +1285,17 @@ public class TestAgent {
 
         statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
 
+
         System.err.println(statusXML);
-
+//
         assertEquals( "1", getValue( statusXML, "//gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DxDecision/diseaseProbability[.='10']/../stage" ) );
-        assertEquals( "0", getValue( statusXML, "//gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DxDecision/actions/" + testDecModel + ".AskAlcohol/status[.='Complete']/../../../stage" ) );
-
 
 
     }
 
 
 
-
-
-
-
     @Test
-    @Ignore
     public void testProbe() throws InterruptedException {
         System.out.println( probe( "patient33" ) );
     }
@@ -1245,7 +1304,6 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testProbe2() throws InterruptedException {
         System.err.println( probe( "123456" ) );
     }
@@ -1272,11 +1330,7 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testEmptyDiagnostic() {
-
-
-        Map<String,Object> args = new LinkedHashMap<String,Object>();
 
         String dxProcessReturn = startDiagnosticGuideProcess( "docX", "patient33", "Uncommon Cold");
         String dxProcessId = getValue( dxProcessReturn, "//dxProcessId" );
@@ -1291,19 +1345,11 @@ public class TestAgent {
 
 
     @Test
-    @Ignore
     public void testNonExistingDiagnostic() {
 
-
-        Map<String,Object> args = new LinkedHashMap<String,Object>();
-
-        String dxProcessReturn = startDiagnosticGuideProcess( "docX", "patient33", "Imaginary Disease");
-        String dxProcessId = getValue( dxProcessReturn, "//dxProcessId" );
-        System.err.println( dxProcessId );
-
-        String statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
-
-        System.err.println( statusXML );
+        String dxProcessReturn = startDiagnosticGuideProcess( "docX", "patient33", "Imaginary Disease" );
+        assertTrue( dxProcessReturn.startsWith( "FAILURE:" ) );
+        System.err.println( dxProcessReturn );
 
     }
 
@@ -1364,16 +1410,6 @@ public class TestAgent {
 
 
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -46,11 +46,12 @@ when
                   $dxProcessId : this["dxProcessId"],
                   $status      : this["status"] == "Complete"
                 )
-    $dx : DiagnosticGuideProcess( id == $dxProcessId, status == "Started", $steps : diagnosticProcessHistory )
+    $dx : DiagnosticGuideProcess( id == $dxProcessId, status == "Started", $steps : diagnosticProcessHistory, $taskId : taskId )
 then
     modify ($dx) {
         setStatus( "Complete" );
     }
+    insert( new TaskStateTransition( $taskId, TaskTransitions.COMPLETE, null, new java.util.Date() ) );
 end
 
 rule "Action_Request : completeDiagnosticGuideProcess - Cancel"

@@ -25,7 +25,7 @@ then
             rd.setType( ResourceType.PMML );
             rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_cold.pmml" ).getURL() );
             rd.setLoaded( false );
-//    insert( rd );
+    insert( rd );
 end
 
 rule "Init Diabetes Descriptors"
@@ -45,7 +45,7 @@ then
             rd.setType( ResourceType.PMML );
             rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_diab.pmml" ).getURL() );
             rd.setLoaded( false );
-//    insert( rd );
+    insert( rd );
 end
 
 rule "Init PTSD Descriptors"

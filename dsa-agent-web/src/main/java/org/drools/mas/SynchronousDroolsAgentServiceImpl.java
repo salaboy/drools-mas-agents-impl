@@ -13,9 +13,7 @@ import org.drools.mas.mappers.MyMapReferenceEntryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jws.WebMethod;
 import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.List;
 
@@ -24,15 +22,15 @@ import java.util.List;
  * @author salaboy
  * @author esteban
  */
-@WebService(targetNamespace = "http://mas.drools.org/")
+@WebService(targetNamespace = "http://mas.drools.org/", serviceName="SyncAgentService", 
+            portName="SyncAgentServicePort", endpointInterface="org.drools.mas.SynchronousDroolsAgentService"
+           )
 @XmlSeeAlso(value = {ACLMessage.class, AbstractMessageBody.class, Inform.class, Info.class, QueryIf.class, InformIf.class,
     Agree.class, Failure.class, Action.class, Rule.class, InformRef.class, Act.class,
     QueryRef.class, Query.class, Ref.class, Encodings.class,
     Ref.class, InformRef.class, Request.class, RequestWhen.class,
     MyMapReferenceEntryType.class, MyMapArgsEntryType.class})
-@SOAPBinding(style = SOAPBinding.Style.DOCUMENT,
-use = SOAPBinding.Use.LITERAL,
-parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
+
 @Features(features = "org.apache.cxf.feature.LoggingFeature") 
 public class SynchronousDroolsAgentServiceImpl implements SynchronousDroolsAgentService {
 
@@ -44,14 +42,10 @@ public class SynchronousDroolsAgentServiceImpl implements SynchronousDroolsAgent
         
     }
 
-    @WebMethod(exclude = true)
     public void setAgent(DroolsAgent agent) {
         this.agent = agent;
     }
 
-    
-
-    @WebMethod(operationName = "tell")
     public List<ACLMessage> tell(ACLMessage message) {
         if (logger.isDebugEnabled()) {
             logger.debug(" >>> IN Message -> " + message.getPerformative().name());
@@ -78,5 +72,10 @@ public class SynchronousDroolsAgentServiceImpl implements SynchronousDroolsAgent
             }
         }
         return retrieveResponses;
+    }
+    
+    public void dispose(){
+        logger.debug(" XXX Disposing Agent -> " + agent.getAgentId());
+        agent.dispose();
     }
 }

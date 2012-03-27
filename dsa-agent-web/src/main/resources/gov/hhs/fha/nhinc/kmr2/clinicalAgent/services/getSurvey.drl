@@ -72,3 +72,20 @@ then
     retract($a);
     ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end
+
+
+rule "Action_Request : getSurvey Fail"
+salience -9999
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "getSurvey", $msgId : msgId,
+                 $userId : this["userId"],
+                 $patientId : this["patientId"],
+                 $surveyId : this["surveyId"]
+    )
+    not ?getSurvey( $userId, $patientId, $surveyId, $return ; )
+then
+    retract($a);
+
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, null, new ExecutionFault( $msgId, "Survey not found " + $surveyId )  );
+end

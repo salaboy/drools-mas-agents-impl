@@ -30,6 +30,9 @@ package org.kmr2.mock;
 
 import org.drools.mas.body.content.Action;
 import org.drools.mas.*;
+import org.drools.grid.api.ResourceDescriptor;
+import org.drools.pmml_4_0.ModelMarker;
+import org.drools.builder.ResourceType;
 
 
 import java.util.List;
@@ -64,28 +67,57 @@ when
     $act : Action( $prov : this["userId"] != null, $pat : this["patientId"] )
     $pin : PatientInfo( patientName != $pat )
 then
-    retract( $pin );
+    modify( $pin ) {
+        setPatientName( (String) $pat );
+    }
 end
 
 rule "Clear pro"
 when
     $act : Action( $prov : this["userId"] != null, $pat : this["patientId"] )
-    $pin : UserInfo( userName != $prov )
+    $uin : UserInfo( userName != $prov )
 then
-    retract( $pin );
+    modify( $uin ) {
+        setUserName( (String) $prov );
+    }
 end
 
 rule "Update pat"
 when
-    $act : Action( $prov : this["userId"] != null, $pat : this["patientId"] )
+//    $act : Action( $prov : this["userId"] != null, $pat : this["patientId"] )
 then
-    insert( new UserInfo( (String) $prov ) );
-    insert( new PatientInfo( (String) $pat ) );
+//    insert( new UserInfo( (String) $prov ) );
+//    insert( new PatientInfo( (String) $pat ) );
+    insert( new UserInfo( "" ) );
+    insert( new PatientInfo( "" ) );
 end
 
 
 
 
+
+
+
+rule "Mark Models"
+when
+    $mm : ModelMarker( $modelName : modelName )
+    $rs : ResourceDescriptor( name == $modelName, loaded == false, type == ResourceType.PMML )
+then
+    modify ( $rs ) {
+        setLoaded( true );
+    }
+end
+
+rule "UnMark Models"
+when
+    $rs : ResourceDescriptor( $modelName : name, loaded == true, type == ResourceType.PMML )
+    not   ModelMarker( modelName == $modelName )
+then
+    System.out.println("XX Looking " + $modelName );
+    modify ( $rs ) {
+        setLoaded( false );
+    }
+end
 
 
 

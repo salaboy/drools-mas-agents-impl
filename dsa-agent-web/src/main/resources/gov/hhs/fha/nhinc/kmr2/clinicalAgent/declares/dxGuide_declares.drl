@@ -40,7 +40,6 @@ import org.drools.informer.generator.annotations.AllowedAnswers;
 declare DiagnosticGuideProcess
    id                       : String                @key
    status                   : String                        = "n/a"
-//   message                  : String
    decModel                 : String
    diagModel                : String
    disease                  : String
@@ -48,7 +47,7 @@ declare DiagnosticGuideProcess
    canAdvance               : boolean                       = false
    canCancel                : boolean                       = false
    actions                  : java.util.HashSet
-//   successStatus            : boolean                       = true
+   taskId                   : String
 end
 
 
@@ -57,7 +56,8 @@ declare DxDecision
     stage                   : int
     current                 : boolean
     descr                   : String
-    diseaseProbability      : int
+    diseaseProbability      : int                  = -1
+    diseaseProbabilityReal  : double               = -1.0
     severity                : String
     response                : String
     actions                 : java.util.List
@@ -66,32 +66,34 @@ end
 
 
 declare Surveyable
+@typesafe( false )
 end
 
 
-declare DxAction extends Surveyable
+declare DxAction
+@typesafe( false )
 
-    actionId        : String                        @key
+    actionId        : String                        = java.util.UUID.randomUUID().toString() @key
+    dxProcessId     : String
+    step            : int
+
+    taskId          : String
+    // control questionnaire, allows to se the task State
     questionnaireId : String
-    numQuestions    : int
-
-    utility         : double      = -1.0
-    utilityLevel    : String
 
     status          : String                        = "Not Started"
-//    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Current status : ", required = true )
-//    @AllowedAnswers( values = { "Not Started=Not Started", "Started=Started", "Committed=Committed", "Complete=Complete" } )
-
     statusUpdated   : String
 
+    numQuestions    : int
+    body            : String
+    bodyQuestId     : String
+
+    utility         : double                        = -1.0
+    rndUtility      : int                           = -1
+    utilityLevel    : String                        = "n/a"
+
 end
 
-
-declare DxAutoCommittingAction extends DxAction
-end
-
-declare DxExternalCommittingAction extends DxAction
-end
 
 
 declare DxStep
@@ -116,89 +118,12 @@ end
 
 
 
-declare AskAlcohol extends DxAutoCommittingAction
-@Questionable( label = "Ask for Alcohol Abuse", language = "EN" )
-
-    descr           : String            = "Ask for alcohol abuse"
-
-    question        : String            = null
-    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Do you abuse alcohol ? ", required = false )
-    @AllowedAnswers( values = { "true=true", "false=false", "unknown=unknown"  } )
-
-end
 
 
-declare AskDeployment extends DxAutoCommittingAction
-@Questionable( label = "Ask for Number of Deployments", language = "EN" )
-
-    descr           : String            = "Ask for number of deployments "
-
-    deploys         : String            = null
-    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " How many times have you been deployed ? ", required = true )
-    @AllowedAnswers( values = { "0=No deployments", "1=Just once", "2+=Two or more times"  } )
-
-end
 
 
-declare DoExcruciatinglyPainfulTest extends DxExternalCommittingAction
-@Questionable( label = "There's something I have to tell you...", language = "EN" )
-
-    descr           : String            = "You had better not know"
-
-    confirm         : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Are you sure ? ", required = true )
-end
 
 
-declare AskSomething1 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 1", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
-declare AskSomething2 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 2", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
-declare AskSomething3 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 3", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
-declare AskSomething4 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 4", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
-declare AskSomething5 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 5", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
-declare AskSomething6 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 6", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
-declare AskSomething7 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 7", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
-declare AskSomething8 extends DxAutoCommittingAction
-@Questionable( label = "Ask for Something 8", language = "EN" )
-    descr           : String            = "No survey here, just complete"
-    question        : Boolean           = null
-    @QuestionMark( type = Question.QuestionType.TYPE_BOOLEAN, label = " Confirm ? ", required = false )
-end
 
 
 

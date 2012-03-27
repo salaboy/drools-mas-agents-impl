@@ -37,19 +37,26 @@ import org.drools.mas.Encodings;
 import org.drools.mas.util.helper.*;
 
 
+declare OneShotBlocker
+  id : String
+end
+
 rule "Action_Request : advanceDiagnosticGuideProcess"
+no-loop
 when
-    $a  : Action( actionName == "advanceDiagnosticGuideProcess",
+    $a  : Action( actionName == "advanceDiagnosticGuideProcess",  $msgId : msgId,
                   $userId      : this["userId"],
                   $patientId   : this["patientId "],
                   $dxProcessId : this["dxProcessId"]
                 )
     $dx : DiagnosticGuideProcess( id == $dxProcessId, status == "Started", $steps : diagnosticProcessHistory )
     $cd : DxDecision( this memberOf $steps, current == true )
+    not   OneShotBlocker( $msgId ; )
 then
     System.out.println( "****************************************************************************************************************** ");
-    System.out.println( "******************************************************************** Stepping to " + ($steps.size()) );
+    System.out.println( "******************************************************************** Stepping to " + ($steps.size()) + " thanks to " + $msgId );
     retract( $cd );
+    insert( new OneShotBlocker( $msgId ) );
     insert( new DxStep( $dx.getId(), ($steps.size()) ) );
 end
 
@@ -64,13 +71,15 @@ rule "Action_Request : advanceDiagnosticGuideProcess - clean"
 salience -100
 when
     $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
-    $a  : Action( actionName == "advanceDiagnosticGuideProcess", $msgId : msgId,
-                  $userId      : this["userId"],
-                  $patientId   : this["patientId "],
-                  $dxProcessId : this["dxProcessId"]
-                )
+    $a : Action( actionName == "advanceDiagnosticGuideProcess", $msgId : msgId,
+                 $userId      : this["userId"],
+                 $patientId   : this["patientId "],
+                 $dxProcessId : this["dxProcessId"]
+               )
+    $b : OneShotBlocker( $msgId ; )
     ?advanceDiagnosticGuideProcess( $userId, $patientId, $dxProcessId, $return ; )
 then
     retract( $a );
+    retract( $b );
     ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end

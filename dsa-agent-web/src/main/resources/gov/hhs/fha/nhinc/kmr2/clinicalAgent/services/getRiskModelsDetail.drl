@@ -67,27 +67,30 @@ when
     not   GetRiskModelsDetail()
 then
     GetRiskModelsDetail ans = new GetRiskModelsDetail();
-    insert(ans);
+        ans.setModelIds( java.util.Arrays.asList( (String[]) $modelIds ) );
+        ans.setRiskModels( new ArrayList() );
+        System.out.println( "Received GRMD action " + $modelIds + ", preparing " + ans );
+    insert( ans );
 end
 
 
-rule "Action_Request : getRiskModelsDetail - refresh"
-no-loop
-when
-    $a :  Action( actionName == "getRiskModelsDetail",
-                  $userId    : this["userId"],
-                  $patientId : this["patientId"],
-                  $modelIds  : this["modelIds"]
-                )
-    $g : GetRiskModelsDetail( $mids : modelIds )
-    exists String( this not memberOf $mids ) from ( (String[]) $modelIds )
-then
-    modify ( $g ) {
-        setModelIds( java.util.Arrays.asList( (String[]) $modelIds ) ),
-        setRiskModels( new ArrayList() );
-    }
-    System.out.println(" UPDATED GRMD " + $g );
-end
+//rule "Action_Request : getRiskModelsDetail - refresh"
+//no-loop
+//when
+//    $a :  Action( actionName == "getRiskModelsDetail",
+//                  $userId    : this["userId"],
+//                  $patientId : this["patientId"],
+//                  $modelIds  : this["modelIds"]
+//                )
+//    $g : GetRiskModelsDetail( $mids : modelIds )
+//    exists String( this not memberOf $mids ) from ( (String[]) $modelIds )
+//then
+//    modify ( $g ) {
+//        setModelIds( java.util.Arrays.asList( (String[]) $modelIds ) ),
+//        setRiskModels( new ArrayList() );
+//    }
+//    System.out.println(" UPDATED GRMD " + $g );
+//end
 
 
 
@@ -113,12 +116,12 @@ then
 end
 
 
-rule "ModelMarking"
-when
-    $mm   : ModelMarker( $id : modelName )
-then
-    System.out.println( "MODEL MARKER DETECTED " + $mm );
-end
+//rule "ModelMarking"
+//when
+//    $mm   : ModelMarker( $id : modelName )
+//then
+//    System.out.println( "MODEL MARKER DETECTED " + $mm );
+//end
 
 rule "Action_Request : getRiskModelsDetail - model info"
 when
@@ -308,6 +311,7 @@ when
     getRiskModelsDetail( $userId, $patientId, $modelIds, $return ; )
 then
     retract( $a );
+    retract( $return );
     ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end
 

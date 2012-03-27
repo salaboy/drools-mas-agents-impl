@@ -107,3 +107,21 @@ then
     retract( $a );
     ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end
+
+
+
+rule "Action_Request : getDiagnosticProcessStatus failure"
+salience -100
+when
+    $s : SessionLocator( $nodeId: nodeId, $sessionId: sessionId, mind == true )
+    $a : Action( actionName == "getDiagnosticProcessStatus", $msgId : msgId,
+                 $userId      : this["userId"],
+                 $patientId   : this["patientId"],
+                 $processId   : this["dxProcessId"],
+                 $refresh     : this["forceRefresh"]
+                )
+    not ?getDiagnosticProcessStatus( $userId, $patientId, $dxProcessId, $refresh, $return ; )
+then
+    retract( $a );
+    ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, null,  new ExecutionFault( $msgId, "Dx Process not found " + $processId ) );
+end

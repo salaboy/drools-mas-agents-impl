@@ -53,44 +53,50 @@ import org.drools.informer.ProgressStatus;
 
 
 
+rule "At risk"
+when
+            RiskThreshold( $ctx : modelId, type == "Alert", $thold : threshold )
+    $risk : RiskValue( context == $ctx, value > ($thold / 100.0) )
+    ?patientName( $pat ; )
+    ?userName( $pro ; )
+then
+    System.out.println(" AT RISK ------------ of " + $risk + " contact " + $pat + " and " + $pro );
 
+    InteractionTicket ticket = new InteractionTicket( java.util.UUID.randomUUID().toString(),
+                                                      new java.util.ArrayList(),
+                                                      $risk );
 
+    Interaction ti1 = new TaskInteraction();
+        ti1.setType( InteractionTypes.NOTIFICATION );
+        ti1.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList( "risk_alert.template", "risk_alert.template" ) ) );
+        ti1.setReceivers( new java.util.LinkedList( java.util.Arrays.asList( $pat, "99990061" ) ) );
+        ti1.setChannels( new java.util.LinkedList( java.util.Arrays.asList( "ALERT", "ALERT" ) ) );
+        ti1.setTimeouts( new java.util.LinkedList( java.util.Arrays.asList( "5s", "5s" ) ) );
+        System.err.println( ti1 );
 
+    Interaction ti2 = new TaskInteraction();
+        ti2.setType( InteractionTypes.NOTIFICATION );
+        ti2.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList( "risk_alert_prov.template", "risk_alert_prov.template" ) ) );
+        ti2.setReceivers( new java.util.LinkedList( java.util.Arrays.asList( $pro, "2122" ) ) );
+        ti2.setChannels( new java.util.LinkedList( java.util.Arrays.asList( "ALERT", "SMS" ) ) );
+        ti2.setTimeouts( new java.util.LinkedList( java.util.Arrays.asList( "5s", "5s" ) ) );
 
+    ticket.getInteractions().add( ti1 );
+    ticket.getInteractions().add( ti2 );
 
-
-
-
-
-declare PatientAcknowledgment extends Surveyable
-@Questionable( label = "Please acknowledge the above message", language = "EN" )
-
-    questionnaireId     : String
-
-    ack                 : String
-    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Do you acknowledge the content above ? ", required = false )
-    @AllowedAnswers( values = { "accept=Accept", "reject=Reject", "hold=Hold"  } )
-
+    insert( ticket );
 end
 
-declare ProviderAcknowledgment extends Surveyable
-@Questionable( label = "Please acknowledge the above message", language = "EN" )
-
-    questionnaireId     : String
-
-    ack                 : String
-    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Do you acknowledge the content above ? ", required = false )
-    @AllowedAnswers( values = { "accept=Accept", "reject=Reject", "hold=Hold", "ignore=Ignore", "escalate=Escalate"  } )
-
-end
 
 
-rule "Install"
-salience 9999
+
+
+rule "Register Usecase Forms"
+salience 99999
 when
 then
-    FormRegistry.register( PatientAcknowledgment.class );
-    FormRegistry.register( ProviderAcknowledgment.class );
+    TemplateBuilder.addTemplate( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/templates/risk_alert.template" );
+    TemplateBuilder.addTemplate( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/templates/risk_alert_prov.template" );
 end
 
 
@@ -98,193 +104,117 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-//rule "At risk"
-//when
-//            RiskThreshold( $ctx : modelId, type == "Alert", $thold : threshold )
-//    $risk : RiskValue( context == $ctx, value > ($thold / 100.0) )
-//    ?patientName( $pat ; )
-//    ?userName( $pro ; )
-//then
-//    System.out.println(" AT RISK ------------ of " + $risk + " contact " + $pat + " and " + $pro );
-//
-//    InteractionTicket ticket = new InteractionTicket( java.util.UUID.randomUUID().toString(),
-//                                                      new java.util.ArrayList(),
-//                                                      $risk );
-//
-//    ticket.getInteractions().add( new Interaction( "org.kmr2.mock.PatientAcknowledgment",
-//                                                   "risk_alert.template",
-//                                                   new java.util.LinkedList( java.util.Arrays.asList( $pat, "99990061" ) ),
-//                                                   new java.util.LinkedList( java.util.Arrays.asList( "ALERT", "ALERT" ) ) ) );
-//
-//    ticket.getInteractions().add( new Interaction( "org.kmr2.mock.ProviderAcknowledgment",
-//                                                   "risk_alert_prov.template",
-//                                                   new java.util.LinkedList( java.util.Arrays.asList( $pro, "2122" ) ),
-//                                                   new java.util.LinkedList( java.util.Arrays.asList( "ALERT", "SMS" ) ) ) );
-//    insert( ticket );
-//end
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-//
-//rule "Dispatch"
-//salience -200
-//when
+rule "Dispatch"
+salience -200
+when
 //    $ticket : InteractionTicket( $ticketId : id,
 //                                 $inters : interactions,
 //                                 $source : source  )
 //    $convo  : TicketActor( $convoId, $ticketId, $actorId ; )
 //    conversationForms( $ticketId, $actorId, $formIds, $bodies, $channels ; )
 //              eval( $formIds.size() > 0 )
-//              RiskValue( $value, $model ; ) from $source
-//    ?patientName( $pat ; )
-//    ?userName( $pro ; )
-//then
-//    System.out.println( " ******************************* Creating helper I " );
-////    SynchronousRequestHelper helper = new SynchronousRequestHelper( new java.net.URL("TODO NEED THE EXACT URL") );
-////    SynchronousRequestHelper helper = new SynchronousRequestHelper( new java.net.URL("http://184.191.173.235:8080/action-message-agent-service/service/SynchronousDroolsAgentService?WSDL") );
-//
-//    int risk = (int) Math.round(100*$value);
-//    String body = "";
-//    for ( int j = 0; j < $formIds.size(); j ++ ) {
-//        java.util.Map vars = new java.util.HashMap(10);
-//        vars.put("title", $model );
-//        vars.put("patient", $pat );
-//        vars.put("disease", $model );
-//        vars.put("risk", risk );
-//        vars.put("provider", $pro );
-//        vars.put("nonRisk", 100-risk );
-//        vars.put("surveyId", $formIds.get(j) );
-//
+    $ticket : InteractionTicket( $ticketId : id,
+                                 $inters : interactions,
+                                 $source : source  )
+    $convo  : TicketActor( $convoId, $ticketId, $actorId ; )
+    conversationAlerts( $ticketId, $actorId, $formIds, $bodies, $channels ; )
+    Integer( this > 0 ) from $channels.size()
+              RiskValue( $value, $model ; ) from $source
+    ?patientName( $pat ; )
+    ?userName( $pro ; )
+then
+    System.out.println( " ******************************* Creating helper I " );
+//    SynchronousRequestHelper helper = new SynchronousRequestHelper( new java.net.URL("TODO NEED THE EXACT URL") );
+//    SynchronousRequestHelper helper = new SynchronousRequestHelper( new java.net.URL("http://184.191.173.235:8080/action-message-agent-service/service/SynchronousDroolsAgentService?WSDL") );
+
+    int risk = (int) Math.round(100*$value);
+    String body = "";
+    for ( int j = 0; j < $formIds.size(); j ++ ) {
+        java.util.Map vars = new java.util.HashMap(10);
+        vars.put("title", $model );
+        vars.put("patient", $pat );
+        vars.put("disease", $model );
+        vars.put("risk", risk );
+        vars.put("provider", $pro );
+        vars.put("nonRisk", 100-risk );
+        vars.put("surveyId", $formIds.get(j) );
+
 //        CompiledTemplate template = (CompiledTemplate)  gov.hhs.fha.nhinc.kmr2.TemplateBuilder.getRegistry().getNamedTemplate( (String) $bodies.get(j) );
 //        body += ( TemplateRuntime.execute ( template, null, vars ).toString() );
-//    }
-//
-//    java.util.LinkedHashMap map = new java.util.LinkedHashMap();
-//    map.put("refId", $ticketId );
-//    map.put("conversationId", $convoId );
-//    map.put("subjectAbout", new String[] { $pat, $pro, $actorId } );          // Array of ids, current alert creation will grab the first id as the ptUnitNumber.
-//    map.put("sender", $pro );                // id
-//    map.put("mainRecipients", new String[] { $actorId } );         // Array of Ids
-//    map.put("secondaryRecipients", new String[0] );    // Array of Ids
-//    map.put("hiddenRecipients", new String[0] );       // Array of Ids
-//    map.put("type", $channels.get(0) );
-//    map.put("header", "Risk threshold exceeded : " + $model + "(" + risk + "%)" );
-//    map.put("body", body );
-//    map.put("priority", "Critical" );
-//    map.put("deliveryDate", new java.util.Date() );
-//    map.put("status", "New" );                         // [ "New" | "Read" | "Unread" | "Escalated" | ... ]
-//
-//    System.out.println(map);
-//
-//
-//    System.out.println( " ******************************* Deliver to " + $actorId + "  : >> " + $formIds + " in " + $convo + " using " + $channels.get(0) );
-////    helper.invokeRequest("deliverMessage",map);
-//end
-//
-//
-//
-//
-//
-//
-//rule "Update state"
-//salience -200
-//when
+        body += TemplateBuilder.applyNamedTemplate ( (String) $bodies.get(j), vars );
+    }
+
+    java.util.LinkedHashMap map = new java.util.LinkedHashMap();
+    map.put("refId", $ticketId );
+    map.put("conversationId", $convoId );
+    map.put("subjectAbout", new String[] { $pat, $pro, $actorId } );          // Array of ids, current alert creation will grab the first id as the ptUnitNumber.
+    map.put("sender", $pro );                // id
+    map.put("mainRecipients", new String[] { $actorId } );         // Array of Ids
+    map.put("secondaryRecipients", new String[0] );    // Array of Ids
+    map.put("hiddenRecipients", new String[0] );       // Array of Ids
+    map.put("type", $channels.get(0) );
+    map.put("header", "Risk threshold exceeded : " + $model + "(" + risk + "%)" );
+    map.put("body", body );
+    map.put("priority", "Critical" );
+    map.put("deliveryDate", new java.util.Date() );
+    map.put("status", "New" );                         // [ "New" | "Read" | "Unread" | "Escalated" | ... ]
+
+    System.out.println(map);
+
+    System.out.println( " ******************************* Deliver to " + $actorId + "  : >> " + $formIds + " in " + $convo + " using " + $channels.get(0) );
+//    helper.invokeRequest("deliverMessage",map);
+
+end
+
+
+
+
+
+
+rule "Update state"
+salience -200
+when
 //    $ticket : InteractionTicket( $ticketId : id,
 //                                 $inters : interactions,
 //                                 $source : source  )
 //    $convo  : TicketActor( $convoId, $ticketId, $actorId ; )
 //    conversationForms( $ticketId, $actorId, $formIds, $bodies ; )
-//    List( $numComplete : size > 0 ) from accumulate (
-//            $p : ProgressStatus( formId memberOf $formIds, $x : percentage == 100 )
-//            collectList( $p )
-//        )
-//    ?patientName( $pat ; )
-//    ?userName( $pro ; )
-//then
-//    int ratio = 100 * $numComplete / $formIds.size();
-//    System.out.println( " ******************************* Creating helper II " );
-////    SynchronousRequestHelper helper = new SynchronousRequestHelper( new java.net.URL("http://184.191.173.235:8080/action-message-agent-service/service/SynchronousDroolsAgentService?WSDL") );
-////
-////
-//    java.util.LinkedHashMap map = new java.util.LinkedHashMap();
-//    map.put("refId", $ticketId );
-//    map.put("conversationId", $convoId );
-//    map.put("subjectAbout", new String[] { $pat, $pro, $actorId } );          // Array of ids, current alert creation will grab the first id as the ptUnitNumber.
-//    map.put("sender", $pro );                // id
-//    map.put("mainRecipients", new String[] { $actorId } );         // Array of Ids
-//    map.put("secondaryRecipients", new String[0] );    // Array of Ids
-//    map.put("hiddenRecipients", new String[0] );       // Array of Ids
-//    map.put("type", "UPDATE" );
-//    map.put("header", null );
-//    map.put("body", null );
-//    map.put("priority", "Critical" );
-//    map.put("deliveryDate", new java.util.Date() );
-//    map.put("status", ratio );                 // [ "New" | "Read" | "Unread" | "Escalated" | ... ]
-//
-////    System.out.println(map);
-//
-//    System.out.println( " ******************************* On progressStatus to " + $actorId + "  : >> " + $formIds + " in " + $convo + " ////  " +  ratio );
-////    helper.invokeRequest("deliverMessage",map);
-//end
+    $ticket : InteractionTicket( $ticketId : id,
+                                 $inters : interactions,
+                                 $source : source  )
+    $convo  : TicketActor( $convoId, $ticketId, $actorId ; )
+    conversationAlerts( $ticketId, $actorId, $formIds, $bodies, $channels ; )
+    Integer( this > 0 ) from $channels.size()
+    List( $numComplete : size > 0 ) from accumulate (
+            $p : ProgressStatus( formId memberOf $formIds, $x : percentage == 100 )
+            collectList( $p )
+        )
+    ?patientName( $pat ; )
+    ?userName( $pro ; )
+then
+    int ratio = 100 * $numComplete / $formIds.size();
+    System.out.println( " ******************************* Creating helper II " );
+//    SynchronousRequestHelper helper = new SynchronousRequestHelper( new java.net.URL("http://184.191.173.235:8080/action-message-agent-service/service/SynchronousDroolsAgentService?WSDL") );
 //
 //
-//
-//
-//
-//
-//
-//
-//rule "Escalation"
-//when
-//    $ticket : InteractionTicket( $id : id,
-//                                 $inters : interactions )
-//    $inter : Interaction( $type, $body, $receivers, $channels ;)
-//    FormMarker( $id, $type, $formId ; )
-//    $al : Alert( $id, $dest, $formId, $channel ; destination memberOf $receivers )
-//    not org.drools.informer.Progress( $formId, 100 ; this after[0,4s] $al )
-//then
-//    System.out.println( $dest + " did not answer " + $al );
-//    retract( $al );
-//    $receivers.remove( 0 );
-//    $channels.remove( 0 );
-//    System.out.println( " Interaction is NOW " + $inter );
-//    update( $inter );
-//end
-//
-//
-//rule "Completion"
-//when
-//    $al : Alert( $id, $dest, $formId, $channel ; )
-//    org.drools.informer.Progress( $formId, 100 ; this after[0,4s] $al )
-//then
-//    System.out.println(" RETRACT!! " + $dest );
-//    retract( $al );
-//end
-//
-//
-//
-//
-//
-//
-//
-//
+    java.util.LinkedHashMap map = new java.util.LinkedHashMap();
+    map.put("refId", $ticketId );
+    map.put("conversationId", $convoId );
+    map.put("subjectAbout", new String[] { $pat, $pro, $actorId } );          // Array of ids, current alert creation will grab the first id as the ptUnitNumber.
+    map.put("sender", $pro );                // id
+    map.put("mainRecipients", new String[] { $actorId } );         // Array of Ids
+    map.put("secondaryRecipients", new String[0] );    // Array of Ids
+    map.put("hiddenRecipients", new String[0] );       // Array of Ids
+    map.put("type", "UPDATE" );
+    map.put("header", null );
+    map.put("body", null );
+    map.put("priority", "Critical" );
+    map.put("deliveryDate", new java.util.Date() );
+    map.put("status", ratio );                 // [ "New" | "Read" | "Unread" | "Escalated" | ... ]
+
+//    System.out.println(map);
+
+    System.out.println( " ******************************* On progressStatus to " + $actorId + "  : >> " + $formIds + " in " + $convo + " ////  " +  ratio );
+//    helper.invokeRequest("deliverMessage",map);
+end
 

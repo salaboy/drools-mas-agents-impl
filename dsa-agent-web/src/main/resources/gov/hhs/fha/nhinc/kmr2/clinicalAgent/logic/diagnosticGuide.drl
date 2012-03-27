@@ -1,0 +1,499 @@
+/*
+ * TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+ * Copyright (c) 2008, Nationwide Health Information Network (NHIN) Connect.
+ * All rights reserved.Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * - Neither the name of the NHIN Connect Project nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *    END OF TERMS AND CONDITIONS
+ */
+package gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision;
+
+import org.drools.pmml_4_0.ModelMarker;
+import org.drools.pmml_4_0.PMML4Field;
+
+import org.drools.mas.*;
+import org.drools.base.DroolsQuery;
+
+import org.drools.informer.Answer;
+import org.drools.informer.Questionnaire;
+import org.drools.informer.interaction.TemplateBuilder;
+import org.drools.informer.generator.Surveyable;
+
+import org.drools.informer.ProgressStatus;
+import org.drools.informer.Question;
+import org.drools.informer.DomainModelAssociation;
+import org.drools.informer.generator.FormRegistry;
+import org.drools.informer.generator.annotations.Questionable;
+import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.informer.generator.annotations.AllowedAnswers;
+
+import org.drools.informer.interaction.*;
+
+import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
+
+import gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DxAction;
+
+rule "Clone Actions"
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $acts : actions, actions.size() > 0, $steps : diagnosticProcessHistory, status == "Started" )
+    $x      : DxStep( dxProcessId == $id, $n : stage )
+    $step   : DxDecision( stage == $n, this memberOf $steps, $choices : actions, current == true ) from $steps
+    $class  : Class( $className : name ) from $acts
+              not DxAction( this memberOf $choices, class == $class, step == $n )
+then
+    System.out.println( "Configuring action " + $class + "in stage " + $n);
+    DxAction act = (DxAction) $class.newInstance();
+        act.setDxProcessId( $id );
+        act.setStep( $n );
+    System.out.println( "Created action " + act );
+    insert( act );
+end
+
+
+rule "Build Control Questionnaire for Actions"
+when
+    $dx : DxAction( taskId == null, $body : this.templateName, $surv : this.bodyQuest )
+then
+    InteractionTicket ticket = new InteractionTicket( java.util.UUID.randomUUID().toString(),
+                                                      new java.util.ArrayList(),
+                                                      $dx );
+    TaskInteraction ti1 = new TaskInteraction();
+        ti1.setType( InteractionTypes.QUESTIONNAIRE );
+        ti1.setAutocomplete( false );
+        ti1.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList( $body ) ) );
+        ti1.setReceivers( new java.util.ArrayList( java.util.Arrays.asList("x") ) );
+        if ( $surv != null ) { ti1.getTriggers().add( $surv ); }
+
+    ticket.getInteractions().add( ti1 );
+
+    System.out.println( "Created ticket " + ticket );
+    insert( ticket );
+end
+
+rule "Link Control Questionnaire for Actions"
+when
+    $dx : DxAction( taskId == null )
+    $tk : InteractionTicket( source == $dx, $inter : interactions[0] )
+    $in : TaskInteraction( this == $inter )
+    $it : InteractiveTask( args contains $in, $taskId : taskId, $qid : controlQuestId )
+then
+    modify ( $dx ) {
+        setTaskId( $taskId ),
+        setQuestionnaireId( $qid );
+    }
+    System.out.println( "BOUNDED " + $dx );
+end
+
+
+rule "Align Control Questionnaire Status"
+salience 999
+when
+    $dx : DxAction( $taskId : taskId != null, $cur : status )
+    $it : InteractiveTask( taskId == $taskId, state != null, $newState : state.label != $cur )
+then
+    modify ( $dx ) {
+        setStatus( $newState );
+    }
+    System.out.println( "ALIGNED TASK AND ACTION! " + $dx );
+end
+
+
+rule "Calculate utility"
+when
+    $dx : DxAction( utility < 0 )
+    ?isUseful( $act, $util, $intg; )
+then
+    modify ( $dx ) {
+        setUtility( $util ),
+        setRndUtility( $intg );
+    }
+end
+
+
+
+rule "Link utilities"
+salience ( $iutil - 300 )
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $acts : actions, actions.size() > 0, $steps : diagnosticProcessHistory, status == "Started" )
+    $x      : DxStep( dxProcessId == $id, $n : stage )
+    $step   : DxDecision( stage == $n, this memberOf $steps, $choices : actions, current == true ) from $steps
+    $act    : DxAction( actionId != null, $iutil : rndUtility >= 0, this not memberOf $choices )
+then
+    System.out.println( "Configuring " + $act + " with utility " + $iutil + "in stage " + $n );
+    $choices.add( 0, $act );
+    System.out.println( "REPORT " + $step.getNodeId() + " has actions " + $choices.size() );
+    update( $step );
+end
+
+
+
+
+rule "Create Body"
+when
+    $dx : DxAction( body == null, $templ : this.templateName, $surv : this.bodyQuest != null, $title : this.descr )
+    $sx : Surveyable( getClass().getName() == $surv, $qid : questionnaireId )
+    $qx : Questionnaire( id == $qid, $num : items.size() )
+then
+    Map args = new HashMap( );
+        args.put( "title", $title );
+        args.put( "surveyId", $qid );
+    modify( $dx ) {
+        setBody( TemplateBuilder.applyNamedTemplate( (String) $templ, args ) );
+    }
+    modify ( $dx ) {
+        setNumQuestions( $num ),
+        setBodyQuestId( $qid );
+    }
+    System.out.println( "Done with DX Action body " + $dx.getBody() );
+end
+
+
+rule "Create Body With no Survey"
+when
+    $dx : DxAction( body == null, $templ : this.templateName, $surv : this.bodyQuest == null, $title : this.descr )
+then
+    Map args = new HashMap( );
+        args.put( "title", $title );
+    modify( $dx ) {
+        setBody( TemplateBuilder.applyNamedTemplate( (String) $templ, args ) );
+    }
+    System.out.println( "Done with DX Action body " + $dx.getBody() );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+rule "Update Diagnosis I"
+when
+    $dx  : DiagnosticGuideProcess( $mid : diagModel, status != "Complete" )
+    $fld : PMML4Field( context == $mid, name == "Diag" )
+then
+    System.out.println( "Model diag " + $fld );
+    DiagValue val = don( $fld, DiagValue.class, false );
+end
+
+rule "Update Diagnosis II"
+no-loop
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $mid : diagModel, $steps : diagnosticProcessHistory, status != "Complete" )
+    $x      : DxStep( dxProcessId == $id, $n : stage )
+    $step   : DxDecision( stage == $n, this memberOf $steps, current == true, $currProb : diseaseProbabilityReal )
+              DiagValue( context == $mid, $val : value != $currProb )
+then
+    int p = + (int) Math.round( $val * 100 );
+    System.err.println(" New estimate is " + p );
+    modify ( $step ) {
+        setDiseaseProbability( p ),
+        setDiseaseProbabilityReal( $val );
+    }
+end
+
+
+
+
+
+
+
+rule "Update Severity : n.a."
+when
+    $dx : DxDecision( $curr : diseaseProbability < 0 )
+then
+    $dx.setSeverity( "n/a" );
+    $dx.setResponse( "Not enough information to estimate a disease probability" );
+end
+
+
+rule "Update Severity : Low"
+when
+    $dx : DxDecision( $curr : diseaseProbability >= 0 && <= 25 )
+then
+    $dx.setSeverity( "Low" );
+    $dx.setResponse( "The estimated disease probability is Low (" + $curr + ")" );
+end
+
+rule "Update Severity : Average"
+when
+    $dx : DxDecision( $curr : diseaseProbability > 25 && <= 50 )
+then
+    $dx.setSeverity( "Average" );
+    $dx.setResponse( "The estimated disease probability is Average (" + $curr + ")" );
+end
+
+rule "Update Severity : High"
+when
+    $dx : DxDecision( $curr : diseaseProbability > 50 && <= 75)
+then
+    $dx.setSeverity( "High" );
+    $dx.setResponse( "The estimated disease probability is High (" + $curr + ")" );
+end
+
+rule "Update Severity : Very High"
+when
+    $dx : DxDecision( $curr : diseaseProbability > 75)
+then
+    $dx.setSeverity( "Very High" );
+    $dx.setResponse( "The estimated disease probability is Very High (" + $curr + ")" );
+end
+
+
+
+
+
+
+
+
+
+rule "Update Utility : Low"
+when
+    $dx : DxAction( actionId != null, $curr : utility <= 0.25)
+then
+    $dx.setUtilityLevel( "Low" );
+end
+
+rule "Update Utility : Normal"
+when
+    $dx : DxAction( actionId != null, $curr : utility > 0.25  )
+then
+    $dx.setUtilityLevel( "Normal" );
+end
+
+
+rule "Find most useful"
+salience -100
+when
+    $step   : DxDecision( current == true, $acts : actions )
+    $dx     : DxAction( actionId != null, this memberOf $acts, $u : utility )
+              not DxAction( actionId != null, this != $dx, this memberOf $acts, utility > $u )
+then
+    $dx.setUtilityLevel( "Suggested" );
+end
+
+
+
+
+
+
+//rule "Commit actions"
+//when
+//    $ps : ProgressStatus( $qid : formId, percentage > 0 && < 100 )
+//    $dx : DxAutoCommittingAction( questionnaireId == $qid, $aid : actionId, status == "Started" )
+//then
+//    $dx.setStatus( "Committed" );
+//    $dx.setStatusUpdated( new java.text.SimpleDateFormat().format( new java.util.Date() ) );
+//    update($dx);
+//end
+//
+//
+//
+//rule "Complete actions"
+//when
+//    $ps : ProgressStatus( $qid : formId, percentage == 100 )
+//    $dx : DxAutoCommittingAction( questionnaireId == $qid, $aid : actionId, status == "Started" || == "Committed" )
+//then
+//    $dx.setStatus( "Complete" );
+//    $dx.setStatusUpdated( new java.text.SimpleDateFormat().format( new java.util.Date() ) );
+//    update($dx);
+//end
+
+
+
+
+
+
+//rule "Freeze auto-commit questions"
+//when
+//    $act : DxAutoCommittingAction( status == "Complete" )
+//    $dma : DomainModelAssociation( object == $act, $qid : questionId )
+//    $qst : Question( id == $qid, finalAnswer == false )
+//then
+//    System.out.println( " ------------------------------------> Freeze ------------> " + $qst );
+//    $qst.setFinalAnswer( true );
+//    update( $qst );
+//end
+//
+//rule "Freeze manual-commit questions"
+//when
+//    $act : DxExternalCommittingAction( status == "Committed" )
+//    $dma : DomainModelAssociation( object == $act, $qid : questionId )
+//    $qst : Question( id == $qid, finalAnswer == false )
+//then
+//    System.out.println( " ------------------------------------> Freeze ------------> " + $qst );
+//    $qst.setFinalAnswer( true );
+//    update( $qst );
+//end
+
+
+
+
+
+
+
+
+
+
+
+
+rule "Close step"
+salience 10
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, $num : diagnosticProcessHistory.size(), status != "Complete" )
+//    $x      : DxStep( dxProcessId == $id, stage > 0, stage == $num )
+    $prev   : DxDecision( this memberOf $steps, current == true, stage < ( $num - 1 ) ) from $steps
+then
+    System.out.println( "Closing " + $prev.getNodeId() );
+    // DxDecision is no longer in WM at this point
+    $prev.setCurrent( false );
+end
+
+
+rule "Close step II"
+salience 15
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, $num : diagnosticProcessHistory.size(), status != "Complete" )
+//    $x      : DxStep( dxProcessId == $id, stage > 0, stage == $num )
+    $prev   : DxDecision( this memberOf $steps, current == true, stage < ( $num - 1 ), $acts : actions ) from $steps
+    $act    : DxAction( actionId != null ) from $acts
+then
+    System.out.println( "Killing orphan " + $act.getClass().getName() );
+    retract( $act );
+end
+
+
+
+rule "Close last step"
+salience 10
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, status == "Complete" )
+    $prev   : DxDecision( this memberOf $steps, current == true ) from $steps
+then
+    System.out.println( "Closing LAST STEP" + $prev );
+    // DxDecision is no longer in WM at this point
+    $prev.setCurrent( false );
+end
+
+rule "Close last step II"
+salience 15
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, status == "Complete" )
+    $prev   : DxDecision( this memberOf $steps, current == true, $acts : actions ) from $steps
+    $act    : DxAction( actionId != null ) from $acts
+then
+    System.out.println( "Killing LAST orphan " + $act );
+    retract( $act );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rule "Create step"
+no-loop
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, $num : diagnosticProcessHistory.size(), status != "Complete" )
+    $x      : DxStep( dxProcessId == $id, stage == $num )
+then
+    System.out.println( "Create step " );
+    DxDecision step = new DxDecision( java.util.UUID.randomUUID().toString() );
+        step.setStage( $steps.size() );
+        step.setCurrent( true );
+        step.setDescr( "Stage " + step.getStage() );
+        step.setActions( new java.util.ArrayList() );
+    $steps.add( step );
+    update( $dx );
+    insertLogical( step );
+end
+
+
+
+
+
+
+rule "Disable Guide Cancel on Progress"
+salience 999
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, $num : diagnosticProcessHistory.size() > 1, status == "Started", canCancel == true )
+then
+    modify ( $dx ) {
+        setCanCancel( false );
+    }
+end
+
+rule "Disable Guide Cancel"
+salience 999
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, $num : diagnosticProcessHistory.size() == 1, status == "Started", canCancel == true )
+    $step   : DxDecision( this memberOf $steps, current == true, $acts : actions ) from $steps
+    exists  ( DxAction( status != "Not Started" ) from $acts )
+then
+    modify ( $dx ) {
+        setCanCancel( false );
+    }
+end
+
+rule "Re-enable Guide Cancel"
+salience 999
+when
+    $dx     : DiagnosticGuideProcess( $id : id, $steps : diagnosticProcessHistory, $num : diagnosticProcessHistory.size() == 1, status == "Started", canCancel == false )
+    $step   : DxDecision( this memberOf $steps, current == true, $acts : actions ) from $steps
+    forall  ( DxAction( status == "Not Started" ) from $acts )
+then
+    modify ( $dx ) {
+        setCanCancel( true );
+    }
+end
+
+
+
+
+
+rule "Remove step marker"
+salience -9999
+when
+    $x : DxStep()
+then
+    System.out.println( "REMOVED STEP COUNTER ");
+    retract( $x );
+end
+
+
+
+

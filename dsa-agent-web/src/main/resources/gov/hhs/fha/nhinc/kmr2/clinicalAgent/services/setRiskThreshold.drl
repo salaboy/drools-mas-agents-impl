@@ -111,9 +111,10 @@ when
                      $type      : this["type"],
                      $value     : this["threshold"]
                    )
-    ?setRiskThreshold( $userId, $patientId, $modelId, $type, $threshold, $return ; )
+    setRiskThreshold( $userId, $patientId, $modelId, $type, $threshold, $return ; )
 then
     retract($a);
+    System.out.println( "Cleanup setRiskThreshold after executing action " + $return );
     ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
 end
 

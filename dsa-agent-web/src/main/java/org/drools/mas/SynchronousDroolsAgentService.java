@@ -4,7 +4,6 @@
  */
 package org.drools.mas;
 
-import javax.jws.WebMethod;
 import javax.jws.WebService;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import java.util.List;
  */
 @WebService
 public interface SynchronousDroolsAgentService {
-    @WebMethod
     List<ACLMessage> tell(ACLMessage message);
-    
+    public void dispose();
 }

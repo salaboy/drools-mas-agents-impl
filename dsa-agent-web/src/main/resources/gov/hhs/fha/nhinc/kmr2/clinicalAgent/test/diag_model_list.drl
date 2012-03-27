@@ -16,7 +16,7 @@ then
     ResourceDescriptorImpl rd = new ResourceDescriptorImpl();
             rd.setAuthor( "dsotty" );
             rd.setCategories( new HashSet( Arrays.asList( "E", "Diagnostic" ) ) );
-            rd.setDescription( " Post Traumatic Stress Disorder " );
+            rd.setDescription( "Post Traumatic Stress Disorder" );
             rd.setName( "MockDiag" );
             rd.setDocumentation( new URL( "http://the-ptsd-doc-is-here.html" ) );
             rd.setId( "MockDiag" );
@@ -25,7 +25,7 @@ then
             rd.setType( ResourceType.PMML );
             rd.setResourceURL( new ClassPathResource( "gov/hhs/fha/nhinc/kmr2/clinicalAgent/mock/mock_ptsd_diag.pmml" ).getURL() );
             rd.setLoaded( false );
-//    insert( rd );
+    insert( rd );
 end
 
 
@@ -37,7 +37,7 @@ then
     ResourceDescriptorImpl rd = new ResourceDescriptorImpl();
             rd.setAuthor( "dsotty" );
             rd.setCategories( new HashSet( Arrays.asList( "E", "Decision" ) ) );
-            rd.setDescription( " Post Traumatic Stress Disorder " );
+            rd.setDescription( "Post Traumatic Stress Disorder" );
             rd.setName( "MockDecision" );
             rd.setDocumentation( new URL( "http://the-ptsd-doc-is-here.html" ) );
             rd.setId( "MockDecision" );

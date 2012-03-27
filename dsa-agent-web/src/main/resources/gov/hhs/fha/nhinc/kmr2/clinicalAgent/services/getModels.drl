@@ -96,7 +96,7 @@ when
     ResourceDescriptor( $id : name, $type : description, $tags : categories  )
     RiskThreshold( modelId == $id, type == "Display", $thold : threshold )
 then
-    System.out.println(" Combine with th");
+    System.out.println(" Combine with th ");
     insertLogical( new ModelElement( $id, new ArrayList($tags), $type, $type, $thold ) );
 end
 
@@ -106,21 +106,24 @@ when
     not RiskThreshold( modelId == $id, type == "Display" )
     ?defaultRiskThreshold( $def ; )
 then
-    System.out.println(" Set default th");
-    insertLogical( new ModelElement( $id, new ArrayList($tags), $type, $type, $def ) );
+    ModelElement emm = new ModelElement( $id, new ArrayList($tags), $type, $type, $def );
+    System.out.println(" Set default th " + $def + " on model " + emm );
+    insertLogical( emm );
 end
 
 
+
 rule "Listing"
+salience -1
 no-loop
 when
     $ml : ModelList( $queryTags : tags )
-    $list : List( $num : size ) from accumulate (
-        $m : ModelElement( tags.containsAll($queryTags) )
+    $list : List( $num : size() ) from accumulate (
+        $m : ModelElement( tags.containsAll( $queryTags ) )
         collectList( $m )
     )
 then
-    System.out.println( "UPDATING MODEL LIST TO " + $list );
+    System.out.println( "UPDATING MODEL LIST TO " + $list + ", query was " + $queryTags );
     modify ( $ml ) {
         setModels( new ArrayList( $list ) );
     }
