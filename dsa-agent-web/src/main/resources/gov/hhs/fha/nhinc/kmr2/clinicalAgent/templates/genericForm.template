@@ -30,9 +30,7 @@
  }
 @declare{'genericForm'}
 <h2>@{title}</h2>
-
 <p>Please answer the following questions</p>
-
 <p class='agentEmbed' type='survey' id='@{surveyId}' p></p>
 @end{}
 

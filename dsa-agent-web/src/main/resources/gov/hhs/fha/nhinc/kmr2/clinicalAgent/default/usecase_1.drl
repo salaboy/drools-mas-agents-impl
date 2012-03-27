@@ -141,7 +141,7 @@ then
 
 //        CompiledTemplate template = (CompiledTemplate)  gov.hhs.fha.nhinc.kmr2.TemplateBuilder.getRegistry().getNamedTemplate( (String) $bodies.get(j) );
 //        body += ( TemplateRuntime.execute ( template, null, vars ).toString() );
-        body += TemplateBuilder.applyNamedTemplate ( (String) $bodies.get(j), vars );
+        body += TemplateBuilder.applyNamedTemplate ( (String) $bodies.get(j), vars ).replace( "\n", "" );
     }
 
     java.util.LinkedHashMap map = new java.util.LinkedHashMap();

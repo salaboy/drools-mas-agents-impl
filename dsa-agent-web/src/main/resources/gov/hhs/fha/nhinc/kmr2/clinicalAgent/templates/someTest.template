@@ -30,12 +30,7 @@
  }
 @declare{'someTest'}
 <h2>@{title}</h2>
-
-<p>
-This is a description of a simple procedure.
-Now, there is something we should tell you...
-</p>
-
+<p>This is a description of a simple procedure. <br/>Now, there is something we should tell you...</p>
 <p class='agentEmbed' type='survey' id='@{surveyId}' p></p>
 @end{}
 

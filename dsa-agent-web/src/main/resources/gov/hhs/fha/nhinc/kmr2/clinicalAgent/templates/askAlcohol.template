@@ -30,9 +30,7 @@
  }
 @declare{'askAlcohol'}
 <h2>@{title}</h2>
-
 <p>Please find out whether the patient abuses alcohol</p>
-
 <p class='agentEmbed' type='survey' id='@{surveyId}' p></p>
 @end{}
 

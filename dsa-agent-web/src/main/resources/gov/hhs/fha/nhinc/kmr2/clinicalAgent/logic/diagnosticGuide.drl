@@ -160,7 +160,7 @@ then
         args.put( "title", $title );
         args.put( "surveyId", $qid );
     modify( $dx ) {
-        setBody( TemplateBuilder.applyNamedTemplate( (String) $templ, args ) );
+        setBody( TemplateBuilder.applyNamedTemplate( (String) $templ, args ).replace("\n","") );
     }
     modify ( $dx ) {
         setNumQuestions( $num ),
@@ -177,7 +177,7 @@ then
     Map args = new HashMap( );
         args.put( "title", $title );
     modify( $dx ) {
-        setBody( TemplateBuilder.applyNamedTemplate( (String) $templ, args ) );
+        setBody( TemplateBuilder.applyNamedTemplate( (String) $templ, args ).replace("\n","") );
     }
     System.out.println( "Done with DX Action body " + $dx.getBody() );
 end

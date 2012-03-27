@@ -5,6 +5,7 @@ import org.drools.mas.action.message.*;
 import org.drools.mas.action.message.types.*;
 import org.drools.mas.action.message.invokers.*;
 import org.drools.mas.*;
+import org.drools.informer.interaction.TemplateBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -272,7 +273,7 @@ end
                args.put( "patient", $pat );
                args.put( "provider", $pro );
 
-           String finalBody = (String) org.mvel2.templates.TemplateRuntime.execute( org.mvel2.templates.TemplateCompiler.compileTemplate( (String) $body ), args );
+           String finalBody = TemplateBuilder.applyTemplate( (String) $body ), args ).replace( "\n", "" );
            DeliverMessageHelper.sendAlert( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",
                                            (String) $convoId,
                                            (String) $header,

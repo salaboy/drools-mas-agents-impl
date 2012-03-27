@@ -30,10 +30,7 @@
  }
 @declare{'empty'}
 <h2>@{title}</h2>
-
-<p>
-Blah Blah Blah
-</p>
+<p>Blah Blah Blah</p>
 @end{}
 
 @includeNamed{'empty'}
