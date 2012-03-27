@@ -23,6 +23,7 @@ global java.util.Map channels;
 declare Entity
     @Traitable
     id                  : String        @key
+    messageId           : String        @key
     resolved            : boolean                   = false
     cn                  : String
     mobile              : String
@@ -44,19 +45,19 @@ end
 declare trait Patient extends OrgEntity
 
     id                  : String        @key
-    messageId           : String
+    messageId           : String        @key
 end
 
 declare trait Provider extends OrgEntity
 
     id                  : String        @key
-    messageId           : String
+    messageId           : String        @key
 end
 
 declare trait Recipient extends OrgEntity
 
     id                  : String        @key
-    messageId           : String
+    messageId           : String        @key
 end
 
 declare trait MainRecipient extends Recipient
@@ -104,42 +105,14 @@ query deliverMessage( String $refId, String $conversationId,
                       String $type, String $header, String $body,
                       String $priority,
                       String $deliveryDate, String $status,
-                      String $return )
-       $ret : MessageDeliveredResponse( $refId, $conversationId; )
-       $return:= String() from MessageContentEncoder.encode($ret, Encodings.XML);
-end
-
-rule "ENTER"
-salience 99999
-when
-    $o : Object()
-then
-    System.out.println("************************************************* " + $o );
-end
-
-rule "Q"
-salience 99999
-when
-    $o : org.drools.base.DroolsQuery( )
-then
-    System.out.println("********************QRYYY***************************** " + $o );
-end
-
-// totally useless rule, except for debug :)
-rule "Deliver Message Action Found"
-    when
-        $action: Action( actionName == "deliverMessage",
-                          $refId   : this["refId"],
-                          $convoId : this["conversationId"]
-                        )
-        $old : MessageDeliveredResponse( refId != $refId || convoId != $convoId )
-    then
-        System.out.println("!!!! Action RefId >>> " + $refId );
-        System.out.println("!!!! Action ConvoId >>> " + $convoId );
+                      Object $return )
+       $return := MessageDeliveredResponse( $refId, $conversationId; )
 end
 
 
-//TODO : remove when delivery will generate the resp
+
+
+
 rule "Deliver Message Action Reset Result"
     when
         $action: Action( actionName == "deliverMessage",
@@ -147,23 +120,10 @@ rule "Deliver Message Action Reset Result"
                           $convoId : this["conversationId"]
                         )
     then
-        insert( new MessageDeliveredResponse( (String) $refId, (String) $convoId ) );
+        insertLogical( new MessageDeliveredResponse( (String) $refId, (String) $convoId ) );
 end
 
 
-
-
-
-rule "Deliver Message Action Reset Result - Clean"
-    when
-        $action: Action( actionName == "deliverMessage",
-                          $refId   : this["refId"],
-                          $convoId : this["conversationId"]
-                        )
-        $old : MessageDeliveredResponse( refId != $refId || convoId != $convoId )
-    then
-        retract( $old );
-end
 
 
 
@@ -180,18 +140,12 @@ rule "Insert Subject-About Entities"
         $action: Action( actionName == "deliverMessage",
                          $refId        : this["refId"],
                          $cnvId        : this["conversationId"],
-                         $subjectAbout : this["subjectAbout"]
+                         $subjectAbout : this["subjectAbout"] != null
                        )
         $id : String() from $subjectAbout
     then
-        insertLogical( new Entity( $id ) );
-end
 
-
-rule "Resolve"
-when
-    $ent : Entity( $id : id, resolved == false )
-then
+    Entity $ent = new Entity( $id, (String) $cnvId );
     System.out.println( "I'm calling the LDAP Service here for " + $id );
    
     Map<String, String> results = LDAPHelper.queryEntity("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL",$id);
@@ -202,7 +156,7 @@ then
         $ent.setGender( (String)results.get("gender") );
 
     $ent.setResolved( true );
-    update( $ent );
+    insertLogical( $ent );
 end
 
 
@@ -211,10 +165,10 @@ when
     $action: Action( actionName == "deliverMessage",
                          $refId : this["refId"],
                          $cnvId : this["conversationId"],
-                         $subjectAbout : this["subjectAbout"]
+                         $subjectAbout : this["subjectAbout"] != null
                        )
     $pid : String() from ( (String[]) $subjectAbout )[0]
-    $ent : Entity( id == $pid, resolved == true )
+    $ent : Entity( id == $pid, messageId == $cnvId, resolved == true )
 then
     System.out.println( "The patient ID IS  " + $pid );
     Patient pat = don( $ent, Patient.class, true );
@@ -228,10 +182,10 @@ when
     $action: Action( actionName == "deliverMessage",
                          $refId      : this["refId"],
                          $cnvId      : this["conversationId"],
-                         $recipients : this["mainRecipients"]
+                         $recipients : this["mainRecipients"] != null
                        )
     $rid : String() from ( (String[]) $recipients )
-    $ent : Entity( id == $rid, resolved == true )
+    $ent : Entity( id == $rid, messageId == $cnvId, resolved == true )
 then
     System.out.println( "The recipient ID IS  " + $rid );
     MainRecipient rec = don( $ent, MainRecipient.class, true );
@@ -247,13 +201,11 @@ when
                          $cnvId      : this["conversationId"],
                          $sender     : this["sender"]
                        )
-    $ent : Entity( id == $sender, resolved == true )
+    $ent : Entity( id == $sender, messageId == $cnvId, resolved == true )
 then
     System.out.println( "The provider ID IS  " + $sender );
     Provider pro = don( $ent, Provider.class, true );
-    System.out.println( pro.hashCode() );
         pro.setMessageId( (String) $cnvId );
-    System.out.println( pro.hashCode() );
     update( pro );
 end
 
@@ -288,7 +240,7 @@ end
        $rec :   Recipient( messageId == $convoId, $mobile : mobile )
    then
        
-       DeliverMessageHelper.sendSMS("http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
+       DeliverMessageHelper.sendSMS( "http://192.168.5.47:8080/PresentationServices/DSAIntegration?WSDL", $mobile, (String) $header );
        
    end
 
@@ -382,7 +334,7 @@ rule " response collector - deliverMessage"
         deliverMessage($refId, $cnvId, $about, $sender, $recipients , $secRec, $hiddenRec, $type,  $header,   
                         $body , $priority , $deliveryDate, $status , $return; )
     then
-        ResponseContent.deliverResponse($nodeId, $sessionId, $msgId, $return, null);
+        ResponseContent.deliverResponse( $nodeId, $sessionId, $msgId, $return, null );
         retract( $action );
 end
 

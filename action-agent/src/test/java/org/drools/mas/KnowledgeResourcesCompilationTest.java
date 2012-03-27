@@ -131,15 +131,24 @@ public class KnowledgeResourcesCompilationTest {
 
         agent.tell(req);
 
-        waitForResponse( agent, req.getId() );
+                waitForResponse( agent, req.getId() );
 
 
-        assertEquals(2, agent.getAgentAnswers(req.getId()).size());
-        Object result = agent.getAgentAnswers(req.getId());
-        assertNotNull(result);
-        assertEquals(true, result.toString().contains("refId"));
-        assertEquals(true, result.toString().contains("conversationId"));
-        agent.dispose();
+                assertEquals(2, agent.getAgentAnswers(req.getId()).size());
+                Object result = agent.getAgentAnswers(req.getId());
+                assertNotNull(result);
+                assertEquals(true, result.toString().contains("refId"));
+                assertEquals(true, result.toString().contains("conversationId"));
+
+
+
+                ACLMessage req2 = factory.newRequestMessage("", "", action);
+
+                        agent.tell(req2);
+
+                        waitForResponse( agent, req2.getId() );
+
+                agent.dispose();
     }
 
     @Test
