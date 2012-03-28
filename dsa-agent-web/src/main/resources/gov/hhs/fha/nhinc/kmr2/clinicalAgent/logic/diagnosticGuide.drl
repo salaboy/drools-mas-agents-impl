@@ -65,6 +65,7 @@ when
 then
     System.out.println( "Configuring action " + $class + "in stage " + $n);
     DxAction act = (DxAction) $class.newInstance();
+        act.setActionId( java.util.UUID.randomUUID().toString() );
         act.setDxProcessId( $id );
         act.setStep( $n );
     System.out.println( "Created action " + act );
@@ -111,10 +112,11 @@ rule "Align Control Questionnaire Status"
 salience 999
 when
     $dx : DxAction( $taskId : taskId != null, $cur : status )
-    $it : InteractiveTask( taskId == $taskId, state != null, $newState : state.label != $cur )
+    $it : InteractiveTask( taskId == $taskId, state != null, $newState : state.label != $cur, $lastChange : lastChange )
 then
     modify ( $dx ) {
-        setStatus( $newState );
+        setStatus( $newState ),
+        setStatusUpdated( new java.text.SimpleDateFormat().format( $lastChange ) );
     }
     System.out.println( "ALIGNED TASK AND ACTION! " + $dx );
 end
@@ -228,7 +230,7 @@ rule "Update Severity : n.a."
 when
     $dx : DxDecision( $curr : diseaseProbability < 0 )
 then
-    $dx.setSeverity( "n/a" );
+    $dx.setSeverity( "N/A" );
     $dx.setResponse( "Not enough information to estimate a disease probability" );
 end
 

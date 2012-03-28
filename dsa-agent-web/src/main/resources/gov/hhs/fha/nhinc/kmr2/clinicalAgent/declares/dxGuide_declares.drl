@@ -39,7 +39,7 @@ import org.drools.informer.generator.annotations.AllowedAnswers;
 
 declare DiagnosticGuideProcess
    id                       : String                @key
-   status                   : String                        = "n/a"
+   status                   : String                        = "N/A"
    decModel                 : String
    diagModel                : String
    disease                  : String
@@ -73,7 +73,7 @@ end
 declare DxAction
 @typesafe( false )
 
-    actionId        : String                        = java.util.UUID.randomUUID().toString() @key
+    actionId        : String                        @key
     dxProcessId     : String
     step            : int
 
@@ -90,7 +90,7 @@ declare DxAction
 
     utility         : double                        = -1.0
     rndUtility      : int                           = -1
-    utilityLevel    : String                        = "n/a"
+    utilityLevel    : String                        = "N/A"
 
 end
 

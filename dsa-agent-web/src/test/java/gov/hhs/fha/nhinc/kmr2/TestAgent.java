@@ -339,6 +339,26 @@ public class TestAgent {
         }
     }
 
+    public String getDiagnosticActionStatus( String userId, String patientId, String dxProcessId, String actionId ) {
+        Map<String,Object> args = new LinkedHashMap<String,Object>();
+        args.put( "userId", userId);
+        args.put( "patientId", patientId );
+        args.put( "dxProcessId", dxProcessId);
+        args.put( "dxActionId", actionId );
+        ACLMessage reqStatus = factory.newRequestMessage("me","you", MessageContentFactory.newActionContent("getDiagnosticActionStatus", args) );
+
+        mainAgent.tell( reqStatus );
+
+        waitForResponse( reqStatus.getId() );
+
+        ACLMessage ans2 = mainAgent.getAgentAnswers( reqStatus.getId() ).get( 1 );
+        try {
+            return ret(ans2);
+        } catch (FailureException e) {
+            return e.getMessage();
+        }
+    }
+
     public String setDiagnosticActionStatus( String userId, String patientId, String dxProcessId, String actionCtrlQuestId, String status ) {
 
         System.out.println( "Setting action status " + status + " for action ctrl quest id " + actionCtrlQuestId );
@@ -1289,6 +1309,46 @@ public class TestAgent {
         System.err.println(statusXML);
 //
         assertEquals( "1", getValue( statusXML, "//gov.hhs.fha.nhinc.kmr2.clinicalAgent.models.decision.DxDecision/diseaseProbability[.='10']/../stage" ) );
+
+
+    }
+
+
+
+
+
+    @Test
+    public void testGetDiagnosticActionStatus() {
+
+
+        String dxProcessReturn = startDiagnosticGuideProcess( "docX", "patient33", "Post Traumatic Stress Disorder");
+        String dxProcessId = getValue( dxProcessReturn, "//dxProcessId" );
+
+        assertNotNull( dxProcessId );
+
+        String statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
+
+        String actionId = getValue( statusXML, "//" + testDecModel + ".AskAlcohol/actionId" );
+
+        String actStatusXML = getDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionId );
+
+        System.err.println( actStatusXML );
+
+        assertEquals( "true", getValue( statusXML, "//canAdvance") );
+        assertEquals( "true", getValue( statusXML, "//canCancel") );
+
+        advanceDiagnosticProcessStatus( "drX", "patient33", dxProcessId );
+
+        String actStatusXML2 = getDiagnosticActionStatus( "drX", "patient33", dxProcessId, actionId );
+
+        System.err.println( actStatusXML );
+
+        statusXML = getDiagnosticProcessStatus( "drX", "patient33", dxProcessId, true );
+        System.out.println( statusXML );
+
+
+
+        assertEquals( actStatusXML, actStatusXML2 );
 
 
     }

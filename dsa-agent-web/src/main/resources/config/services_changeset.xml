@@ -38,6 +38,7 @@
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/setDiagnosticActionStatus.drl" />
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/completeDiagnosticGuideProcess.drl" />
         <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/getDiagnosticProcessStatus.drl" />
+        <resource type="DRL" source="classpath:gov/hhs/fha/nhinc/kmr2/clinicalAgent/services/getDiagnosticActionStatus.drl" />
 
 
 
