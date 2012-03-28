@@ -4,6 +4,8 @@
  */
 package org.drools.mas;
 
+import org.drools.mas.ACLMessage;
+
 import javax.jws.WebService;
 import java.util.List;
 

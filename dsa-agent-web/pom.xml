@@ -39,7 +39,7 @@
                 <db.dialect>org.hibernate.dialect.H2Dialect</db.dialect>
                 <agent.name>clinical-decision-support-agent</agent.name>
                 <agent.node>clinical-decision-support-agent-localnode</agent.node>
-                <agent.port>8005</agent.port>
+                <agent.port>8007</agent.port>
                 <agent.endpoint.ip>localhost</agent.endpoint.ip>
                 <agent.endpoint.port>8082</agent.endpoint.port>
             </properties>
@@ -54,7 +54,7 @@
                 <db.dialect>org.hibernate.dialect.MySQL5Dialect</db.dialect>
                 <agent.name>clinical-decision-support-agent</agent.name>
                 <agent.node>clinical-decision-support-agent-localnode</agent.node>
-                <agent.port>8005</agent.port>
+                <agent.port>8007</agent.port>
                 <agent.endpoint.ip>184.191.173.235</agent.endpoint.ip>
                 <agent.endpoint.port>8082</agent.endpoint.port>
             </properties>

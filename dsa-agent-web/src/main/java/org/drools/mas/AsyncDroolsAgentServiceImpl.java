@@ -23,7 +23,7 @@ import java.util.List;
  */
 @WebService(targetNamespace = "http://mas.drools.org/", serviceName="AsyncAgentService", portName="AsyncAgentServicePort", endpointInterface="org.drools.mas.AsyncDroolsAgentService")
 @XmlSeeAlso(value = {ACLMessage.class, AbstractMessageBody.class, Inform.class, Info.class, QueryIf.class, InformIf.class,
-    Agree.class, Failure.class, Action.class, Rule.class, InformRef.class, Act.class,
+    Agree.class, Failure.class, Action.class, Rule.class, InformRef.class, Act.class, Disconfirm.class, Confirm.class,
     QueryRef.class, Query.class, Ref.class, Encodings.class,
     Ref.class, InformRef.class, Request.class, RequestWhen.class,
     MyMapReferenceEntryType.class, MyMapArgsEntryType.class})

@@ -26,7 +26,7 @@ import java.util.List;
             portName="SyncAgentServicePort", endpointInterface="org.drools.mas.SynchronousDroolsAgentService"
            )
 @XmlSeeAlso(value = {ACLMessage.class, AbstractMessageBody.class, Inform.class, Info.class, QueryIf.class, InformIf.class,
-    Agree.class, Failure.class, Action.class, Rule.class, InformRef.class, Act.class,
+    Agree.class, Failure.class, Action.class, Rule.class, InformRef.class, Act.class, Disconfirm.class, Confirm.class,
     QueryRef.class, Query.class, Ref.class, Encodings.class,
     Ref.class, InformRef.class, Request.class, RequestWhen.class,
     MyMapReferenceEntryType.class, MyMapArgsEntryType.class})
