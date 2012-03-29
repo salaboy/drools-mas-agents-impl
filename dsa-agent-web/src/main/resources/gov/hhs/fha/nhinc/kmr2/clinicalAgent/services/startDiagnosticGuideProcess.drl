@@ -64,9 +64,9 @@ then
 
     long jtid = -1;
 
-    Task task = new Task(
+    HumanTask task = new HumanTask(
         tid,
-//        jtid,
+        jtid,
         "Diagnostic Guide Task for " + $disease,
         (String) $provId,
         java.util.Arrays.asList( $provId ),

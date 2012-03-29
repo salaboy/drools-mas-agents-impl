@@ -5,6 +5,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -45,6 +46,19 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing>  {
             return Collections.emptyList();
         }
     }
+
+    public static Collection fromXMLString( String data ) {
+        try {
+            Unmarshaller unmarshal = JAXBContext.newInstance( ReferenceAdapter.class.getPackage().getName() ).createUnmarshaller();
+            unmarshal.unmarshal( new ByteArrayInputStream( data.getBytes() ) );
+            ReferenceAdapter loader = unmarshal.getAdapter( ReferenceAdapter.class );
+            return loader.getObjects();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+    
 
     public ReferenceAdapter() {
         cache = new HashMap<String, UIdAble>();

@@ -1,5 +1,6 @@
 package org.demo.test
 
+import gov.hhs.fha.nhinc.kmr2.clinicalAgent.test.TestData;
 import urn.gov.hhs.fha.nhinc.adapter.fact.ReferenceAdapter;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,13 +14,13 @@ function void insertAll( Collection coll, KnowledgeHelper drools ) {
     }
 }
 
-//rule "Load data from test xml"
-//when
-//
-//then
-//    Collection coll = ReferenceAdapter.fromXMLResource( "file:./src/main/resources/gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/test_data.xml" );
-//    insertAll( coll, drools );
-//end
+rule "Load data from test xml"
+when
+
+then
+    Collection coll = ReferenceAdapter.fromXMLString( TestData.data );
+    insertAll( coll, drools );
+end
 
 
 rule "Log"

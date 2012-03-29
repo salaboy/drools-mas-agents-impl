@@ -7,9 +7,10 @@
     <packaging>pom</packaging>
     <name>KMR2 :: Agents Implementations</name>
     <modules>
-        <module>service-clients</module>
+        <!--module>service-clients</module-->
         <module>action-agent-helpers</module>
         <module>action-agent</module>
+        <module>action-agent-demo</module>
         <module>action-agent-client</module>
         <module>dsa-agent-web</module>
         <module>dsa-agent-client</module>
@@ -18,6 +19,7 @@
         <module>lackey-agent</module>
         <module>lackey-agent-client</module>
         <module>simple-swing-client</module>
+        <module>simulator-agent</module>
     </modules>
 
     <repositories>
