@@ -62,8 +62,11 @@ when
 then
     String tid = java.util.UUID.randomUUID().toString();
 
+    long jtid = -1;
+
     Task task = new Task(
         tid,
+//        jtid,
         "Diagnostic Guide Task for " + $disease,
         (String) $provId,
         java.util.Arrays.asList( $provId ),
