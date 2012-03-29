@@ -5,10 +5,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +39,18 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing>  {
             e.printStackTrace();
             return Collections.emptyList();
         } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public static Collection fromXMLStream( InputStream source ) {
+        try {
+            Unmarshaller unmarshal = JAXBContext.newInstance( ReferenceAdapter.class.getPackage().getName() ).createUnmarshaller();
+            unmarshal.unmarshal( source );
+            ReferenceAdapter loader = unmarshal.getAdapter( ReferenceAdapter.class );
+            return loader.getObjects();
+        } catch (JAXBException e) {
             e.printStackTrace();
             return Collections.emptyList();
         }

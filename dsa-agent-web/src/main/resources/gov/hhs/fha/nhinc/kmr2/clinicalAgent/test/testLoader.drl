@@ -1,6 +1,5 @@
 package org.demo.test
 
-import gov.hhs.fha.nhinc.kmr2.clinicalAgent.test.TestData;
 import urn.gov.hhs.fha.nhinc.adapter.fact.ReferenceAdapter;
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,7 +17,8 @@ rule "Load data from test xml"
 when
 
 then
-    Collection coll = ReferenceAdapter.fromXMLString( TestData.data );
+    org.drools.io.impl.ClassPathResource res = new org.drools.io.impl.ClassPathResource("gov/hhs/fha/nhinc/kmr2/clinicalAgent/test/test_data.xml");
+    Collection coll = ReferenceAdapter.fromXMLStream( res.getInputStream() );
     insertAll( coll, drools );
 end
 
